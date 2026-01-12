@@ -127,11 +127,13 @@ function EnvielUI:CreateWindow(Config)
 	if Themes[Theme] then 
 		self.Theme = Themes[Theme] 
 	else
-		local DefaultTheme = Themes.Dark
-		for key, val in pairs(DefaultTheme) do
-			if self.Theme[key] == nil then
-				self.Theme[key] = val
-			end
+		self.Theme = Themes.Dark -- Default safer
+	end
+	
+	-- Merge defaults
+	for key, val in pairs(Themes.Dark) do
+		if self.Theme[key] == nil then
+			self.Theme[key] = val
 		end
 	end
 	
