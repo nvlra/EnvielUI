@@ -1,7 +1,7 @@
 -- EnvielUI Showcase Script
 -- Loads the latest version from GitHub
 
-local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
+local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua?v="..tostring(os.time())))()
 
 -- 1. Create Window
 local Window = EnvielUI.new():CreateWindow({

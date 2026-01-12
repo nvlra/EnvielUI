@@ -808,14 +808,16 @@ function EnvielUI:CreateWindow(Config)
 		function Elements:CreateSlider(Config)
 			local Name = Config.Name or "Slider"
 			local Flag = Config.Flag or Name
-			local Min, Max
+			local Min = 0
+			local Max = 100
 			
+			-- Handle both Range and Min/Max formats
 			if Config.Range then
 				Min = Config.Range[1] or 0
 				Max = Config.Range[2] or 100
-			else
-				Min = Config.Min or 0
-				Max = Config.Max or 100
+			elseif Config.Min and Config.Max then
+				Min = Config.Min
+				Max = Config.Max
 			end
 			
 			local Default = Config.Default or Config.CurrentValue or Min
@@ -1073,13 +1075,13 @@ function EnvielUI:CreateWindow(Config)
 
 		function Elements:CreateKeybind(Config)
 			local Name = Config.Name or "Keybind"
-			local Default = Config.CurrentKeybind or Enum.KeyCode.None
+			local Default = Config.CurrentKeybind or nil -- Fixed: Enum.KeyCode.None is invalid
 			local Callback = Config.Callback or function() end
 			
 			local Value = Default
 			
 			local Frame = Create("Frame", {
-				Parent = Page, BackgroundColor3 = self.Instance.Theme.Secondary, Size = UDim2.new(1,0,0,46), BackgroundTransparency = 0
+				Parent = Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,46), BackgroundTransparency = 0
 			})
 			Create("UICorner", {Parent=Frame, CornerRadius=UDim.new(0,8)})
 			Create("UIStroke", {Parent=Frame, Color=self.Instance.Theme.Stroke, Thickness=1, Transparency=0.5})
@@ -1098,12 +1100,15 @@ function EnvielUI:CreateWindow(Config)
 			local Listening = false
 			
 			BindBtn.MouseButton1Click:Connect(function()
+				if Listening then return end
 				Listening = true
 				BindBtn.Text = "..."
 				BindBtn.TextColor3 = self.Instance.Theme.Accent
 				
 				local Connection
-				Connection = UserInputService.InputBegan:Connect(function(input)
+				Connection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+					if gameProcessed then return end
+					
 					if input.UserInputType == Enum.UserInputType.Keyboard then
 						Value = input.KeyCode
 						BindBtn.Text = Value.Name
