@@ -1064,6 +1064,71 @@ function EnvielUI:CreateWindow(Config)
 		end)
 	end
 
+	function Window:Prompt(Config)
+		local Title = Config.Title or "Alert"
+		local Content = Config.Content or "Are you sure?"
+		local Actions = Config.Actions or {
+			{Text = "OK", Callback = function() end}
+		}
+		
+		local Overlay = Create("Frame", {
+			Parent = ScreenGui, Name = "PromptOverlay", BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1,
+			Size = UDim2.new(1,0,1,0), ZIndex = 2000
+		})
+		
+		local PromptFrame = Create("Frame", {
+			Parent = Overlay, Name = "Content", BackgroundColor3 = self.Instance.Theme.Main,
+			Size = UDim2.new(0, 320, 0, 0), Position = UDim2.new(0.5, -160, 0.5, -50),
+			AutomaticSize = Enum.AutomaticSize.Y
+		})
+		Create("UICorner", {Parent = PromptFrame, CornerRadius = UDim.new(0, 10)})
+		Create("UIStroke", {Parent = PromptFrame, Color = self.Instance.Theme.Stroke, Thickness = 2})
+		Create("UIPadding", {Parent = PromptFrame, PaddingTop=UDim.new(0,20), PaddingBottom=UDim.new(0,20), PaddingLeft=UDim.new(0,20), PaddingRight=UDim.new(0,20)})
+		
+		local TitleLbl = Create("TextLabel", {
+			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,24),
+			Text = Title, Font = Enum.Font.GothamBold, TextSize = 18, TextColor3 = self.Instance.Theme.Text
+		})
+		
+		local ContentLbl = Create("TextLabel", {
+			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,0), Position = UDim2.new(0,0,0,30),
+			Text = Content, Font = Enum.Font.GothamMedium, TextSize = 14, TextColor3 = self.Instance.Theme.TextSec,
+			TextWrapped = true, AutomaticSize = Enum.AutomaticSize.Y
+		})
+		
+		local ButtonContainer = Create("Frame", {
+			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,30), Position = UDim2.new(0,0,0, ContentLbl.AbsoluteSize.Y + 45),
+			AutomaticSize = Enum.AutomaticSize.Y
+		})
+		Create("UIListLayout", {Parent = ButtonContainer, FillDirection=Enum.FillDirection.Horizontal, HorizontalAlignment=Enum.HorizontalAlignment.Center, Padding=UDim.new(0,10)})
+		
+		-- Dynamic resizing hack
+		ContentLbl:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+			ButtonContainer.Position = UDim2.new(0,0,0, ContentLbl.AbsoluteSize.Y + 45)
+		end)
+
+		for _, Action in pairs(Actions) do
+			local Btn = Create("TextButton", {
+				Parent = ButtonContainer, BackgroundColor3 = self.Instance.Theme.Accent, Size = UDim2.new(0, 100, 0, 32),
+				Text = Action.Text, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = self.Instance.Theme.AccentText,
+				AutoButtonColor = false
+			})
+			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
+			
+			Btn.MouseButton1Click:Connect(function()
+				if Action.Callback then Action.Callback() end
+				Tween(Overlay, {BackgroundTransparency = 1}, 0.2)
+				Tween(PromptFrame, {Size = UDim2.new(0,320,0,0), BackgroundTransparency=1}, 0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In).Completed:Wait()
+				Overlay:Destroy()
+			end)
+		end
+		
+		-- Intro Animation
+		Tween(Overlay, {BackgroundTransparency = 0.6}, 0.3)
+		PromptFrame.Size = UDim2.new(0, 320, 0, 0) 
+		Tween(PromptFrame, {Size = UDim2.new(0, 320, 0, 150 + ContentLbl.AbsoluteSize.Y)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+	end
+
 	function Elements:CreateGroup(Config)
 			local Title = Config.Title or "Group"
 			local GroupConfig = {
