@@ -845,7 +845,7 @@ function EnvielUI:CreateWindow(Config)
 				Value = not Value
 				self.Instance.Flags[Flag] = Value
 				Callback(Value)
-				Tween(Swift, {BackgroundColor3=Value and self.Instance.Theme.Accent or self.Instance.Theme.Stroke}, 0.2)
+				Tween(Switch, {BackgroundColor3=Value and self.Instance.Theme.Accent or self.Instance.Theme.Stroke}, 0.2)
 				Tween(Circle, {Position=Value and UDim2.new(1,-22,0.5,-9) or UDim2.new(0,2,0.5,-9)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 			end)
 			
