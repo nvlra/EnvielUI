@@ -124,24 +124,20 @@ function EnvielUI:CreateWindow(Config)
 	local WindowName = Config.Name or "Enviel UI"
 	local Theme = Config.Theme or "Dark"
 	
-	if Themes[Theme] then 
-		self.Theme = Themes[Theme] 
-	else
-		local DefaultTheme = Themes.Dark
-		for key, val in pairs(DefaultTheme) do
-			if self.Theme[key] == nil then
-				self.Theme[key] = val
-			end
-		end
-	end
+	print("[EnvielUI] Initializing...")
 	
 	local Success, ParentTarget = pcall(function()
-		return (gethui and gethui()) or (syn and syn.protect_gui and syn.protect_gui(Create("ScreenGui", {})) and CoreGui) or CoreGui
+		local Target = (gethui and gethui()) or CoreGui
+		print("[EnvielUI] Security Check: " .. (gethui and "gethui" or "CoreGui"))
+		return Target
 	end)
 	
 	if not Success or not ParentTarget then
+		warn("[EnvielUI] Secure parenting failed, falling back to PlayerGui")
 		ParentTarget = Players.LocalPlayer:WaitForChild("PlayerGui")
 	end
+	
+	print("[EnvielUI] Parenting to: " .. tostring(ParentTarget))
 	
 	local function RandomString(length)
 		local str = ""
