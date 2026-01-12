@@ -8,7 +8,20 @@ local HttpService = game:GetService("HttpService")
 
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
-EnvielUI.Version = "Validation_v8_FinalPolish"
+EnvielUI.Version = "Validation_v9_UltimateBeta"
+
+-- Security Handling (Rayfield-style)
+local cloneref = (cloneref or clonereference or function(instance) return instance end)
+local function GetService(Name)
+	return cloneref(game:GetService(Name))
+end
+
+local RunService = GetService("RunService")
+local TweenService = GetService("TweenService")
+local UserInputService = GetService("UserInputService")
+local Players = GetService("Players")
+local CoreGui = GetService("CoreGui")
+local Stats = GetService("Stats")
 
 local Themes = {
 	Dark = {
