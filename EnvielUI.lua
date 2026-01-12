@@ -3,8 +3,8 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
-local VirtualUser = game:GetService("VirtualUser") -- Added VirtualUser
-local HttpService = game:GetService("HttpService") -- Added HttpService
+local VirtualUser = game:GetService("VirtualUser")
+local HttpService = game:GetService("HttpService")
 
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
@@ -19,7 +19,6 @@ local Themes = {
 		Accent = Color3.fromHex("FFDE25"),
 		AccentText = Color3.fromHex("1A1A1A"),
 		
-		-- New Rayfield-style keys
 		Hover = Color3.fromHex("252525"),
 		Element = Color3.fromHex("222222"),
 		TextSelected = Color3.fromHex("FFFFFF"),
@@ -34,7 +33,6 @@ local Themes = {
 		Accent = Color3.fromHex("A78F0A"),
 		AccentText = Color3.fromHex("FFFFFF"),
 
-		-- New Rayfield-style keys
 		Hover = Color3.fromHex("EEEEEE"),
 		Element = Color3.fromHex("F5F5F5"),
 		TextSelected = Color3.fromHex("111111"),
@@ -118,7 +116,7 @@ end
 function EnvielUI.new()
 	local self = setmetatable({}, EnvielUI)
 	self.Theme = Themes.Dark 
-	self.Flags = {} -- Configuration Flags
+	self.Flags = {}
 	return self
 end
 
@@ -129,7 +127,6 @@ function EnvielUI:CreateWindow(Config)
 	if Themes[Theme] then 
 		self.Theme = Themes[Theme] 
 	else
-		-- Backward Compatibility / Custom Theme Validation
 		local DefaultTheme = Themes.Dark
 		for key, val in pairs(DefaultTheme) do
 			if self.Theme[key] == nil then
@@ -138,7 +135,6 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end
 	
-	-- Secure Parenting Logic
 	local Success, ParentTarget = pcall(function()
 		return (gethui and gethui()) or (syn and syn.protect_gui and syn.protect_gui(Create("ScreenGui", {})) and CoreGui) or CoreGui
 	end)
@@ -147,7 +143,6 @@ function EnvielUI:CreateWindow(Config)
 		ParentTarget = Players.LocalPlayer:WaitForChild("PlayerGui")
 	end
 	
-	-- Random Name Generation for Anti-Detection
 	local function RandomString(length)
 		local str = ""
 		for i = 1, length do
@@ -156,7 +151,6 @@ function EnvielUI:CreateWindow(Config)
 		return str
 	end
 
-	-- Remove existing if found (by exact name search might fail if randomized, but we'll try standard just in case)
 	for _, child in pairs(ParentTarget:GetChildren()) do
 		if child:GetAttribute("EnvielID") == "MainInstance" then
 			child:Destroy()
@@ -164,13 +158,13 @@ function EnvielUI:CreateWindow(Config)
 	end
 	
 	local ScreenGui = Create("ScreenGui", {
-		Name = RandomString(10), -- Randomized Name
+		Name = RandomString(10),
 		Parent = ParentTarget,
 		IgnoreGuiInset = true,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		ResetOnSpawn = false
 	})
-	ScreenGui:SetAttribute("EnvielID", "MainInstance") -- Attribute for robust identification
+	ScreenGui:SetAttribute("EnvielID", "MainInstance")
 	
 	local Minimized = false
 	local OpenSize = UDim2.new(0, 700, 0, 450)
@@ -244,13 +238,12 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end)
 
-	-- Mobile Toggle Button
 	if UserInputService.TouchEnabled then
 		local MobileToggle = Create("TextButton", {
 			Name = "EnvielMobileToggle",
 			Parent = ScreenGui,
 			BackgroundColor3 = self.Theme.Main,
-			Position = UDim2.new(0.5, -25, 0, 10), -- Top Center
+			Position = UDim2.new(0.5, -25, 0, 10),
 			Size = UDim2.new(0, 50, 0, 50),
 			Text = "",
 			AutoButtonColor = false
@@ -262,15 +255,14 @@ function EnvielUI:CreateWindow(Config)
 			BackgroundTransparency = 1,
 			Position = UDim2.new(0.5, -12, 0.5, -12),
 			Size = UDim2.new(0, 24, 0, 24),
-			Image = GetIcon("menu"), -- Assuming "menu" icon exists, otherwise generic
+			Image = GetIcon("menu"),
 			ImageColor3 = self.Theme.Accent
 		})
 		
 		local MobileOpen = true
 		MobileToggle.MouseButton1Click:Connect(function()
 			MobileOpen = not MobileOpen
-			-- Re-using the toggle logic logic roughly
-			ScreenGui.Enabled = true -- Ensure enabled
+			ScreenGui.Enabled = true
 			if not MobileOpen then
 				if not Minimized then
 					Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In).Completed:Wait()
@@ -341,7 +333,6 @@ function EnvielUI:CreateWindow(Config)
 	})
 	MinBtn.MouseButton1Click:Connect(ToggleMinimize)
 
-	-- Mobile Scaling
 	if UserInputService.TouchEnabled then
 		Create("UIScale", {
 			Parent = MainFrame,
@@ -357,7 +348,6 @@ function EnvielUI:CreateWindow(Config)
 		Position = UDim2.new(0, 0, 0, 50)
 	})
 	
-	-- Search Bar
 	local SearchBarFrame = Create("Frame", {
 		Parent = ContentContainer,
 		BackgroundTransparency = 1,
@@ -384,13 +374,12 @@ function EnvielUI:CreateWindow(Config)
 		Name = "Sidebar",
 		Parent = ContentContainer,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, 20, 0, 45), -- Adjusted for SearchBar
-		Size = UDim2.new(0, 160, 1, -55), -- Adjusted height
+		Position = UDim2.new(0, 20, 0, 45),
+		Size = UDim2.new(0, 160, 1, -55),
 		ScrollBarThickness = 0,
 		CanvasSize = UDim2.new(0,0,0,0)
 	})
 	
-	-- Search Logic
 	SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
 		local Input = SearchBar.Text:lower()
 		for _, page in pairs(ContentContainer:FindFirstChild("Pages"):GetChildren()) do
@@ -725,10 +714,10 @@ function EnvielUI:CreateWindow(Config)
 					})
 					
 					Btn.MouseEnter:Connect(function() 
-						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Hover}, 0.2) -- Changed to Hover
+						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Hover}, 0.2)
 					end)
 					Btn.MouseLeave:Connect(function() 
-						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Element}, 0.2) -- Changed to Element
+						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Element}, 0.2)
 					end)
 					
 					Btn.MouseButton1Click:Connect(function()
@@ -739,7 +728,7 @@ function EnvielUI:CreateWindow(Config)
 						Expanded = false
 						Tween(Frame, {Size=UDim2.new(1,0,0,DropHeight)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 						Tween(Arrow, {Rotation=0}, 0.3)
-						RefreshOptions() -- Refresh to update selection color
+						RefreshOptions()
 					end)
 				end
 			end
