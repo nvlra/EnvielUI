@@ -548,56 +548,75 @@ function EnvielUI:CreateWindow(Config)
 			if page:IsA("ScrollingFrame") then
 				page.ScrollBarImageColor3 = T.Stroke
 				
-				for _, frame in pairs(page:GetChildren()) do
-					if frame:IsA("Frame") and frame:FindFirstChild("UIStroke") then
-						Tween(frame, {BackgroundColor3 = T.Element}, 0.3)
-						Tween(frame.UIStroke, {Color = T.Stroke}, 0.3)
-
-						for _, desc in pairs(frame:GetDescendants()) do
-							if desc:IsA("TextLabel") then
-								if desc.Text ~= "Interact" then
-									Tween(desc, {TextColor3 = T.Text}, 0.3)
-								end
-							elseif desc:IsA("TextButton") then
-								local Type = desc:GetAttribute("EnvielType")
-								if Type == "ActionButton" then
-									Tween(desc, {BackgroundColor3 = T.Accent, TextColor3 = T.AccentText}, 0.3)
-								elseif Type == "ToggleSwitch" then
-									local FlagName = desc:GetAttribute("EnvielFlag")
-									local IsOn = self.Instance.Flags[FlagName]
-									
-									if IsOn then
-										Tween(desc, {BackgroundColor3 = T.Accent}, 0.3)
-									else
-										Tween(desc, {BackgroundColor3 = T.Stroke}, 0.3)
-									end
-									
-									local Circle = desc:FindFirstChild("Frame")
-									if Circle then Tween(Circle, {BackgroundColor3 = T.Main}, 0.3) end
-								elseif Type == "DropdownOption" then
-									Tween(desc, {BackgroundColor3 = T.Element}, 0.3)
-									local IsSelected = desc:GetAttribute("EnvielSelected")
-									Tween(desc, {TextColor3 = IsSelected and T.Accent or T.TextSec}, 0.3)
-								end
-							elseif desc:IsA("TextBox") then
-								local Type = desc:GetAttribute("EnvielType")
-								if Type == "InputBox" then
-									Tween(desc, {TextColor3 = T.Accent, PlaceholderColor3 = T.TextSec}, 0.3)
-								end
-							elseif desc:IsA("Frame") then
-								local Type = desc:GetAttribute("EnvielType")
-								if Type == "SliderFill" then
-									Tween(desc, {BackgroundColor3 = T.Accent}, 0.3)
-								elseif Type == "SliderThumb" then
-									Tween(desc, {BackgroundColor3 = T.AccentText}, 0.3)
-									if desc:FindFirstChild("UIStroke") then Tween(desc.UIStroke, {Color = T.Accent}, 0.3) end
-								end
+				for _, obj in pairs(page:GetDescendants()) do
+					-- Handle Containers/Frames based on Attribute
+					local ThemeAttr = obj:GetAttribute("EnvielTheme")
+					if ThemeAttr then
+						if ThemeAttr == "Element" then
+							Tween(obj, {BackgroundColor3 = T.Element}, 0.3)
+						elseif ThemeAttr == "Secondary" then
+							Tween(obj, {BackgroundColor3 = T.Secondary}, 0.3)
+						end
+						
+						if obj:FindFirstChild("UIStroke") then
+							Tween(obj.UIStroke, {Color = T.Stroke}, 0.3)
+						end
+					end
+					
+					-- Handle TextLabels
+					if obj:IsA("TextLabel") then
+						-- Exclude special labels if needed, but T.Text is generally safe
+						-- Button labels are inside frames that SetTheme handles?
+						-- Actually, Button Labels need T.Text.
+						-- Tab Labels are handled in Sidebar loop.
+						-- We need to check if it's not a button text (Interact)
+						if obj.Text ~= "Interact" and obj.Name ~= "Icon" and obj.Name ~= "Label" then 
+							Tween(obj, {TextColor3 = T.Text}, 0.3)
+						end
+					end
+					
+					-- Handle TextButtons (Action, Toggle, etc.)
+					if obj:IsA("TextButton") then
+						local Type = obj:GetAttribute("EnvielType")
+						if Type == "ActionButton" then
+							Tween(obj, {BackgroundColor3 = T.Accent, TextColor3 = T.AccentText}, 0.3)
+						elseif Type == "ToggleSwitch" then
+							local FlagName = obj:GetAttribute("EnvielFlag")
+							local IsOn = self.Instance.Flags[FlagName]
+							
+							if IsOn then
+								Tween(obj, {BackgroundColor3 = T.Accent}, 0.3)
+							else
+								Tween(obj, {BackgroundColor3 = T.Stroke}, 0.3)
 							end
 							
-							if desc:IsA("TextButton") and desc:GetAttribute("EnvielType") == "SliderTrack" then
-								Tween(desc, {BackgroundColor3 = T.Stroke}, 0.3)
-							end
+							local Circle = obj:FindFirstChild("Frame")
+							if Circle then Tween(Circle, {BackgroundColor3 = T.Main}, 0.3) end
+						elseif Type == "DropdownOption" then
+							Tween(obj, {BackgroundColor3 = T.Element}, 0.3)
+							local IsSelected = obj:GetAttribute("EnvielSelected")
+							Tween(obj, {TextColor3 = IsSelected and T.Accent or T.TextSec}, 0.3)
+						elseif Type == "SliderTrack" then
+							Tween(obj, {BackgroundColor3 = T.Stroke}, 0.3)
+							local Fill = obj:FindFirstChild("Frame") -- Actually Fill is child of Track? No, check CreateSlider
+							-- Fill is child of Track.
 						end
+					end
+					
+					-- Handle Slider Fill/Thumb (Frames)
+					if obj:IsA("Frame") then
+						local Type = obj:GetAttribute("EnvielType")
+						if Type == "SliderFill" then
+							Tween(obj, {BackgroundColor3 = T.Accent}, 0.3)
+						elseif Type == "SliderThumb" then
+							Tween(obj, {BackgroundColor3 = T.AccentText}, 0.3)
+							if obj:FindFirstChild("UIStroke") then Tween(obj.UIStroke, {Color = T.Accent}, 0.3) end
+						end
+					end
+					
+					-- Handle InputBoxes
+					if obj:IsA("TextBox") then
+						Tween(obj, {TextColor3 = T.Accent, PlaceholderColor3 = T.TextSec}, 0.3)
 					end
 				end
 			end
