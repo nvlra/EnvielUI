@@ -8,7 +8,7 @@ local HttpService = game:GetService("HttpService")
 
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
-EnvielUI.Version = "Validation_v6_FixAlign"
+EnvielUI.Version = "Validation_v7_FixDropdown"
 
 local Themes = {
 	Dark = {
@@ -529,6 +529,14 @@ function EnvielUI:CreateWindow(Config)
 									if Circle then
 										Tween(Circle, {BackgroundColor3 = T.Main}, 0.3)
 									end
+								elseif Type == "DropdownOption" then
+									Tween(desc, {BackgroundColor3 = T.Element}, 0.3)
+									local IsSelected = desc:GetAttribute("EnvielSelected")
+									if IsSelected then
+										Tween(desc, {TextColor3 = T.Accent}, 0.3)
+									else
+										Tween(desc, {TextColor3 = T.TextSec}, 0.3)
+									end
 								end
 							end
 						end
@@ -892,6 +900,8 @@ function EnvielUI:CreateWindow(Config)
 						TextColor3 = (opt == Default) and self.Instance.Theme.Accent or self.Instance.Theme.TextSec,
 						TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, AutoButtonColor=false
 					})
+					Btn:SetAttribute("EnvielType", "DropdownOption")
+					Btn:SetAttribute("EnvielSelected", (opt == Default))
 					
 					Btn.MouseEnter:Connect(function() 
 						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Hover}, 0.2)
