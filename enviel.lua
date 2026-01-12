@@ -18,7 +18,7 @@ local Humanoid = Character:WaitForChild("Humanoid")
 local RootPart = Character:WaitForChild("HumanoidRootPart")
 
 --// Load EnvielUI
-local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua?v="..tostring(math.random())))()
+local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
 local Window -- Forward declaration for Notify calls
 
 --// Configuration System

@@ -1,3 +1,4 @@
+local EnvielUI = {}
 EnvielUI.__index = EnvielUI
 EnvielUI.Version = "V1"
 EnvielUI.Flags = {} -- Initialize globally to prevent nil indexing
