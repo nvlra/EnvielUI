@@ -1,6 +1,6 @@
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
-EnvielUI.Version = "Validation_v10_SecurityFixed"
+EnvielUI.Version = "V1"
 
 local cloneref = (cloneref or clonereference or function(instance) return instance end)
 local function GetService(Name)
@@ -501,6 +501,15 @@ function EnvielUI:CreateWindow(Config)
 			Tween(MobileToggle, {BackgroundColor3 = T.Element}, 0.3)
 			if MobileToggle:FindFirstChild("UIStroke") then Tween(MobileToggle.UIStroke, {Color = T.Accent}, 0.3) end
 			if MobileToggle:FindFirstChild("ImageLabel") then Tween(MobileToggle.ImageLabel, {ImageColor3 = T.Accent}, 0.3) end
+		end
+		
+		-- Update Watermark
+		local WM = MainFrame:FindFirstChild("Watermark")
+		if WM then
+			Tween(WM, {BackgroundColor3 = T.Stroke}, 0.3)
+			if WM:FindFirstChild("UIStroke") then Tween(WM.UIStroke, {Color = T.Stroke}, 0.3) end
+			local WMText = WM:FindFirstChild("TextLabel")
+			if WMText then Tween(WMText, {TextColor3 = T.Text}, 0.3) end
 		end
 		
 		
@@ -1429,7 +1438,7 @@ function EnvielUI:CreateWindow(Config)
 				if Action.Callback then Action.Callback() end
 				if Overlay then Tween(Overlay, {BackgroundTransparency = 1}, 0.2) end
 				if PromptFrame then Tween(PromptFrame, {BackgroundTransparency = 1}, 0.2) end
-				if Scale then Tween(Scale, {Scale = 0.8}, 0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In) end
+				if Scale then Tween(Scale, {Scale = 0.9}, 0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.In) end
 				
 				task.delay(0.2, function()
 					if Overlay then Overlay:Destroy() end
@@ -1440,7 +1449,9 @@ function EnvielUI:CreateWindow(Config)
 		Tween(Overlay, {BackgroundTransparency = 0.6}, 0.3)
 		PromptFrame.BackgroundTransparency = 1
 		Tween(PromptFrame, {BackgroundTransparency = 0}, 0.3)
-		Tween(Scale, {Scale = 1}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		Scale.Scale = 1.1 -- Start slightly larger for a pop-in effect or 0.9 for pop-out
+		Scale.Scale = 0.9
+		Tween(Scale, {Scale = 1}, 0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		PromptFrame.Size = UDim2.new(0, 320, 0, 150 + ContentLbl.AbsoluteSize.Y)
 	end
 	
