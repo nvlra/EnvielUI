@@ -138,13 +138,17 @@ function EnvielUI:CreateWindow(Config)
 	print("[EnvielUI] Initializing...")
 	
 	local Success, ParentTarget = pcall(function()
-		local Target = (gethui and gethui()) or CoreGui
-		print("[EnvielUI] Security Check: " .. (gethui and "gethui" or "CoreGui"))
-		return Target
+		-- Try gethui() first (Secure), otherwise force PlayerGui (Safe)
+		-- Avoid CoreGui directly as it causes crashes/detection on some executors
+		if gethui then
+			return gethui()
+		else
+			return Players.LocalPlayer:WaitForChild("PlayerGui")
+		end
 	end)
 	
 	if not Success or not ParentTarget then
-		warn("[EnvielUI] Secure parenting failed, falling back to PlayerGui")
+		warn("[EnvielUI] Secure parenting failed, forcing PlayerGui")
 		ParentTarget = Players.LocalPlayer:WaitForChild("PlayerGui")
 	end
 	
