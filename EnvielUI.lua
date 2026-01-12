@@ -730,7 +730,7 @@ function EnvielUI:CreateWindow(Config)
 			local Callback = Config.Callback or function() end
 			
 			local Frame = Create("Frame", {
-				Parent = Page,
+				Parent = Config.Parent or Page,
 				BackgroundColor3 = self.Instance.Theme.Element,
 				Size = UDim2.new(1, 0, 0, 42),
 				BackgroundTransparency = 0,
@@ -782,7 +782,7 @@ function EnvielUI:CreateWindow(Config)
 			self.Instance.Flags[Flag] = Value
 			
 			local Frame = Create("Frame", {
-				Parent = Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,44), BackgroundTransparency = 0
+				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,44), BackgroundTransparency = 0
 			})
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
@@ -832,6 +832,7 @@ function EnvielUI:CreateWindow(Config)
 			end
 			
 			local Default = Config.Default or Config.CurrentValue or Min
+			local Increment = Config.Increment or 1
 			local Callback = Config.Callback or function() end
 			
 			if self.Instance.Flags[Flag] ~= nil then
@@ -842,7 +843,7 @@ function EnvielUI:CreateWindow(Config)
 			self.Instance.Flags[Flag] = Value
 			
 			local Frame = Create("Frame", {
-				Parent = Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,60), BackgroundTransparency = 0
+				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,60), BackgroundTransparency = 0
 			})
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
@@ -881,8 +882,19 @@ function EnvielUI:CreateWindow(Config)
 				local SizeX = Track.AbsoluteSize.X
 				local PosX = Input.Position.X - Track.AbsolutePosition.X
 				local Percent = math.clamp(PosX / SizeX, 0, 1)
-				Value = math.floor(Min + ((Max - Min) * Percent))
-				ValueLabel.Text = tostring(Value)
+				
+				local RawValue = Min + ((Max - Min) * Percent)
+				local SteppedValue = math.floor(RawValue / Increment + 0.5) * Increment
+				Value = math.clamp(SteppedValue, Min, Max)
+				
+				-- Format decimals
+				local Decimals = 0
+				if Increment < 1 then
+					local s = tostring(Increment)
+					if s:find("%.") then Decimals = s:match("%.(%d+)"):len() end
+				end
+				ValueLabel.Text = string.format("%."..Decimals.."f", Value)
+				
 				Tween(Fill, {Size = UDim2.new(Percent, 0, 1, 0)}, 0.05)
 				Tween(Thumb, {Position = UDim2.new(Percent, -7, 0.5, -7)}, 0.05)
 				self.Instance.Flags[Flag] = Value
@@ -931,7 +943,7 @@ function EnvielUI:CreateWindow(Config)
 			local TotalOptionsHeight = math.min(#Options, 6) * OptionHeight
 			
 			local Frame = Create("Frame", {
-				Parent = Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,DropHeight), BackgroundTransparency = 0, ClipsDescendants = true
+				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,DropHeight), BackgroundTransparency = 0, ClipsDescendants = true
 			})
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
@@ -1016,7 +1028,7 @@ function EnvielUI:CreateWindow(Config)
 		
 		function Elements:CreateSection(Name)
 			local SectionFrame = Create("Frame", {
-				Parent = Page, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,30)
+				Parent = Config.Parent or Page, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,30)
 			})
 			local Label = Create("TextLabel", {
 				Parent = SectionFrame, BackgroundTransparency=1, Position=UDim2.new(0,5,0,0), Size=UDim2.new(1,-10,1,0),
@@ -1033,7 +1045,7 @@ function EnvielUI:CreateWindow(Config)
 			local RemoveTextAfterFocusLost = Config.RemoveTextAfterFocusLost or false
 			
 			local Frame = Create("Frame", {
-				Parent = Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,44), BackgroundTransparency = 0
+				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,44), BackgroundTransparency = 0
 			})
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
@@ -1072,7 +1084,7 @@ function EnvielUI:CreateWindow(Config)
 			local Content = Config.Content or "Content"
 			
 			local Frame = Create("Frame", {
-				Parent = Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,0), BackgroundTransparency = 0, AutomaticSize = Enum.AutomaticSize.Y
+				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,0), BackgroundTransparency = 0, AutomaticSize = Enum.AutomaticSize.Y
 			})
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
@@ -1113,7 +1125,7 @@ function EnvielUI:CreateWindow(Config)
 			local Expanded = false
 			
 			local Frame = Create("Frame", {
-				Parent = Page, BackgroundColor3 = self.Instance.Theme.Secondary, Size = UDim2.new(1,0,0,46), BackgroundTransparency = 0, ClipsDescendants = true
+				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Secondary, Size = UDim2.new(1,0,0,46), BackgroundTransparency = 0, ClipsDescendants = true
 			})
 			Create("UICorner", {Parent=Frame, CornerRadius=UDim.new(0,8)})
 			Create("UIStroke", {Parent=Frame, Color=self.Instance.Theme.Stroke, Thickness=1, Transparency=0.5})
@@ -1229,7 +1241,7 @@ function EnvielUI:CreateWindow(Config)
 			local Title = Config.Title or "Group"
 			local GroupConfig = {
 				Name = Title,
-				Parent = Page,
+				Parent = Config.Parent or Page,
 				BackgroundColor3 = self.Instance.Theme.Element,
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y
