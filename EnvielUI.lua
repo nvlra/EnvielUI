@@ -735,6 +735,7 @@ function EnvielUI:CreateWindow(Config)
 				Size = UDim2.new(1, 0, 0, 42),
 				BackgroundTransparency = 0,
 			})
+			Frame:SetAttribute("EnvielTheme", "Element")
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 
@@ -784,6 +785,7 @@ function EnvielUI:CreateWindow(Config)
 			local Frame = Create("Frame", {
 				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,44), BackgroundTransparency = 0
 			})
+			Frame:SetAttribute("EnvielTheme", "Element")
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 
@@ -857,6 +859,7 @@ function EnvielUI:CreateWindow(Config)
 			local Frame = Create("Frame", {
 				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,60), BackgroundTransparency = 0
 			})
+			Frame:SetAttribute("EnvielTheme", "Element")
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 
@@ -957,6 +960,7 @@ function EnvielUI:CreateWindow(Config)
 			local Frame = Create("Frame", {
 				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,DropHeight), BackgroundTransparency = 0, ClipsDescendants = true
 			})
+			Frame:SetAttribute("EnvielTheme", "Element")
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 			
@@ -1098,6 +1102,7 @@ function EnvielUI:CreateWindow(Config)
 			local Frame = Create("Frame", {
 				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,0), BackgroundTransparency = 0, AutomaticSize = Enum.AutomaticSize.Y
 			})
+			Frame:SetAttribute("EnvielTheme", "Element")
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 			Create("UIPadding", {Parent = Frame, PaddingTop=UDim.new(0,10), PaddingBottom=UDim.new(0,10), PaddingLeft=UDim.new(0,15), PaddingRight=UDim.new(0,15)})
@@ -1139,6 +1144,7 @@ function EnvielUI:CreateWindow(Config)
 			local Frame = Create("Frame", {
 				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Secondary, Size = UDim2.new(1,0,0,46), BackgroundTransparency = 0, ClipsDescendants = true
 			})
+			Frame:SetAttribute("EnvielTheme", "Secondary")
 			Create("UICorner", {Parent=Frame, CornerRadius=UDim.new(0,8)})
 			Create("UIStroke", {Parent=Frame, Color=self.Instance.Theme.Stroke, Thickness=1, Transparency=0.5})
 
@@ -1260,6 +1266,7 @@ function EnvielUI:CreateWindow(Config)
 			}
 			
 			local GroupFrame = Create("Frame", GroupConfig)
+			GroupFrame:SetAttribute("EnvielTheme", "Element")
 			Create("UICorner", {Parent = GroupFrame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = GroupFrame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 			Create("UIPadding", {Parent = GroupFrame, PaddingTop=UDim.new(0,8), PaddingBottom=UDim.new(0,8), PaddingLeft=UDim.new(0,0), PaddingRight=UDim.new(0,0)})
