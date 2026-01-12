@@ -1064,5 +1064,8 @@ function EnvielUI:CreateWindow(Config)
 		
 		return Elements
 	end
+	
+	return Window
+end
 
 return EnvielUI
