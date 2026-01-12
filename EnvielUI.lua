@@ -808,9 +808,17 @@ function EnvielUI:CreateWindow(Config)
 		function Elements:CreateSlider(Config)
 			local Name = Config.Name or "Slider"
 			local Flag = Config.Flag or Name
-			local Min = Config.Range[1] or 0
-			local Max = Config.Range[2] or 100
-			local Default = Config.CurrentValue or Min
+			local Min, Max
+			
+			if Config.Range then
+				Min = Config.Range[1] or 0
+				Max = Config.Range[2] or 100
+			else
+				Min = Config.Min or 0
+				Max = Config.Max or 100
+			end
+			
+			local Default = Config.Default or Config.CurrentValue or Min
 			local Callback = Config.Callback or function() end
 			
 			if self.Instance.Flags[Flag] ~= nil then
