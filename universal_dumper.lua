@@ -1,6 +1,6 @@
 -- Enviel Universal Explorer & Dumper
 -- Loads the EnvielUI library (Remote)
-local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua?v=14"))()
+local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua?v=15"))()
 local Window = EnvielUI:CreateWindow({
     Name = "Enviel Explorer",
     Theme = { -- Dark Theme
@@ -176,7 +176,8 @@ local function DumpRecursively(root, level)
     return output
 end
 
-local DumpAllBtn = GroupDump:CreateButton({
+local DumpAllBtn
+DumpAllBtn = GroupDump:CreateButton({
     Name = "Dump EVERYTHING (Logic & Remotes)",
     ButtonText = "Dump All",
     Callback = function()
