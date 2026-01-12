@@ -56,7 +56,7 @@ local Themes = {
 	}
 }
 
-print("[EnvielUI] Loading Library...")
+
 
 local IconLib
 local SuccessIcon, ErrIcon = pcall(function()
@@ -68,7 +68,7 @@ if not SuccessIcon then
 	warn("[EnvielUI] Failed to load IconLib:", ErrIcon)
 	IconLib = { GetIcon = function(...) return "" end }
 else
-	print("[EnvielUI] IconLib loaded successfully")
+
 end
 
 local function GetIcon(Name)
@@ -162,7 +162,7 @@ function EnvielUI:CreateWindow(Config)
 		self.Theme = Themes.Dark
 	end
 	
-	-- Initialize Flags if attempting to use directly on the module
+	
 	if not self.Flags then
 		self.Flags = {}
 	end
@@ -173,28 +173,28 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end
 	
-	print("[EnvielUI] Debug: Theme check passed.")
+	
 	
 	print("[EnvielUI] Initializing...")
 	
 	local function GetCorrectParent()
 		local Success, Parent = pcall(function() return gethui() end)
 		if Success and Parent then 
-			print("[EnvielUI] Using gethui()")
+			
 			return cloneref(Parent)
 		end
 		
 		if CoreGui then 
-			print("[EnvielUI] Using CoreGui")
+			
 			return CoreGui 
 		end
 		
-		print("[EnvielUI] Using PlayerGui (Fallback)")
+		
 		return Players.LocalPlayer:WaitForChild("PlayerGui")
 	end
 	
 	local ParentTarget = GetCorrectParent()
-	print("[EnvielUI] Final Parent: " .. tostring(ParentTarget))
+	
 	
 	local function RandomString(length)
 		local str = ""
@@ -204,14 +204,14 @@ function EnvielUI:CreateWindow(Config)
 		return str
 	end
 
-	print("[EnvielUI] Debug: Cleaning old instances...")
+	
 	for _, child in pairs(ParentTarget:GetChildren()) do
 		if child:GetAttribute("EnvielID") == "MainInstance" then
 			child:Destroy()
 		end
 	end
 	
-	print("[EnvielUI] Debug: Creating ScreenGui...")
+	
 	local ScreenGui = Create("ScreenGui", {
 		Name = RandomString(10),
 		Parent = ParentTarget,
@@ -225,7 +225,7 @@ function EnvielUI:CreateWindow(Config)
 	local Minimized = false
 	local OpenSize = UDim2.new(0, 700, 0, 450)
 	
-	print("[EnvielUI] Debug: Creating MainFrame...")
+	
 	local MainFrame = Create("Frame", {
 		Name = "MainFrame",
 		Parent = ScreenGui,
@@ -237,7 +237,7 @@ function EnvielUI:CreateWindow(Config)
 		BackgroundTransparency = 1,
 		ClipsDescendants = true
 	})
-	print("[EnvielUI] Debug: MainFrame Created.")
+	
 
 	Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 16)})
 	Create("UIStroke", {
@@ -553,7 +553,7 @@ function EnvielUI:CreateWindow(Config)
 				page.ScrollBarImageColor3 = T.Stroke
 				
 				for _, obj in pairs(page:GetDescendants()) do
-					-- Handle Containers/Frames based on Attribute
+					
 					local ThemeAttr = obj:GetAttribute("EnvielTheme")
 					if ThemeAttr then
 						if ThemeAttr == "Element" then
@@ -567,19 +567,19 @@ function EnvielUI:CreateWindow(Config)
 						end
 					end
 					
-					-- Handle TextLabels
+					
 					if obj:IsA("TextLabel") then
-						-- Exclude special labels if needed, but T.Text is generally safe
-						-- Button labels are inside frames that SetTheme handles?
-						-- Actually, Button Labels need T.Text.
-						-- Tab Labels are handled in Sidebar loop.
-						-- We need to check if it's not a button text (Interact)
+						
+						
+						
+						
+						
 						if obj.Text ~= "Interact" and obj.Name ~= "Icon" and obj.Name ~= "Label" then 
 							Tween(obj, {TextColor3 = T.Text}, 0.3)
 						end
 					end
 					
-					-- Handle TextButtons (Action, Toggle, etc.)
+					
 					if obj:IsA("TextButton") then
 						local Type = obj:GetAttribute("EnvielType")
 						if Type == "ActionButton" then
@@ -602,12 +602,12 @@ function EnvielUI:CreateWindow(Config)
 							Tween(obj, {TextColor3 = IsSelected and T.Accent or T.TextSec}, 0.3)
 						elseif Type == "SliderTrack" then
 							Tween(obj, {BackgroundColor3 = T.Stroke}, 0.3)
-							local Fill = obj:FindFirstChild("Frame") -- Actually Fill is child of Track? No, check CreateSlider
-							-- Fill is child of Track.
+							local Fill = obj:FindFirstChild("Frame") 
+							
 						end
 					end
 					
-					-- Handle Slider Fill/Thumb (Frames)
+					
 					if obj:IsA("Frame") then
 						local Type = obj:GetAttribute("EnvielType")
 						if Type == "SliderFill" then
@@ -618,7 +618,7 @@ function EnvielUI:CreateWindow(Config)
 						end
 					end
 					
-					-- Handle InputBoxes
+					
 					if obj:IsA("TextBox") then
 						Tween(obj, {TextColor3 = T.Accent, PlaceholderColor3 = T.TextSec}, 0.3)
 					end
@@ -701,7 +701,7 @@ function EnvielUI:CreateWindow(Config)
 				local icon = TabBtn:FindFirstChild("ImageLabel")
 				if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.Accent}, 0.2) end
 			else
-				-- Enforce Active State just in case
+				
 				Tween(TabBtn, {BackgroundTransparency = 0, BackgroundColor3 = self.Instance.Theme.TabActive}, 0.2)
 			end
 		end)
@@ -940,7 +940,7 @@ function EnvielUI:CreateWindow(Config)
 				local SteppedValue = math.floor(RawValue / Increment + 0.5) * Increment
 				Value = math.clamp(SteppedValue, Min, Max)
 				
-				-- Format decimals
+				
 				local Decimals = 0
 				if Increment < 1 then
 					local s = tostring(Increment)
@@ -1076,10 +1076,6 @@ function EnvielUI:CreateWindow(Config)
 		end
 		
 
-
-
-
-		
 		function Elements:CreateSection(Name)
 			local SectionFrame = Create("Frame", {
 				Parent = Config.Parent or Page, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,30)
@@ -1360,8 +1356,6 @@ function EnvielUI:CreateWindow(Config)
 		local ContentText = Config.Content or "Message"
 		local Duration = Config.Duration or 3
 		local Image = GetIcon("megaphone")
-		
-		print("[EnvielUI] Debug: Notify called.", TitleText)
 		
 		local NotifFrame = Create("Frame", {
 			Parent = NotificationContainer,
