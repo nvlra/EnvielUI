@@ -18,7 +18,8 @@ local Humanoid = Character:WaitForChild("Humanoid")
 local RootPart = Character:WaitForChild("HumanoidRootPart")
 
 --// Load EnvielUI
-local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/no-val/EnvielUI/main/EnvielUI.lua"))()
+local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
+local Window -- Forward declaration for Notify calls
 
 --// Configuration System
 local Config = {
@@ -45,7 +46,7 @@ local FileName = "Fishit_Config.json"
 local function SaveConfig()
     if writefile then
         writefile(FileName, HttpService:JSONEncode(Config))
-        EnvielUI.Window:Notify({Title = "Config", Description = "Settings saved successfully!", Icon = "save"})
+        if Window then Window:Notify({Title = "Config", Description = "Settings saved successfully!", Icon = "save"}) end
     end
 end
 
@@ -56,7 +57,7 @@ local function LoadConfig()
             for k, v in pairs(Decoded) do
                 Config[k] = v
             end
-            EnvielUI.Window:Notify({Title = "Config", Description = "Settings loaded!", Icon = "file-check"})
+            if Window then Window:Notify({Title = "Config", Description = "Settings loaded!", Icon = "file-check"}) end
         end
     end
 end
@@ -117,7 +118,7 @@ local function TeleportTo(cframe)
 end
 
 --// UI Creation
-local Window = EnvielUI.Window:CreateWindow({
+Window = EnvielUI:CreateWindow({
     Name = "Fishit | Enviel",
     Theme = Config.Theme,
     CloseCallback = function() SaveConfig() end
@@ -221,7 +222,7 @@ GroupSell:CreateButton({
     Callback = function()
         local remote = GetRemote(Remotes.SellAll)
         if remote then remote:InvokeServer() end
-        EnvielUI.Window:Notify({ Title = "Sold", Description = "Attempts to sell all items sent." })
+        Window:Notify({ Title = "Sold", Description = "Attempts to sell all items sent." })
     end
 })
 
@@ -418,9 +419,9 @@ GroupConfig:CreateButton({
         ConfigInput:Set(json)
         if setclipboard then
             setclipboard(json)
-            EnvielUI.Window:Notify({Title = "Config", Description = "Copied to clipboard!", Icon = "copy"})
+            Window:Notify({Title = "Config", Description = "Copied to clipboard!", Icon = "copy"})
         else
-            EnvielUI.Window:Notify({Title = "Config", Description = "JSON generated. Copy it manually.", Icon = "file-code"})
+            Window:Notify({Title = "Config", Description = "JSON generated. Copy it manually.", Icon = "file-code"})
         end
     end
 })

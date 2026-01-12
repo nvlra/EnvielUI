@@ -157,6 +157,11 @@ function EnvielUI:CreateWindow(Config)
 		self.Theme = Themes.Dark
 	end
 	
+	-- Initialize Flags if attempting to use directly on the module
+	if not self.Flags then
+		self.Flags = {}
+	end
+	
 	for key, val in pairs(Themes.Dark) do
 		if self.Theme[key] == nil then
 			self.Theme[key] = val
