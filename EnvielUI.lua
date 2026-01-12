@@ -7,7 +7,6 @@ local CoreGui = game:GetService("CoreGui")
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
 
--- Configuration & Themes
 local Themes = {
 	Dark = {
 		Main = Color3.fromHex("1A1A1A"),
@@ -29,7 +28,7 @@ local Themes = {
 	}
 }
 
--- Icon Library Loader (Footagesus/Icons)
+
 local IconLib = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"))()
 IconLib.SetIconsType("lucide") -- Default to Lucide
 
@@ -43,7 +42,6 @@ local function GetIcon(Name)
 	return "" -- Return empty if not found
 end
 
--- Utility Functions
 local function Create(msg, prop)
 	local inst = Instance.new(msg)
 	for i, v in pairs(prop) do
@@ -63,7 +61,6 @@ local function Tween(instance, properties, duration, style, direction)
 	return tween
 end
 
--- Smooth Drag Function
 local function Dragify(Frame, DragObject)
 	local Dragging, DragInput, DragStart, StartPos
 	local DragTarget = DragObject or Frame
@@ -108,7 +105,6 @@ local function Dragify(Frame, DragObject)
 	end)
 end
 
--- Constructor
 function EnvielUI.new()
 	local self = setmetatable({}, EnvielUI)
 	self.Theme = Themes.Dark -- Default
@@ -121,18 +117,18 @@ function EnvielUI:CreateWindow(Config)
 	
 	if Themes[Theme] then self.Theme = Themes[Theme] end
 	
-	-- Safe Parent Logic
+
 	local Success, ParentTarget = pcall(function() return CoreGui end)
 	if not Success or not ParentTarget then
 		ParentTarget = Players.LocalPlayer:WaitForChild("PlayerGui")
 	end
 	
-	-- Cleanup Old UI
+
 	if ParentTarget:FindFirstChild("EnvielLibrary") then
 		ParentTarget.EnvielLibrary:Destroy()
 	end
 	
-	-- Main GUI
+
 	local ScreenGui = Create("ScreenGui", {
 		Name = "EnvielLibrary",
 		Parent = ParentTarget,
@@ -141,11 +137,11 @@ function EnvielUI:CreateWindow(Config)
 		ResetOnSpawn = false
 	})
 	
-	-- State Variables for Window Logic
+
 	local Minimized = false
 	local OpenSize = UDim2.new(0, 700, 0, 450)
 	
-	-- Main Frame
+
 	local MainFrame = Create("Frame", {
 		Name = "MainFrame",
 		Parent = ScreenGui,
@@ -164,13 +160,13 @@ function EnvielUI:CreateWindow(Config)
 		Transparency = 0.5
 	})
 	
-	-- Apply Drag
+
 	Dragify(MainFrame)
 	
-	-- Opening Animation
+
 	Tween(MainFrame, {Size = OpenSize}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 	
-	-- Floating Icon (Open Button)
+
 	local OpenBtn = Create("ImageButton", {
 		Name = "OpenButton",
 		Parent = ScreenGui,
@@ -184,7 +180,7 @@ function EnvielUI:CreateWindow(Config)
 	Create("UICorner", {Parent = OpenBtn, CornerRadius = UDim.new(0, 12)})
 	Dragify(OpenBtn)
 	
-	-- Function to Toggle Minimize
+
 	local function ToggleMinimize()
 		Minimized = not Minimized
 		if Minimized then
@@ -203,7 +199,7 @@ function EnvielUI:CreateWindow(Config)
 	end
 	OpenBtn.MouseButton1Click:Connect(ToggleMinimize)
 	
-	-- Toggle Key Logic
+
 	local ToggleKey = Config.Keybind or Enum.KeyCode.RightControl
 	UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		if not gameProcessed and input.KeyCode == ToggleKey then
@@ -224,7 +220,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end)
 
-	-- Header
+
 	local Header = Create("Frame", {
 		Name = "Header",
 		Parent = MainFrame,
@@ -245,7 +241,7 @@ function EnvielUI:CreateWindow(Config)
 		TextXAlignment = Enum.TextXAlignment.Left
 	})
 	
-	-- Header Controls
+
 	local Controls = Create("Frame", {
 		Name = "Controls",
 		Parent = Header,
@@ -281,7 +277,7 @@ function EnvielUI:CreateWindow(Config)
 	})
 	MinBtn.MouseButton1Click:Connect(ToggleMinimize)
 
-	-- Content Layout
+
 	local ContentContainer = Create("Frame", {
 		Name = "Content",
 		Parent = MainFrame,
@@ -314,7 +310,7 @@ function EnvielUI:CreateWindow(Config)
 		Instance = self
 	}
 	
-	-- Tab Logic
+
 	function Window:SelectTab(TabId)
 		for _, page in pairs(Pages:GetChildren()) do
 			if page:IsA("ScrollingFrame") then page.Visible = false end
@@ -630,7 +626,7 @@ function EnvielUI:CreateWindow(Config)
 			end)
 		end
 		
-	-- Notification Logic
+
 	local NotificationContainer = Create("Frame", {
 		Name = "Notifications",
 		Parent = ScreenGui,
