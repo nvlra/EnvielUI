@@ -84,15 +84,63 @@ Window:Notify({
 
 ## Component Reference
 
-| Component       | Description                                        |
-| :-------------- | :------------------------------------------------- |
-| `CreateWindow`  | Creates the main dragable GUI window.              |
-| `CreateTab`     | Adds a sidebar tab with an icon and text.          |
-| `CreateSection` | Adds a header text to organize elements.           |
-| `CreateButton`  | A clickable button that executes a function.       |
-| `CreateToggle`  | A switch button for boolean (true/false) states.   |
-| `CreateSlider`  | A draggable bar to select a number within a range. |
-| `Notify`        | Sends a temporary toast notification.              |
+| Component       | Description                                              |
+| :-------------- | :------------------------------------------------------- |
+| `CreateWindow`  | Creates the main dragable GUI window.                    |
+| `CreateTab`     | Adds a sidebar tab with an icon and text.                |
+| `CreateSection` | Adds a header text to organize elements.                 |
+| `CreateButton`  | A clickable button that executes a function.             |
+| `CreateToggle`  | A switch button for boolean (true/false) states.         |
+| `CreateSlider`  | A draggable bar to select a number within a range.       |
+| `CreateGroup`   | Creates a container to organize elements (WindUI Style). |
+| `Watermark`     | Shows an FPS/Ping HUD overlay.                           |
+| `Prompt`        | Displays a rich alert popup with actions.                |
+| `Notify`        | Sends a temporary toast notification.                    |
+
+## Advanced Features (Ultimate)
+
+### 1. Watermark HUD
+
+Displays FPS, Ping, and Script Name in a draggable overlay.
+
+```lua
+Window:Watermark({
+    Title = "Enviel Script | v1.5",
+    Enabled = true
+})
+```
+
+### 2. Group System (iOS Style Layout)
+
+Organize your elements into clean, separated groups.
+
+```lua
+local SettingsGroup = MainTab:CreateGroup({ Title = "General Settings" })
+
+SettingsGroup:CreateToggle({ ... }) -- Automatically inside the group
+SettingsGroup:CreateButton({ ... })
+```
+
+### 3. Rich Alerts (Prompts)
+
+Show important warnings or confirmations.
+
+```lua
+Window:Prompt({
+    Title = "Confirmation",
+    Content = "Are you sure you want to proceed?",
+    Actions = {
+        {
+            Text = "Yes",
+            Callback = function() print("Confirmed") end
+        },
+        {
+            Text = "No",
+            Callback = function() print("Cancelled") end
+        }
+    }
+})
+```
 
 ---
 
