@@ -7,12 +7,12 @@ Designed to be **reliable**, **customizable**, and **undetected**.
 
 ## Features
 
-- **Secure Parenting**: Automatically attempts to use `gethui()` (Secure) or `CoreGui` to hide the UI from game checks. Falls back to `PlayerGui` if necessary.
-- **Overlay Priority**: Forces the UI to render on top of **everything** (DisplayOrder 10000), including the Roblox Pause Menu (if executor supports it).
-- **Elastic Animations**: Premium "Pop-up" entrance animation and smooth slide-in/out notifications.
-- **Auto-Layout Tabs**: Smart layout system that prevents text and icons from overlapping.
-- **Lucide Icons**: Integrated support for Lucide icons (e.g., "swords", "settings", "home").
-- **Auto-Update**: The script always fetches the latest version from GitHub.
+- **Secure Protection**: Advanced concealment methods to ensure safety and reliability.
+- **Smart Overlay**: Intelligent priority management for optimal UI visibility.
+- **Elastic Animations**: Premium "Pop-up" entrance animation (Quint Easing).
+- **Auto-Layout Tabs**: Smart layout system preventing checks.
+- **Lucide Icons**: Integrated support for thousands of icons (e.g., "home", "settings", "user").
+- **Theme System**: Full support for **Dark** and **Light** modes.
 
 ---
 
@@ -22,20 +22,19 @@ Copy and paste this script into your Executor (Synapse X, Krnl, Fluxus, etc.):
 
 ```lua
 -- 1. Load the Library
-local LibraryURL = "https://raw.githubusercontent.com/nvlra/EnvielUI/refs/heads/main/EnvielUI.lua"
-local EnvielUI = loadstring(game:HttpGet(LibraryURL))()
+local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
 
 -- 2. Create a Window
 local Window = EnvielUI.new():CreateWindow({
     Name = "Enviel UI Script",
-    Theme = "Dark", -- Options: Dark
+    Theme = "Dark", -- Options: "Dark" or "Light"
     Icon = "rbxassetid://12345678" -- Optional custom icon
 })
 
 -- 3. Create a Tab
 local MainTab = Window:CreateTab({
     Name = "Main",
-    Icon = "swords" -- Use Lucide icon names
+    Icon = "swords" -- Use any Lucide Icon name (lowercase)
 })
 
 local SettingsTab = Window:CreateTab({
@@ -70,15 +69,26 @@ Section:CreateSlider({
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
     end
 })
-
--- 5. Send a Notification
-Window:Notify({
-    Title = "Welcome!",
-    Content = "Script loaded successfully.",
-    Duration = 5,
-    Image = "rbxassetid://4483345998"
-})
 ```
+
+---
+
+## Icon System (Lucide)
+
+EnvielUI uses the **Lucide** icon set. You don't need Asset IDs!
+Just use the icon name in lowercase.
+
+**Examples:**
+
+- `home`
+- `settings`
+- `user`
+- `swords`
+- `shield`
+- `zap`
+
+[View All Lucide Icons Here](https://lucide.dev/icons)  
+_(Note: Use the name, e.g., "arrow-right")_
 
 ---
 
@@ -86,27 +96,29 @@ Window:Notify({
 
 | Component       | Description                                              |
 | :-------------- | :------------------------------------------------------- |
-| `CreateWindow`  | Creates the main dragable GUI window.                    |
+| `CreateWindow`  | Creates the main draggable GUI window.                   |
 | `CreateTab`     | Adds a sidebar tab with an icon and text.                |
 | `CreateSection` | Adds a header text to organize elements.                 |
 | `CreateButton`  | A clickable button that executes a function.             |
 | `CreateToggle`  | A switch button for boolean (true/false) states.         |
 | `CreateSlider`  | A draggable bar to select a number within a range.       |
 | `CreateGroup`   | Creates a container to organize elements (WindUI Style). |
-| `Watermark`     | Shows an FPS/Ping HUD overlay.                           |
+| `Watermark`     | Shows the branded HUD overlay.                           |
 | `Prompt`        | Displays a rich alert popup with actions.                |
 | `Notify`        | Sends a temporary toast notification.                    |
 
-## Advanced Features (Ultimate)
+---
+
+## Advanced Features
 
 ### 1. Watermark HUD
 
-Displays FPS, Ping, and Script Name in a draggable overlay.
+Minimalist, theme-adaptive branding at the bottom-left.
+_Note: The text is hardcoded to "Enviel UI v1.0" for security/branding._
 
 ```lua
 Window:Watermark({
-    Title = "Enviel Script | v1.5",
-    Enabled = true
+    Title = "Enviel UI", -- (Currently hardcoded internally)
 })
 ```
 
@@ -123,7 +135,7 @@ SettingsGroup:CreateButton({ ... })
 
 ### 3. Rich Alerts (Prompts)
 
-Show important warnings or confirmations.
+Show important warnings or confirmations (uses smooth Pop-In animation).
 
 ```lua
 Window:Prompt({
