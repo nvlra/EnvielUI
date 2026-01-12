@@ -1,76 +1,118 @@
-# Enviel UI Library
+# EnvielUI Library for Roblox
 
-Enviel UI is a just simple library ui.
+A modern, secure, and aesthetic UI Library for Roblox Scripting.  
+Designed to be **reliable**, **customizable**, and **undetected**.
 
-## Features
+![EnvielUI Banner](https://via.placeholder.com/700x200?text=Enviel+UI+Library) _Placeholder for future banner_
 
-- **Modern Aesthetics**: Clean Dark & Light themes with high-quality visual hierarchy.
-- **Fluid Animations**: Custom Tween logic for window dragging, toggling, and interactions.
-- **Dynamic Icons**: Integrated support for Lucide and Geist icons. Simply use icon names (e.g., "home", "settings") without needing Asset IDs.
-- **Advanced Components**:
-  - **Color Picker**: Full HSV spectrum bar with precise RGB sliders.
-  - **Notifications**: Built-in toast notification system.
-  - **Interactive Controls**: Smooth sliders, animated dropdowns, and keybind listeners.
-- **Window Management**: Draggable interface with a minimize-to-icon feature.
+## 🔥 Features
 
-## Installation
+- **Secure Parenting**: Automatically attempts to use `gethui()` (Secure) or `CoreGui` to hide the UI from game checks. Falls back to `PlayerGui` if necessary.
+- **Overlay Priority**: Forces the UI to render on top of **everything** (DisplayOrder 10000), including the Roblox Pause Menu (if executor supports it).
+- **Elastic Animations**: Premium "Pop-up" entrance animation and smooth slide-in/out notifications.
+- **Auto-Layout Tabs**: Smart layout system that prevents text and icons from overlapping.
+- **Lucide Icons**: Integrated support for Lucide icons (e.g., "swords", "settings", "home").
+- **Auto-Update**: The script always fetches the latest version from GitHub.
 
-Import the library directly into your script using `loadstring`.
+---
 
-```lua
-local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
-```
+## 🚀 How to Use
 
-## Documentation
-
-### Creating a Window
+Copy and paste this script into your Executor (Synapse X, Krnl, Fluxus, etc.):
 
 ```lua
+-- 1. Load the Library
+-- Tip: Add ?v=RandomNumber to the URL to bypass Roblox caching if you don't see updates.
+local LibraryURL = "https://raw.githubusercontent.com/nvlra/EnvielUI/refs/heads/main/EnvielUI.lua"
+local EnvielUI = loadstring(game:HttpGet(LibraryURL))()
+
+-- 2. Create a Window
 local Window = EnvielUI.new():CreateWindow({
-    Name = "My Hub",
-    Theme = "Dark",
-    Keybind = Enum.KeyCode.RightControl
+    Name = "Enviel UI Script",
+    Theme = "Dark", -- Options: Dark
+    Icon = "rbxassetid://12345678" -- Optional custom icon
 })
-```
 
-### Tab System
-
-Tabs are created within a Window. You can use direct names for icons.
-
-```lua
-local HomeTab = Window:CreateTab({
-    Name = "Home",
-    Icon = "layout-dashboard"
+-- 3. Create a Tab
+local MainTab = Window:CreateTab({
+    Name = "Main",
+    Icon = "swords" -- Use Lucide icon names
 })
-```
 
-### Notifications
+local SettingsTab = Window:CreateTab({
+    Name = "Settings",
+    Icon = "settings"
+})
 
-Send local notifications to the user.
+-- 4. Add Elements
+local Section = MainTab:CreateSection("Farming")
 
-```lua
+Section:CreateButton({
+    Name = "Kill All Enemies",
+    Callback = function()
+        print("Killing enemies...")
+    end
+})
+
+Section:CreateToggle({
+    Name = "Auto Farm",
+    Default = false,
+    Callback = function(Value)
+        print("Auto Farm is now:", Value)
+    end
+})
+
+Section:CreateSlider({
+    Name = "WalkSpeed",
+    Min = 16,
+    Max = 500,
+    Default = 16,
+    Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+    end
+})
+
+-- 5. Send a Notification
 Window:Notify({
-    Title = "Welcome",
+    Title = "Welcome!",
     Content = "Script loaded successfully.",
     Duration = 5,
-    Image = "check"
+    Image = "rbxassetid://4483345998"
 })
 ```
 
-### Components Reference
+---
 
-| Component           | Description                              |
-| :------------------ | :--------------------------------------- |
-| `CreateButton`      | Standard clickable button with callback. |
-| `CreateToggle`      | On/Off switch with boolean state.        |
-| `CreateSlider`      | Draggable slider for number ranges.      |
-| `CreateDropdown`    | Expandable menu for multiple choices.    |
-| `CreateInput`       | Text input field.                        |
-| `CreateColorPicker` | HSV/RGB color selection tool.            |
-| `CreateKeybind`     | Key press listener for custom binds.     |
-| `CreateSection`     | Visual separator text.                   |
+## 🎨 Component Reference
 
-## Credits
+| Component       | Description                                        |
+| :-------------- | :------------------------------------------------- |
+| `CreateWindow`  | Creates the main dragable GUI window.              |
+| `CreateTab`     | Adds a sidebar tab with an icon and text.          |
+| `CreateSection` | Adds a header text to organize elements.           |
+| `CreateButton`  | A clickable button that executes a function.       |
+| `CreateToggle`  | A switch button for boolean (true/false) states.   |
+| `CreateSlider`  | A draggable bar to select a number within a range. |
+| `Notify`        | Sends a temporary toast notification.              |
 
-- **Library Creator**: Enviel
-- **Icon System**: Powered by Footagesus/Icons (Lucide/Geist)
+---
+
+## 🛠 Troubleshooting
+
+### UI Not Appearing?
+
+- Ensure your executor supports `gethui()` or `CoreGui`.
+- If on a strict game/executor, it might fallback to `PlayerGui` which can be covered by the Pause Menu.
+- Check the **Console (F9)** for any error messages.
+
+### Updates Not Showing? (Caching)
+
+Roblox caches `loadstring` URLs for a few minutes. To force an update immediately, add a random number to the URL:
+
+```lua
+local LibraryURL = "https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua?v=" .. tostring(math.random())
+```
+
+---
+
+_Created by nvlra. Open Source & Free to Use._
