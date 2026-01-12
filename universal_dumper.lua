@@ -1,6 +1,6 @@
 -- Enviel Universal Explorer & Dumper
 -- Loads the EnvielUI library (Remote)
-local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua?v=16"))()
+local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua?v=17"))()
 local Window = EnvielUI:CreateWindow({
     Name = "Enviel Explorer",
     Theme = { -- Dark Theme
@@ -137,7 +137,31 @@ GroupNav:CreateButton({
 -- Dumper Section
 local GroupDump = Tab:CreateGroup({ Name = "Actions" })
 
-local function DumpRecursively(root, level)
+local function IsVisualTrash(obj)
+    -- Returns true if the object is likely visual/physics spam
+    return obj:IsA("BasePart") or 
+           obj:IsA("Attachment") or 
+           obj:IsA("JointInstance") or 
+           obj:IsA("Sound") or 
+           obj:IsA("Light") or 
+           obj:IsA("Beam") or 
+           obj:IsA("ParticleEmitter") or 
+           obj:IsA("Trail") or 
+           obj:IsA("Sparkles") or 
+           obj:IsA("Explosion") or 
+           obj:IsA("Decal") or 
+           obj:IsA("Texture") or 
+           obj:IsA("BodyMover") or
+           obj:IsA("Constraint")
+end
+
+local function DumpRecursively(root, level, filterMode)
+    -- Helper to check if we should print this node
+    -- If filterMode is on, we skip VisualTrash
+    if filterMode and IsVisualTrash(root) then
+        return "" 
+    end
+
     local indent = string.rep("  ", level)
     local output = indent .. FormatName(root)
     
@@ -154,11 +178,7 @@ local function DumpRecursively(root, level)
         
         if src then
             output = output .. " -- [HAS SOURCE]\n"
-            -- Add source with wrapper for readability
             output = output .. indent .. "-- [[ SOURCE START: " .. root.Name .. " ]]\n"
-            
-            -- Indent the source lines for tree structure consistency (optional, but good for reading)
-            -- But pure copy-paste might be better. Let's just wrap it.
             output = output .. src .. "\n"
             output = output .. indent .. "-- [[ SOURCE END ]]"
         end
@@ -170,7 +190,7 @@ local function DumpRecursively(root, level)
     
     local children = root:GetChildren()
     for _, c in ipairs(children) do
-        output = output .. DumpRecursively(c, level + 1)
+        output = output .. DumpRecursively(c, level + 1, filterMode)
     end
     
     return output
@@ -178,19 +198,19 @@ end
 
 local DumpAllBtn
 DumpAllBtn = GroupDump:CreateButton({
-    Name = "Dump EVERYTHING (Logic & Remotes)",
-    ButtonText = "Dump All",
+    Name = "Dump ALL (Filtered: No Parts/Sounds)",
+    ButtonText = "Dump Logic Only",
     Callback = function()
         if DumpAllBtn then DumpAllBtn:SetText("Scanning...") end
-        if task then task.wait(0.1) end -- Let UI update
+        if task then task.wait(0.1) end
         
         local services = {}
         
-        -- 0. PRIORITIZE ReplicatedStorage (Game Logic!)
+        -- 0. PRIORITIZE ReplicatedStorage
         local rep = game:GetService("ReplicatedStorage")
         if rep then table.insert(services, rep) end
 
-        -- 1. Scan Game Services (Excluding Heavy/Protected)
+        -- 1. Scan Game Services
         local blocked = {
             ["Workspace"] = true,
             ["CoreGui"] = true,
@@ -199,8 +219,8 @@ DumpAllBtn = GroupDump:CreateButton({
             ["Stats"] = true,
             ["SoundService"] = true,
             ["LogService"] = true,
-            ["Players"] = true, -- Block main Players service (contains all players, too big)
-            ["ReplicatedStorage"] = true -- Already added manually
+            ["Players"] = true, 
+            ["ReplicatedStorage"] = true
         }
         
         for _, s in ipairs(game:GetChildren()) do
@@ -209,7 +229,7 @@ DumpAllBtn = GroupDump:CreateButton({
             end
         end
         
-        -- 2. Add Player Specifics (Crucial for Logic)
+        -- 2. Add Player Specifics
         local lp = game:GetService("Players").LocalPlayer
         if lp then
             if lp:FindFirstChild("PlayerGui") then table.insert(services, lp.PlayerGui) end
@@ -221,26 +241,56 @@ DumpAllBtn = GroupDump:CreateButton({
         if DumpAllBtn then DumpAllBtn:SetText("Compiling...") end
         if task then task.wait(0.1) end
         
-        local result = "=== Enviel Smart Dump (ALL) ===\n" ..
+        local result = "=== Enviel Smart Dump (LOGIC ONLY) ===\n" ..
                        "-- Time: " .. os.date("%X") .. "\n" ..
                        "-- Map: " .. game.PlaceId .. "\n\n"
         
         for _, srv in ipairs(services) do
             if srv then
-                result = result .. DumpRecursively(srv, 0)
+                result = result .. DumpRecursively(srv, 0, true) -- true for Filter Mode
                 result = result .. "\n"
             end
         end
         
         if setclipboard then
             setclipboard(result)
-            if Window.Notify then Window:Notify({Title = "Dumped Everything", Description = "Size: " .. #result .. " chars", Icon = "copy"}) end
+            if Window.Notify then Window:Notify({Title = "Dumped Logic", Description = "Clean dump (no visuals) copied!", Icon = "copy"}) end
         else
             print("Clipboard missing. Check console.")
             print(result)
         end
         
-        if DumpAllBtn then DumpAllBtn:SetText("Dump All") end
+        if DumpAllBtn then DumpAllBtn:SetText("Dump Logic Only") end
+    end
+})
+
+GroupDump:CreateButton({
+    Name = "Dump EVERYTHING (Raw - Massive)",
+    ButtonText = "Dump All (Raw)",
+    Callback = function()
+        -- Same logic but FilterMode = false
+        local services = {}
+        local rep = game:GetService("ReplicatedStorage")
+        if rep then table.insert(services, rep) end
+        
+        local blocked = { ["Workspace"]=true, ["CoreGui"]=true, ["CorePackages"]=true, ["Stats"]=true, ["SoundService"]=true, ["LogService"]=true, ["Players"]=true, ["ReplicatedStorage"]=true }
+        for _, s in ipairs(game:GetChildren()) do if not blocked[s.Name] then table.insert(services, s) end end
+        
+        local lp = game:GetService("Players").LocalPlayer
+        if lp then
+            if lp:FindFirstChild("PlayerGui") then table.insert(services, lp.PlayerGui) end
+            if lp:FindFirstChild("PlayerScripts") then table.insert(services, lp.PlayerScripts) end
+            if lp:FindFirstChild("Backpack") then table.insert(services, lp.Backpack) end
+            if lp.Character then table.insert(services, lp.Character) end
+        end
+
+        local result = "=== Enviel RAW Dump ===\n"
+        for _, srv in ipairs(services) do
+            if srv then result = result .. DumpRecursively(srv, 0, false) .. "\n" end
+        end
+        
+        if setclipboard then setclipboard(result) end
+        if Window.Notify then Window:Notify({Title = "Dumped RAW", Description = "Large file warning!", Icon = "alert-triangle"}) end
     end
 })
 
