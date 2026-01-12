@@ -590,7 +590,7 @@ function EnvielUI:CreateWindow(Config)
 			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 1, 0),
 			ScrollBarThickness = 2,
-			ScrollBarImageColor3 = self.Instance.Theme.Accent,
+			ScrollBarImageColor3 = self.Instance.Theme.Stroke,
 			Visible = false,
 			CanvasSize = UDim2.new(0,0,0,0)
 		})
@@ -632,6 +632,14 @@ function EnvielUI:CreateWindow(Config)
 				Text = "Interact", TextColor3 = self.Instance.Theme.AccentText, TextSize = 11, AutoButtonColor = false
 			})
 			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
+			
+			Btn.MouseEnter:Connect(function()
+				Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Hover}, 0.2)
+			end)
+			
+			Btn.MouseLeave:Connect(function()
+				Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Accent}, 0.2)
+			end)
 			
 			Btn.MouseButton1Click:Connect(function()
 				Tween(Btn, {Size = UDim2.new(0,85,0,24)}, 0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.In).Completed:Wait()
