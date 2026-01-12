@@ -8,7 +8,7 @@ local HttpService = game:GetService("HttpService")
 
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
-EnvielUI.Version = "Validation_v7_FixDropdown"
+EnvielUI.Version = "Validation_v8_FinalPolish"
 
 local Themes = {
 	Dark = {
@@ -537,6 +537,14 @@ function EnvielUI:CreateWindow(Config)
 									else
 										Tween(desc, {TextColor3 = T.TextSec}, 0.3)
 									end
+										Tween(desc, {TextColor3 = T.TextSec}, 0.3)
+									end
+								end
+							elseif desc:IsA("TextBox") then
+								local Type = desc:GetAttribute("EnvielType")
+								if Type == "InputBox" then
+									Tween(desc, {TextColor3 = T.Accent}, 0.3)
+									Tween(desc, {PlaceholderColor3 = T.TextSec}, 0.3)
 								end
 							end
 						end
