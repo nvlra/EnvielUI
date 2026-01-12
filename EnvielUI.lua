@@ -12,32 +12,32 @@ EnvielUI.Version = "Validation_v2" -- Updated version
 
 local Themes = {
 	Dark = {
-		Main = Color3.fromHex("1A1A1A"),
-		Secondary = Color3.fromHex("1D1D1D"),
-		Stroke = Color3.fromHex("333333"),
-		Text = Color3.fromHex("FFFFFF"),
+		Main = Color3.fromHex("181818"), -- Slightly softer black
+		Secondary = Color3.fromHex("202020"),
+		Stroke = Color3.fromHex("303030"),
+		Text = Color3.fromHex("E0E0E0"), -- Off-white text
 		TextSec = Color3.fromHex("888888"),
-		Accent = Color3.fromHex("FFDE25"),
-		AccentText = Color3.fromHex("1A1A1A"),
+		Accent = Color3.fromHex("FFFFFF"), -- White Accent
+		AccentText = Color3.fromHex("000000"), -- Black text on accent
 		
 		Hover = Color3.fromHex("252525"),
-		Element = Color3.fromHex("222222"),
+		Element = Color3.fromHex("1E1E1E"),
 		TextSelected = Color3.fromHex("FFFFFF"),
 		Description = Color3.fromHex("666666"),
 	},
 	Light = {
-		Main = Color3.fromHex("FFFFFF"),
-		Secondary = Color3.fromHex("DDDDDD"),
-		Stroke = Color3.fromHex("E0E0E0"),
-		Text = Color3.fromHex("333333"),
-		TextSec = Color3.fromHex("666666"),
-		Accent = Color3.fromHex("A78F0A"),
-		AccentText = Color3.fromHex("FFFFFF"),
+		Main = Color3.fromHex("F5F5F5"), -- Soft White
+		Secondary = Color3.fromHex("EBEBEB"),
+		Stroke = Color3.fromHex("D0D0D0"),
+		Text = Color3.fromHex("101010"), -- Soft Black Text
+		TextSec = Color3.fromHex("606060"),
+		Accent = Color3.fromHex("151515"), -- Black Accent
+		AccentText = Color3.fromHex("FFFFFF"), -- White text on accent
 
-		Hover = Color3.fromHex("EEEEEE"),
-		Element = Color3.fromHex("F5F5F5"),
-		TextSelected = Color3.fromHex("111111"),
-		Description = Color3.fromHex("888888"),
+		Hover = Color3.fromHex("E0E0E0"),
+		Element = Color3.fromHex("FFFFFF"),
+		TextSelected = Color3.fromHex("000000"),
+		Description = Color3.fromHex("808080"),
 	}
 }
 
