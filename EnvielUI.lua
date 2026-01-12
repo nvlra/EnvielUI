@@ -183,7 +183,7 @@ function EnvielUI:CreateWindow(Config)
 		BackgroundColor3 = self.Theme.Main,
 		BorderSizePixel = 0,
 		Position = UDim2.new(0.5, -350, 0.5, -225),
-		Size = UDim2.new(0, 0, 0, 0), 
+		Size = OpenSize, -- UDim2.new(0, 0, 0, 0), -- Fixed: Start visible to avoid tween issues
 		ClipsDescendants = true
 	})
 -- ... (skipping unchanged lines implicitly by using large range if possible or multiple replaces)
