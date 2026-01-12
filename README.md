@@ -1,98 +1,76 @@
 # Enviel UI Library
 
-Enviel UI is a customizable User Interface library for Roblox, designed with a focus on smooth animations and a modern aesthetic.
+Enviel UI is a premium, minimalistic User Interface library for Roblox developers. It features a modern acrylic aesthetic, smooth Tween animations, and a robust component system designed for professional scripts.
 
 ## Features
 
-- **Modern Design**: Dark & Light themes with an acrylic-style appearance.
-- **Animations**: Tweens for window interactions, buttons, and toggles.
-- **Dynamic Icons**: Integrated support for Lucide and Geist icons via automated fetching.
-- **Component Library**:
-  - Color Picker (Hue Spectrum & RGB Sliders)
-  - Smooth Sliders
-  - Toggles
-  - Dropdown Menus
-  - Keybind Listeners
-  - Notification System
-- **Window Management**: Drag and drop support with a minimized floating icon state.
+- **Modern Aesthetics**: Clean Dark & Light themes with high-quality visual hierarchy.
+- **Fluid Animations**: Custom Tween logic for window dragging, toggling, and interactions.
+- **Dynamic Icons**: Integrated support for Lucide and Geist icons. Simply use icon names (e.g., "home", "settings") without needing Asset IDs.
+- **Advanced Components**:
+  - **Color Picker**: Full HSV spectrum bar with precise RGB sliders.
+  - **Notifications**: Built-in toast notification system.
+  - **Interactive Controls**: Smooth sliders, animated dropdowns, and keybind listeners.
+- **Window Management**: Draggable interface with a minimize-to-icon feature.
 
-## Getting Started
+## Installation
 
-### Installation
-
-Load the library directly into your script using `loadstring`:
+Import the library directly into your script using `loadstring`.
 
 ```lua
-local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUsername/EnvielUI/main/EnvielUI.lua"))()
-```
-
-### Basic Usage
-
-```lua
-local Window = EnvielUI.new():CreateWindow({
-    Name = "My Script",
-    Theme = "Dark", -- or "Light"
-    Keybind = Enum.KeyCode.RightControl
-})
-
-local Tab = Window:CreateTab({
-    Name = "Home",
-    Icon = "home"
-})
-
-Tab:CreateButton({
-    Name = "Click Me",
-    Callback = function()
-        Window:Notify({Title = "Success", Content = "Button Clicked!"})
-    end
-})
+local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
 ```
 
 ## Documentation
 
-### Window Configuration
-
-- **Name**: Title of the window.
-- **Theme**: Color scheme ("Dark" or "Light").
-- **Keybind**: Key to toggle UI visibility.
-
-### Components
-
-#### CreateTab
-
-Adds a new tab to the sidebar.
+### Creating a Window
 
 ```lua
-Window:CreateTab({ Name = "Tab Name", Icon = "settings" })
-```
-
-#### Notify
-
-Displays a temporary notification toast.
-
-```lua
-Window:Notify({
-    Title = "Alert",
-    Content = "Notification message",
-    Duration = 3,
-    Image = "info"
+local Window = EnvielUI.new():CreateWindow({
+    Name = "My Hub",
+    Theme = "Dark",
+    Keybind = Enum.KeyCode.RightControl
 })
 ```
 
-#### Interactive Elements
+### Tab System
 
-The following methods are available on a Tab object:
+Tabs are created within a Window. You can use direct names for icons.
 
-- `CreateButton`
-- `CreateToggle`
-- `CreateSlider`
-- `CreateDropdown`
-- `CreateInput`
-- `CreateColorPicker`
-- `CreateKeybind`
-- `CreateSection`
+```lua
+local HomeTab = Window:CreateTab({
+    Name = "Home",
+    Icon = "layout-dashboard" -- Lucide Icon Name
+})
+```
+
+### Notifications
+
+Send local notifications to the user.
+
+```lua
+Window:Notify({
+    Title = "Welcome",
+    Content = "Script loaded successfully.",
+    Duration = 5,
+    Image = "check"
+})
+```
+
+### Components Reference
+
+| Component           | Description                              |
+| :------------------ | :--------------------------------------- |
+| `CreateButton`      | Standard clickable button with callback. |
+| `CreateToggle`      | On/Off switch with boolean state.        |
+| `CreateSlider`      | Draggable slider for number ranges.      |
+| `CreateDropdown`    | Expandable menu for multiple choices.    |
+| `CreateInput`       | Text input field.                        |
+| `CreateColorPicker` | HSV/RGB color selection tool.            |
+| `CreateKeybind`     | Key press listener for custom binds.     |
+| `CreateSection`     | Visual separator text.                   |
 
 ## Credits
 
-- **Creator**: Enviel
-- **Icons**: Footagesus/Icons (Lucide/Geist)
+- **Library Creator**: Enviel
+- **Icon System**: Powered by Footagesus/Icons (Lucide/Geist)
