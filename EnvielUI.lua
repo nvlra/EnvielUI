@@ -1063,6 +1063,7 @@ function EnvielUI:CreateWindow(Config)
 			local Frame = Create("Frame", {
 				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,44), BackgroundTransparency = 0
 			})
+			Frame:SetAttribute("EnvielTheme", "Element")
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 			
