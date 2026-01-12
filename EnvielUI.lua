@@ -188,7 +188,8 @@ function EnvielUI:CreateWindow(Config)
 		Parent = ParentTarget,
 		IgnoreGuiInset = true,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-		ResetOnSpawn = false
+		ResetOnSpawn = false,
+		DisplayOrder = 10000 -- Force UI to be on top of everything
 	})
 	ScreenGui:SetAttribute("EnvielID", "MainInstance")
 	
