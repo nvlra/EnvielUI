@@ -153,19 +153,30 @@ function EnvielUI:CreateWindow(Config)
 	
 	print("[EnvielUI] Debug: Theme check passed.")
 	
-	print("[EnvielUI] Debug: Determining Parent...")
+	print("[EnvielUI] Initializing...")
 	
-	local Success, ParentTarget = pcall(function()
-		-- Forcing PlayerGui to ensure visibility on all executors
+	local function GetCorrectParent()
+		-- 1. Try secure gethui (Standard for modern executors)
+		local Success, Parent = pcall(function() return gethui() end)
+		if Success and Parent then 
+			print("[EnvielUI] Using gethui()")
+			return Parent 
+		end
+		
+		-- 2. Try regular CoreGui (Legacy/Unsafe but effective)
+		Success, Parent = pcall(function() return game:GetService("CoreGui") end)
+		if Success and Parent then 
+			print("[EnvielUI] Using CoreGui")
+			return Parent 
+		end
+		
+		-- 3. Fallback to PlayerGui (Safe but covered by ESC menu)
+		print("[EnvielUI] Using PlayerGui (Fallback)")
 		return Players.LocalPlayer:WaitForChild("PlayerGui")
-	end)
-	
-	if not Success or not ParentTarget then
-		warn("[EnvielUI] Failed to find PlayerGui")
-		ParentTarget = Players.LocalPlayer:WaitForChild("PlayerGui")
 	end
 	
-	print("[EnvielUI] Debug: Parent set to " .. tostring(ParentTarget))
+	local ParentTarget = GetCorrectParent()
+	print("[EnvielUI] Final Parent: " .. tostring(ParentTarget))
 	
 	local function RandomString(length)
 		local str = ""
