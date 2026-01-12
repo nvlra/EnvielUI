@@ -244,17 +244,26 @@ function EnvielUI:CreateWindow(Config)
 		BackgroundTransparency = 0
 	}, 0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
 	
-	local OpenBtn = Create("ImageButton", {
+	local OpenBtn = Create("TextButton", {
 		Name = "OpenButton",
 		Parent = ScreenGui,
-		BackgroundTransparency = 1,
+		BackgroundColor3 = self.Theme.Element,
 		Position = UDim2.new(0, 30, 0.5, -25),
 		Size = UDim2.new(0, 50, 0, 50),
-		Image = "rbxassetid://4483345998",
+		Text = "",
 		Visible = false,
 		AutoButtonColor = false
 	})
-	Create("UICorner", {Parent = OpenBtn, CornerRadius = UDim.new(0, 12)})
+	Create("UICorner", {Parent = OpenBtn, CornerRadius = UDim.new(1, 0)})
+	Create("UIStroke", {Parent = OpenBtn, Color = self.Theme.Accent, Thickness = 2})
+	local OpenIcon = Create("ImageLabel", {
+		Parent = OpenBtn,
+		BackgroundTransparency = 1,
+		Position = UDim2.new(0.5, -16, 0.5, -16),
+		Size = UDim2.new(0, 32, 0, 32),
+		Image = "rbxassetid://86129438272762",
+		ImageColor3 = self.Theme.Accent
+	})
 	Dragify(OpenBtn)
 	
 	local function ToggleMinimize()
@@ -295,7 +304,7 @@ function EnvielUI:CreateWindow(Config)
 		local MobileToggle = Create("TextButton", {
 			Name = "EnvielMobileToggle",
 			Parent = ScreenGui,
-			BackgroundColor3 = self.Theme.Main,
+			BackgroundColor3 = self.Theme.Element,
 			Position = UDim2.new(0.5, -25, 0, 10),
 			Size = UDim2.new(0, 50, 0, 50),
 			Text = "",
@@ -306,9 +315,9 @@ function EnvielUI:CreateWindow(Config)
 		Create("ImageLabel", {
 			Parent = MobileToggle,
 			BackgroundTransparency = 1,
-			Position = UDim2.new(0.5, -12, 0.5, -12),
-			Size = UDim2.new(0, 24, 0, 24),
-			Image = GetIcon("menu"),
+			Position = UDim2.new(0.5, -16, 0.5, -16),
+			Size = UDim2.new(0, 32, 0, 32),
+			Image = "rbxassetid://86129438272762",
 			ImageColor3 = self.Theme.Accent
 		})
 		
@@ -359,32 +368,35 @@ function EnvielUI:CreateWindow(Config)
 		Size = UDim2.new(0, 60, 1, 0)
 	})
 	
-	local CloseBtn = Create("TextButton", {
+	local CloseBtn = Create("ImageButton", {
 		Parent = Controls,
 		BackgroundTransparency = 1,
 		Position = UDim2.new(1, -30, 0, 10),
 		Size = UDim2.new(0, 30, 0, 30),
-		Text = "X",
-		TextColor3 = self.Theme.TextSec,
-		Font = Enum.Font.GothamBold,
-		TextSize = 14
+		Image = GetIcon("x"),
+		ImageColor3 = self.Theme.TextSec,
+		AutoButtonColor = false
 	})
 	CloseBtn.MouseButton1Click:Connect(function()
 		Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In).Completed:Wait()
 		ScreenGui.Enabled = false
 	end)
 	
-	local MinBtn = Create("TextButton", {
+	local MinBtn = Create("ImageButton", {
 		Parent = Controls,
 		BackgroundTransparency = 1,
 		Position = UDim2.new(1, -60, 0, 10),
 		Size = UDim2.new(0, 30, 0, 30),
-		Text = "-",
-		TextColor3 = self.Theme.TextSec,
-		Font = Enum.Font.GothamBold,
-		TextSize = 18
+		Image = GetIcon("minus"),
+		ImageColor3 = self.Theme.TextSec,
+		AutoButtonColor = false
 	})
 	MinBtn.MouseButton1Click:Connect(ToggleMinimize)
+	
+	for _, btn in pairs({CloseBtn, MinBtn}) do
+		btn.MouseEnter:Connect(function() Tween(btn, {ImageColor3 = self.Theme.Accent}, 0.2) end)
+		btn.MouseLeave:Connect(function() Tween(btn, {ImageColor3 = self.Theme.TextSec}, 0.2) end)
+	end
 
 	if UserInputService.TouchEnabled then
 		Create("UIScale", {
@@ -409,7 +421,7 @@ function EnvielUI:CreateWindow(Config)
 	})
 	local SearchBar = Create("TextBox", {
 		Parent = SearchBarFrame,
-		BackgroundColor3 = self.Theme.Secondary,
+		BackgroundColor3 = self.Theme.Element,
 		Size = UDim2.new(1, 0, 1, 0),
 		Text = "",
 		PlaceholderText = "Search...",
@@ -479,6 +491,18 @@ function EnvielUI:CreateWindow(Config)
 		Tween(MainFrame.UIStroke, {Color = T.Stroke}, 0.3)
 		Tween(Title, {TextColor3 = T.TextSec}, 0.3)
 		
+		if OpenBtn then
+			Tween(OpenBtn, {BackgroundColor3 = T.Element}, 0.3)
+			if OpenBtn:FindFirstChild("UIStroke") then Tween(OpenBtn.UIStroke, {Color = T.Accent}, 0.3) end
+			if OpenBtn:FindFirstChild("ImageLabel") then Tween(OpenBtn.ImageLabel, {ImageColor3 = T.Accent}, 0.3) end
+		end
+		
+		if MobileToggle then
+			Tween(MobileToggle, {BackgroundColor3 = T.Element}, 0.3)
+			if MobileToggle:FindFirstChild("UIStroke") then Tween(MobileToggle.UIStroke, {Color = T.Accent}, 0.3) end
+			if MobileToggle:FindFirstChild("ImageLabel") then Tween(MobileToggle.ImageLabel, {ImageColor3 = T.Accent}, 0.3) end
+		end
+		
 		
 		for _, btn in pairs(Sidebar:GetChildren()) do
 			if btn:IsA("TextButton") then
@@ -539,6 +563,18 @@ function EnvielUI:CreateWindow(Config)
 								if Type == "InputBox" then
 									Tween(desc, {TextColor3 = T.Accent, PlaceholderColor3 = T.TextSec}, 0.3)
 								end
+							elseif desc:IsA("Frame") then
+								local Type = desc:GetAttribute("EnvielType")
+								if Type == "SliderFill" then
+									Tween(desc, {BackgroundColor3 = T.Accent}, 0.3)
+								elseif Type == "SliderThumb" then
+									Tween(desc, {BackgroundColor3 = T.AccentText}, 0.3)
+									if desc:FindFirstChild("UIStroke") then Tween(desc.UIStroke, {Color = T.Accent}, 0.3) end
+								end
+							end
+							
+							if desc:IsA("TextButton") and desc:GetAttribute("EnvielType") == "SliderTrack" then
+								Tween(desc, {BackgroundColor3 = T.Stroke}, 0.3)
 							end
 						end
 					end
@@ -796,16 +832,20 @@ function EnvielUI:CreateWindow(Config)
 				Parent = Frame, BackgroundColor3 = self.Instance.Theme.Stroke, Position=UDim2.new(0,15,0,38), Size=UDim2.new(1,-30,0,6), Text="", AutoButtonColor=false
 			})
 			Create("UICorner", {Parent=Track, CornerRadius=UDim.new(0,3)})
+			Track:SetAttribute("EnvielType", "SliderTrack")
 			
 			local Fill = Create("Frame", {
 				Parent = Track, BackgroundColor3 = self.Instance.Theme.Accent, Size = UDim2.new((Value - Min)/(Max - Min), 0, 1, 0)
 			})
 			Create("UICorner", {Parent=Fill, CornerRadius=UDim.new(0,3)})
+			Fill:SetAttribute("EnvielType", "SliderFill")
 			
 			local Thumb = Create("Frame", {
-				Parent = Track, BackgroundColor3 = self.Instance.Theme.Text, Position = UDim2.new((Value - Min)/(Max - Min), -7, 0.5, -7), Size = UDim2.new(0,14,0,14)
+				Parent = Track, BackgroundColor3 = self.Instance.Theme.AccentText, Position = UDim2.new((Value - Min)/(Max - Min), -7, 0.5, -7), Size = UDim2.new(0,14,0,14)
 			})
 			Create("UICorner", {Parent=Thumb, CornerRadius=UDim.new(1,0)})
+			Create("UIStroke", {Parent=Thumb, Color=self.Instance.Theme.Accent, Thickness=2})
+			Thumb:SetAttribute("EnvielType", "SliderThumb")
 			
 			local function UpdateSlider(Input)
 				local SizeX = Track.AbsoluteSize.X
@@ -899,7 +939,8 @@ function EnvielUI:CreateWindow(Config)
 						Size=UDim2.new(1,0,0,OptionHeight), Text="    "..tostring(opt),
 						FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 						TextColor3 = (opt == Default) and self.Instance.Theme.Accent or self.Instance.Theme.TextSec,
-						TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, AutoButtonColor=false
+						TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, AutoButtonColor=false,
+						BorderSizePixel = 0
 					})
 					Btn:SetAttribute("EnvielType", "DropdownOption")
 					Btn:SetAttribute("EnvielSelected", (opt == Default))
@@ -939,215 +980,9 @@ function EnvielUI:CreateWindow(Config)
 		end
 		
 
-	local NotificationContainer = Create("Frame", {
-		Name = "Notifications",
-		Parent = ScreenGui,
-		BackgroundTransparency = 1,
-		Position = UDim2.new(1, -320, 1, -20),
-		Size = UDim2.new(0, 300, 1, 0),
-		AnchorPoint = Vector2.new(0, 1)
-	})
-	Create("UIListLayout", {
-		Parent = NotificationContainer,
-		SortOrder = Enum.SortOrder.LayoutOrder,
-		VerticalAlignment = Enum.VerticalAlignment.Bottom,
-		Padding = UDim.new(0, 10)
-	})
-	
-	function Window:Notify(Config)
-		local TitleText = Config.Title or "Notification"
-		local ContentText = Config.Content or "Message"
-		local Duration = Config.Duration or 3
-		local Image = Config.Image or "rbxassetid://4483345998"
-		
-		print("[EnvielUI] Debug: Notify called.", TitleText)
-		
-		local NotifFrame = Create("Frame", {
-			Parent = NotificationContainer,
-			BackgroundColor3 = self.Instance.Theme.Secondary,
-			Size = UDim2.new(1, 0, 0, 70),
-			BackgroundTransparency = 0.2,
-			LayoutOrder = tick()
-		})
-		Create("UICorner", {Parent = NotifFrame, CornerRadius = UDim.new(0, 8)})
-		Create("UIStroke", {Parent = NotifFrame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
-		
-		local Icon = Create("ImageLabel", {
-			Parent = NotifFrame, BackgroundTransparency = 1,
-			Position = UDim2.new(0, 10, 0, 10), Size = UDim2.new(0, 50, 0, 50),
-			Image = Image
-		})
-		Create("UICorner", {Parent = Icon, CornerRadius = UDim.new(0, 8)})
-		
-		local TitleLabel = Create("TextLabel", {
-			Parent = NotifFrame, BackgroundTransparency = 1,
-			Position = UDim2.new(0, 70, 0, 10), Size = UDim2.new(1, -80, 0, 20),
-			Font = Enum.Font.GothamBold, Text = TitleText, TextColor3 = self.Instance.Theme.Text,
-			TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
-		})
-		
-		local ContentLabel = Create("TextLabel", {
-			Parent = NotifFrame, BackgroundTransparency = 1,
-			Position = UDim2.new(0, 70, 0, 30), Size = UDim2.new(1, -80, 0, 30),
-			Font = Enum.Font.GothamMedium, Text = ContentText, TextColor3 = self.Instance.Theme.TextSec,
-			TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true
-		})
-		
-		NotifFrame.Position = UDim2.new(1, 50, 0, 0)
-		NotifFrame.BackgroundTransparency = 1
-		Icon.ImageTransparency = 1
-		TitleLabel.TextTransparency = 0
-		ContentLabel.TextTransparency = 0
-		TitleLabel.ZIndex = 2
-		ContentLabel.ZIndex = 2
 
-		Tween(NotifFrame, {Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 0.2}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-		Tween(Icon, {ImageTransparency = 0}, 0.5)
-		Tween(TitleLabel, {TextTransparency = 0}, 0.5)
-		Tween(ContentLabel, {TextTransparency = 0}, 0.5)
-		
-		task.delay(Duration, function()
-			Tween(NotifFrame, {Position = UDim2.new(1, 50, 0, 0), BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-			Tween(Icon, {ImageTransparency = 1}, 0.5)
-			Tween(TitleLabel, {TextTransparency = 1}, 0.5)
-			Tween(ContentLabel, {TextTransparency = 1}, 0.5).Completed:Wait()
-			NotifFrame:Destroy()
-		end)
-	end
 
-	function Window:Watermark(Config)
-		local Title = Config.Title or "EnvielUI"
-		local Enabled = Config.Enabled or true
-		local FPS = 0
-		
-		local WatermarkFrame = Create("Frame", {
-			Parent = ScreenGui, Name = "Watermark", BackgroundColor3 = self.Instance.Theme.Secondary,
-			Size = UDim2.new(0, 200, 0, 30), Position = UDim2.new(0.01, 0, 0.01, 0), Visible = Enabled
-		})
-		Create("UICorner", {Parent = WatermarkFrame, CornerRadius = UDim.new(0, 6)})
-		Create("UIStroke", {Parent = WatermarkFrame, Color = self.Instance.Theme.Stroke, Thickness = 1})
-		
-		local Text = Create("TextLabel", {
-			Parent = WatermarkFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0),
-			Font = Enum.Font.GothamMedium, TextSize = 13, TextColor3 = self.Instance.Theme.Text,
-			Text = "Initializing...", TextXAlignment = Enum.TextXAlignment.Center
-		})
-		
-		if not Enabled then WatermarkFrame.Visible = false return end
-		
-		RunService.RenderStepped:Connect(function(deltaTime)
-			if not WatermarkFrame.Parent then return end
-			FPS = math.floor(1 / deltaTime)
-			local Ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValueString():split(" ")[1] or 0)
-			Text.Text = string.format("%s | FPS: %d | Ping: %d ms", Title, FPS, Ping)
-			WatermarkFrame.Size = UDim2.new(0, Text.TextBounds.X + 24, 0, 30)
-		end)
-	end
 
-	function Window:Prompt(Config)
-		local Title = Config.Title or "Alert"
-		local Content = Config.Content or "Are you sure?"
-		local Actions = Config.Actions or {
-			{Text = "OK", Callback = function() end}
-		}
-		
-		local Overlay = Create("Frame", {
-			Parent = ScreenGui, Name = "PromptOverlay", BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1,
-			Size = UDim2.new(1,0,1,0), ZIndex = 2000
-		})
-		
-		local PromptFrame = Create("Frame", {
-			Parent = Overlay, Name = "Content", BackgroundColor3 = self.Instance.Theme.Main,
-			Size = UDim2.new(0, 320, 0, 0), Position = UDim2.new(0.5, -160, 0.5, -50),
-			AutomaticSize = Enum.AutomaticSize.Y
-		})
-		Create("UICorner", {Parent = PromptFrame, CornerRadius = UDim.new(0, 10)})
-		Create("UIStroke", {Parent = PromptFrame, Color = self.Instance.Theme.Stroke, Thickness = 2})
-		Create("UIPadding", {Parent = PromptFrame, PaddingTop=UDim.new(0,20), PaddingBottom=UDim.new(0,20), PaddingLeft=UDim.new(0,20), PaddingRight=UDim.new(0,20)})
-		
-		local TitleLbl = Create("TextLabel", {
-			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,24),
-			Text = Title, Font = Enum.Font.GothamBold, TextSize = 18, TextColor3 = self.Instance.Theme.Text
-		})
-		
-		local ContentLbl = Create("TextLabel", {
-			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,0), Position = UDim2.new(0,0,0,30),
-			Text = Content, Font = Enum.Font.GothamMedium, TextSize = 14, TextColor3 = self.Instance.Theme.TextSec,
-			TextWrapped = true, AutomaticSize = Enum.AutomaticSize.Y
-		})
-		
-		local ButtonContainer = Create("Frame", {
-			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,30), Position = UDim2.new(0,0,0, ContentLbl.AbsoluteSize.Y + 45),
-			AutomaticSize = Enum.AutomaticSize.Y
-		})
-		Create("UIListLayout", {Parent = ButtonContainer, FillDirection=Enum.FillDirection.Horizontal, HorizontalAlignment=Enum.HorizontalAlignment.Center, Padding=UDim.new(0,10)})
-		
-		ContentLbl:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-			ButtonContainer.Position = UDim2.new(0,0,0, ContentLbl.AbsoluteSize.Y + 45)
-		end)
-
-		for _, Action in pairs(Actions) do
-			local Btn = Create("TextButton", {
-				Parent = ButtonContainer, BackgroundColor3 = self.Instance.Theme.Accent, Size = UDim2.new(0, 100, 0, 32),
-				Text = Action.Text, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = self.Instance.Theme.AccentText,
-				AutoButtonColor = false
-			})
-			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
-			
-			Btn.MouseButton1Click:Connect(function()
-				if Action.Callback then Action.Callback() end
-				Tween(Overlay, {BackgroundTransparency = 1}, 0.2)
-				Tween(PromptFrame, {Size = UDim2.new(0,320,0,0), BackgroundTransparency=1}, 0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In).Completed:Wait()
-				Overlay:Destroy()
-			end)
-		end
-		
-		Tween(Overlay, {BackgroundTransparency = 0.6}, 0.3)
-		PromptFrame.Size = UDim2.new(0, 320, 0, 0) 
-		Tween(PromptFrame, {Size = UDim2.new(0, 320, 0, 150 + ContentLbl.AbsoluteSize.Y)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-	end
-
-	function Elements:CreateGroup(Config)
-			local Title = Config.Title or "Group"
-			local GroupConfig = {
-				Name = Title,
-				Parent = Page,
-				BackgroundColor3 = self.Instance.Theme.Element,
-				Size = UDim2.new(1, 0, 0, 0),
-				AutomaticSize = Enum.AutomaticSize.Y
-			}
-			
-			local GroupFrame = Create("Frame", GroupConfig)
-			Create("UICorner", {Parent = GroupFrame, CornerRadius = UDim.new(0, 8)})
-			Create("UIStroke", {Parent = GroupFrame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
-			Create("UIPadding", {Parent = GroupFrame, PaddingTop=UDim.new(0,8), PaddingBottom=UDim.new(0,8), PaddingLeft=UDim.new(0,0), PaddingRight=UDim.new(0,0)})
-			
-			if Title ~= "" then
-				local TitleLbl = Create("TextLabel", {
-					Parent = GroupFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -20, 0, 20), Position = UDim2.new(0, 10, 0, 0),
-					Text = Title, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = self.Instance.Theme.TextSec, TextXAlignment = Enum.TextXAlignment.Left
-				})
-				Create("Frame", {
-					Parent = GroupFrame, BackgroundColor3 = self.Instance.Theme.Stroke, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 0, 24), BackgroundTransparency = 0.8
-				})
-			end
-			
-			local GroupContent = Create("Frame", {
-				Parent = GroupFrame, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y
-			})
-			Create("UIListLayout", {Parent = GroupContent, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
-			Create("UIPadding", {Parent = GroupContent, PaddingTop=UDim.new(0, Title~="" and 28 or 5), PaddingBottom=UDim.new(0,5), PaddingLeft=UDim.new(0,10), PaddingRight=UDim.new(0,10)})
-			
-			local GroupElements = setmetatable({}, Elements)
-			function GroupElements:CreateButton(Cfg) Cfg.Parent = GroupContent return Elements:CreateButton(Cfg) end
-			function GroupElements:CreateToggle(Cfg) Cfg.Parent = GroupContent return Elements:CreateToggle(Cfg) end
-			function GroupElements:CreateSlider(Cfg) Cfg.Parent = GroupContent return Elements:CreateSlider(Cfg) end
-			function GroupElements:CreateDropdown(Cfg) Cfg.Parent = GroupContent return Elements:CreateDropdown(Cfg) end
-			function GroupElements:CreateInput(Cfg) Cfg.Parent = GroupContent return Elements:CreateInput(Cfg) end
-			function GroupElements:CreateColorPicker(Cfg) Cfg.Parent = GroupContent return Elements:CreateColorPicker(Cfg) end
-			
-			return GroupElements
-		end
 		
 		function Elements:CreateSection(Name)
 			local SectionFrame = Create("Frame", {
@@ -1390,7 +1225,223 @@ function EnvielUI:CreateWindow(Config)
 			end)
 		end
 		
+		function Elements:CreateGroup(Config)
+			local Title = Config.Title or "Group"
+			local GroupConfig = {
+				Name = Title,
+				Parent = Page,
+				BackgroundColor3 = self.Instance.Theme.Element,
+				Size = UDim2.new(1, 0, 0, 0),
+				AutomaticSize = Enum.AutomaticSize.Y
+			}
+			
+			local GroupFrame = Create("Frame", GroupConfig)
+			Create("UICorner", {Parent = GroupFrame, CornerRadius = UDim.new(0, 8)})
+			Create("UIStroke", {Parent = GroupFrame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+			Create("UIPadding", {Parent = GroupFrame, PaddingTop=UDim.new(0,8), PaddingBottom=UDim.new(0,8), PaddingLeft=UDim.new(0,0), PaddingRight=UDim.new(0,0)})
+			
+			if Title ~= "" then
+				local TitleLbl = Create("TextLabel", {
+					Parent = GroupFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -20, 0, 20), Position = UDim2.new(0, 10, 0, 0),
+					Text = Title, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = self.Instance.Theme.TextSec, TextXAlignment = Enum.TextXAlignment.Left
+				})
+
+			end
+			
+			local GroupContent = Create("Frame", {
+				Parent = GroupFrame, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y
+			})
+			Create("UIListLayout", {Parent = GroupContent, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
+			Create("UIPadding", {Parent = GroupContent, PaddingTop=UDim.new(0, Title~="" and 28 or 5), PaddingBottom=UDim.new(0,5), PaddingLeft=UDim.new(0,10), PaddingRight=UDim.new(0,10)})
+			
+			local GroupElements = setmetatable({}, Elements)
+			function GroupElements:CreateButton(Cfg) Cfg.Parent = GroupContent return Elements:CreateButton(Cfg) end
+			function GroupElements:CreateToggle(Cfg) Cfg.Parent = GroupContent return Elements:CreateToggle(Cfg) end
+			function GroupElements:CreateSlider(Cfg) Cfg.Parent = GroupContent return Elements:CreateSlider(Cfg) end
+			function GroupElements:CreateDropdown(Cfg) Cfg.Parent = GroupContent return Elements:CreateDropdown(Cfg) end
+			function GroupElements:CreateInput(Cfg) Cfg.Parent = GroupContent return Elements:CreateInput(Cfg) end
+			function GroupElements:CreateColorPicker(Cfg) Cfg.Parent = GroupContent return Elements:CreateColorPicker(Cfg) end
+			function GroupElements:CreateKeybind(Cfg) Cfg.Parent = GroupContent return Elements:CreateKeybind(Cfg) end
+			function GroupElements:CreateParagraph(Cfg) Cfg.Parent = GroupContent return Elements:CreateParagraph(Cfg) end
+			function GroupElements:CreateSection(Name) return Elements:CreateSection(Name) end 
+			
+			return GroupElements
+		end
+		
 		return Elements
+	end
+	
+	local NotificationContainer = Create("Frame", {
+		Name = "Notifications",
+		Parent = ScreenGui,
+		BackgroundTransparency = 1,
+		Position = UDim2.new(1, -320, 1, -20),
+		Size = UDim2.new(0, 300, 1, 0),
+		AnchorPoint = Vector2.new(0, 1)
+	})
+	Create("UIListLayout", {
+		Parent = NotificationContainer,
+		SortOrder = Enum.SortOrder.LayoutOrder,
+		VerticalAlignment = Enum.VerticalAlignment.Bottom,
+		Padding = UDim.new(0, 10)
+	})
+	
+	function Window:Notify(Config)
+		local TitleText = "Enviel System"
+		local ContentText = Config.Content or "Message"
+		local Duration = Config.Duration or 3
+		local Image = GetIcon("megaphone")
+		
+		print("[EnvielUI] Debug: Notify called.", TitleText)
+		
+		local NotifFrame = Create("Frame", {
+			Parent = NotificationContainer,
+			BackgroundColor3 = self.Instance.Theme.Secondary,
+			Size = UDim2.new(1, 0, 0, 70),
+			BackgroundTransparency = 0.2,
+			LayoutOrder = tick()
+		})
+		Create("UICorner", {Parent = NotifFrame, CornerRadius = UDim.new(0, 8)})
+		Create("UIStroke", {Parent = NotifFrame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+		
+		local Icon = Create("ImageLabel", {
+			Parent = NotifFrame, BackgroundTransparency = 1,
+			Position = UDim2.new(0, 17, 0, 17), Size = UDim2.new(0, 36, 0, 36),
+			Image = Image, ImageColor3 = self.Instance.Theme.Text
+		})
+		Create("UICorner", {Parent = Icon, CornerRadius = UDim.new(0, 8)})
+		
+		local TitleLabel = Create("TextLabel", {
+			Parent = NotifFrame, BackgroundTransparency = 1,
+			Position = UDim2.new(0, 70, 0, 10), Size = UDim2.new(1, -80, 0, 20),
+			Font = Enum.Font.GothamBold, Text = TitleText, TextColor3 = self.Instance.Theme.Text,
+			TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
+		})
+		
+		local ContentLabel = Create("TextLabel", {
+			Parent = NotifFrame, BackgroundTransparency = 1,
+			Position = UDim2.new(0, 70, 0, 30), Size = UDim2.new(1, -80, 0, 30),
+			Font = Enum.Font.GothamMedium, Text = ContentText, TextColor3 = self.Instance.Theme.TextSec,
+			TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true
+		})
+		
+		NotifFrame.Position = UDim2.new(1, 50, 0, 0)
+		NotifFrame.BackgroundTransparency = 1
+		Icon.ImageTransparency = 1
+		TitleLabel.TextTransparency = 0
+		ContentLabel.TextTransparency = 0
+		TitleLabel.ZIndex = 2
+		ContentLabel.ZIndex = 2
+
+		Tween(NotifFrame, {Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 0.2}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		Tween(Icon, {ImageTransparency = 0}, 0.5)
+		Tween(TitleLabel, {TextTransparency = 0}, 0.5)
+		Tween(ContentLabel, {TextTransparency = 0}, 0.5)
+		
+		task.delay(Duration, function()
+			Tween(NotifFrame, {Position = UDim2.new(1, 50, 0, 0), BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+			Tween(Icon, {ImageTransparency = 1}, 0.5)
+			Tween(TitleLabel, {TextTransparency = 1}, 0.5)
+			Tween(ContentLabel, {TextTransparency = 1}, 0.5).Completed:Wait()
+			NotifFrame:Destroy()
+		end)
+	end
+
+	function Window:Watermark(Config)
+		
+		local WatermarkFrame = Create("Frame", {
+			Parent = MainFrame, Name = "Watermark", BackgroundColor3 = self.Instance.Theme.Stroke,
+			Size = UDim2.new(0, 0, 0, 22),
+			Position = UDim2.new(0, 15, 1, -35),
+			Visible = true
+		})
+		Create("UICorner", {Parent = WatermarkFrame, CornerRadius = UDim.new(0, 4)})
+		Create("UIStroke", {Parent = WatermarkFrame, Color = self.Instance.Theme.Stroke, Thickness = 1})
+		
+		local Text = Create("TextLabel", {
+			Parent = WatermarkFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0),
+			Font = Enum.Font.GothamMedium, TextSize = 11, TextColor3 = self.Instance.Theme.Text,
+			Text = "Enviel UI v1.0",
+			TextXAlignment = Enum.TextXAlignment.Center
+		})
+		
+
+		WatermarkFrame.Size = UDim2.new(0, Text.TextBounds.X + 16, 0, 22)
+	end
+
+	function Window:Prompt(Config)
+		local Title = Config.Title or "Alert"
+		local Content = Config.Content or "Are you sure?"
+		local Actions = Config.Actions or {
+			{Text = "OK", Callback = function() end}
+		}
+		
+		local Overlay = Create("Frame", {
+			Parent = ScreenGui, Name = "PromptOverlay", BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1,
+			Size = UDim2.new(1,0,1,0), ZIndex = 2000
+		})
+		
+		local PromptFrame = Create("Frame", {
+			Parent = Overlay, Name = "Content", BackgroundColor3 = self.Instance.Theme.Main,
+			Size = UDim2.new(0, 320, 0, 0), Position = UDim2.new(0.5, -160, 0.5, -50),
+			AutomaticSize = Enum.AutomaticSize.Y
+		})
+		Create("UICorner", {Parent = PromptFrame, CornerRadius = UDim.new(0, 10)})
+		Create("UIStroke", {Parent = PromptFrame, Color = self.Instance.Theme.Stroke, Thickness = 2})
+		Create("UIPadding", {Parent = PromptFrame, PaddingTop=UDim.new(0,20), PaddingBottom=UDim.new(0,20), PaddingLeft=UDim.new(0,20), PaddingRight=UDim.new(0,20)})
+		
+		local TitleLbl = Create("TextLabel", {
+			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,24),
+			Text = Title, Font = Enum.Font.GothamBold, TextSize = 18, TextColor3 = self.Instance.Theme.Text
+		})
+		
+		local ContentLbl = Create("TextLabel", {
+			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,0), Position = UDim2.new(0,0,0,30),
+			Text = Content, Font = Enum.Font.GothamMedium, TextSize = 14, TextColor3 = self.Instance.Theme.TextSec,
+			TextWrapped = true, AutomaticSize = Enum.AutomaticSize.Y
+		})
+		
+		local ButtonContainer = Create("Frame", {
+			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,30), Position = UDim2.new(0,0,0, ContentLbl.AbsoluteSize.Y + 45),
+			AutomaticSize = Enum.AutomaticSize.Y
+		})
+		Create("UIListLayout", {Parent = ButtonContainer, FillDirection=Enum.FillDirection.Horizontal, HorizontalAlignment=Enum.HorizontalAlignment.Center, Padding=UDim.new(0,10)})
+		
+		ContentLbl:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+			ButtonContainer.Position = UDim2.new(0,0,0, ContentLbl.AbsoluteSize.Y + 45)
+		end)
+
+		local Scale = Create("UIScale", {Parent = PromptFrame, Scale = 0.8})
+		local Closing = false
+
+		for _, Action in pairs(Actions) do
+			local Btn = Create("TextButton", {
+				Parent = ButtonContainer, BackgroundColor3 = self.Instance.Theme.Accent, Size = UDim2.new(0, 100, 0, 32),
+				Text = Action.Text, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = self.Instance.Theme.AccentText,
+				AutoButtonColor = false
+			})
+			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
+			
+			Btn.MouseButton1Click:Connect(function()
+				if Closing then return end
+				Closing = true
+				
+				if Action.Callback then Action.Callback() end
+				if Overlay then Tween(Overlay, {BackgroundTransparency = 1}, 0.2) end
+				if PromptFrame then Tween(PromptFrame, {BackgroundTransparency = 1}, 0.2) end
+				if Scale then Tween(Scale, {Scale = 0.8}, 0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In) end
+				
+				task.delay(0.2, function()
+					if Overlay then Overlay:Destroy() end
+				end)
+			end)
+		end
+		
+		Tween(Overlay, {BackgroundTransparency = 0.6}, 0.3)
+		PromptFrame.BackgroundTransparency = 1
+		Tween(PromptFrame, {BackgroundTransparency = 0}, 0.3)
+		Tween(Scale, {Scale = 1}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		PromptFrame.Size = UDim2.new(0, 320, 0, 150 + ContentLbl.AbsoluteSize.Y)
 	end
 	
 	return Window

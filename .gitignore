@@ -1,3 +1,4 @@
 example_script.lua
 .DS_Store
 *.tmp
+debug_full.lua
