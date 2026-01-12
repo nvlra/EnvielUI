@@ -832,20 +832,22 @@ function EnvielUI:CreateWindow(Config)
 			TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true
 		})
 		
-		NotifFrame.Position = UDim2.new(1, 100, 0, 0)
-		
+		-- Initial State: Off-screen (Right) & Invisible
+		NotifFrame.Position = UDim2.new(1, 50, 0, 0)
 		NotifFrame.BackgroundTransparency = 1
 		Icon.ImageTransparency = 1
 		TitleLabel.TextTransparency = 1
 		ContentLabel.TextTransparency = 1
 		
-		Tween(NotifFrame, {BackgroundTransparency = 0.2}, 0.3)
-		Tween(Icon, {ImageTransparency = 0}, 0.3)
-		Tween(TitleLabel, {TextTransparency = 0}, 0.3)
-		Tween(ContentLabel, {TextTransparency = 0}, 0.3)
+		-- Animate IN (Slide Left + Fade In)
+		Tween(NotifFrame, {Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 0.2}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		Tween(Icon, {ImageTransparency = 0}, 0.5)
+		Tween(TitleLabel, {TextTransparency = 0}, 0.5)
+		Tween(ContentLabel, {TextTransparency = 0}, 0.5)
 		
 		task.delay(Duration, function()
-			Tween(NotifFrame, {BackgroundTransparency = 1}, 0.5)
+			-- Animate OUT (Slide Right + Fade Out)
+			Tween(NotifFrame, {Position = UDim2.new(1, 50, 0, 0), BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In)
 			Tween(Icon, {ImageTransparency = 1}, 0.5)
 			Tween(TitleLabel, {TextTransparency = 1}, 0.5)
 			Tween(ContentLabel, {TextTransparency = 1}, 0.5).Completed:Wait()
