@@ -40,8 +40,21 @@ local Themes = {
 	}
 }
 
-local IconLib = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"))()
-IconLib.SetIconsType("lucide")
+print("[EnvielUI] Loading Library...")
+
+local IconLib
+local SuccessIcon, ErrIcon = pcall(function()
+	IconLib = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"))()
+	IconLib.SetIconsType("lucide")
+end)
+
+if not SuccessIcon then
+	warn("[EnvielUI] Failed to load IconLib:", ErrIcon)
+	-- Mock IconLib to prevent errors
+	IconLib = { GetIcon = function(...) return "" end }
+else
+	print("[EnvielUI] IconLib loaded successfully")
+end
 
 local function GetIcon(Name)
 	if not Name or Name == "" then return "" end
@@ -137,7 +150,9 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end
 	
-	print("[EnvielUI] Initializing...")
+	print("[EnvielUI] Debug: Theme check passed.")
+	
+	print("[EnvielUI] Debug: Determining Parent...")
 	
 	local Success, ParentTarget = pcall(function()
 		-- Forcing PlayerGui to ensure visibility on all executors
@@ -149,7 +164,7 @@ function EnvielUI:CreateWindow(Config)
 		ParentTarget = Players.LocalPlayer:WaitForChild("PlayerGui")
 	end
 	
-	print("[EnvielUI] Parenting to: " .. tostring(ParentTarget))
+	print("[EnvielUI] Debug: Parent set to " .. tostring(ParentTarget))
 	
 	local function RandomString(length)
 		local str = ""
@@ -159,12 +174,14 @@ function EnvielUI:CreateWindow(Config)
 		return str
 	end
 
+	print("[EnvielUI] Debug: Cleaning old instances...")
 	for _, child in pairs(ParentTarget:GetChildren()) do
 		if child:GetAttribute("EnvielID") == "MainInstance" then
 			child:Destroy()
 		end
 	end
 	
+	print("[EnvielUI] Debug: Creating ScreenGui...")
 	local ScreenGui = Create("ScreenGui", {
 		Name = RandomString(10),
 		Parent = ParentTarget,
@@ -177,6 +194,7 @@ function EnvielUI:CreateWindow(Config)
 	local Minimized = false
 	local OpenSize = UDim2.new(0, 700, 0, 450)
 	
+	print("[EnvielUI] Debug: Creating MainFrame...")
 	local MainFrame = Create("Frame", {
 		Name = "MainFrame",
 		Parent = ScreenGui,
@@ -186,11 +204,8 @@ function EnvielUI:CreateWindow(Config)
 		Size = OpenSize, -- UDim2.new(0, 0, 0, 0), -- Fixed: Start visible to avoid tween issues
 		ClipsDescendants = true
 	})
--- ... (skipping unchanged lines implicitly by using large range if possible or multiple replaces)
--- Actually, replace_file_content needs contiguous block. I'll split this or just do the big block if range allows. 
--- Wait, the range 124-490 is huge. I should use multi_replace.
+	print("[EnvielUI] Debug: MainFrame Created.")
 
-	
 	Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 16)})
 	Create("UIStroke", {
 		Parent = MainFrame, 
