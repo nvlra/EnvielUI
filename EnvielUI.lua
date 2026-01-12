@@ -88,6 +88,10 @@ local function Create(msg, prop)
 end
 
 local function Tween(instance, properties, duration, style, direction)
+	if not instance then 
+		warn("EnvielUI: Tween called with nil instance")
+		return 
+	end
 	local info = TweenInfo.new(
 		duration or 0.3, 
 		style or Enum.EasingStyle.Quart, 
