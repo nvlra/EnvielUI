@@ -5,7 +5,7 @@ Designed to be **reliable**, **customizable**, and **undetected**.
 
 ![EnvielUI Banner](https://via.placeholder.com/700x200?text=Enviel+UI+Library) _Placeholder for future banner_
 
-## 🔥 Features
+## Features
 
 - **Secure Parenting**: Automatically attempts to use `gethui()` (Secure) or `CoreGui` to hide the UI from game checks. Falls back to `PlayerGui` if necessary.
 - **Overlay Priority**: Forces the UI to render on top of **everything** (DisplayOrder 10000), including the Roblox Pause Menu (if executor supports it).
@@ -16,7 +16,7 @@ Designed to be **reliable**, **customizable**, and **undetected**.
 
 ---
 
-## 🚀 How to Use
+## How to Use
 
 Copy and paste this script into your Executor (Synapse X, Krnl, Fluxus, etc.):
 
@@ -83,7 +83,7 @@ Window:Notify({
 
 ---
 
-## 🎨 Component Reference
+## Component Reference
 
 | Component       | Description                                        |
 | :-------------- | :------------------------------------------------- |
@@ -97,7 +97,7 @@ Window:Notify({
 
 ---
 
-## 🛠 Troubleshooting
+## Troubleshooting
 
 ### UI Not Appearing?
 
