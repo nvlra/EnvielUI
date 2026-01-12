@@ -507,6 +507,7 @@ function EnvielUI:CreateWindow(Config)
 		if WM then
 			Tween(WM, {BackgroundColor3 = T.Stroke}, 0.3)
 			if WM:FindFirstChild("UIStroke") then Tween(WM.UIStroke, {Color = T.Stroke}, 0.3) end
+			local WMText = WM:FindFirstChild("WatermarkText")
 			if WMText then Tween(WMText, {TextColor3 = T.Text}, 0.3) end
 		end
 		
@@ -1334,7 +1335,7 @@ function EnvielUI:CreateWindow(Config)
 		Create("UIStroke", {Parent = WatermarkFrame, Color = self.Instance.Theme.Stroke, Thickness = 1})
 		
 		local Text = Create("TextLabel", {
-			Parent = WatermarkFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0),
+			Parent = WatermarkFrame, Name = "WatermarkText", BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0),
 			Font = Enum.Font.GothamMedium, TextSize = 11, TextColor3 = self.Instance.Theme.Text,
 			Text = "Enviel UI v1.0",
 			TextXAlignment = Enum.TextXAlignment.Center
