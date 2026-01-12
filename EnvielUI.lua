@@ -1035,6 +1035,35 @@ function EnvielUI:CreateWindow(Config)
 		end)
 	end
 
+	function Window:Watermark(Config)
+		local Title = Config.Title or "EnvielUI"
+		local Enabled = Config.Enabled or true
+		local FPS = 0
+		
+		local WatermarkFrame = Create("Frame", {
+			Parent = ScreenGui, Name = "Watermark", BackgroundColor3 = self.Instance.Theme.Secondary,
+			Size = UDim2.new(0, 200, 0, 30), Position = UDim2.new(0.01, 0, 0.01, 0), Visible = Enabled
+		})
+		Create("UICorner", {Parent = WatermarkFrame, CornerRadius = UDim.new(0, 6)})
+		Create("UIStroke", {Parent = WatermarkFrame, Color = self.Instance.Theme.Stroke, Thickness = 1})
+		
+		local Text = Create("TextLabel", {
+			Parent = WatermarkFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0),
+			Font = Enum.Font.GothamMedium, TextSize = 13, TextColor3 = self.Instance.Theme.Text,
+			Text = "Initializing...", TextXAlignment = Enum.TextXAlignment.Center
+		})
+		
+		if not Enabled then WatermarkFrame.Visible = false return end
+		
+		RunService.RenderStepped:Connect(function(deltaTime)
+			if not WatermarkFrame.Parent then return end
+			FPS = math.floor(1 / deltaTime)
+			local Ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValueString():split(" ")[1] or 0)
+			Text.Text = string.format("%s | FPS: %d | Ping: %d ms", Title, FPS, Ping)
+			WatermarkFrame.Size = UDim2.new(0, Text.TextBounds.X + 24, 0, 30)
+		end)
+	end
+
 		function Elements:CreateSection(Name)
 			local SectionFrame = Create("Frame", {
 				Parent = Page, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,30)
