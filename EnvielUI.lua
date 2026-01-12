@@ -8,17 +8,17 @@ local HttpService = game:GetService("HttpService")
 
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
-EnvielUI.Version = "Validation_v2" -- Updated version
+EnvielUI.Version = "Validation_v1"
 
 local Themes = {
 	Dark = {
-		Main = Color3.fromHex("181818"), -- Slightly softer black
+		Main = Color3.fromHex("181818"),
 		Secondary = Color3.fromHex("202020"),
 		Stroke = Color3.fromHex("303030"),
-		Text = Color3.fromHex("E0E0E0"), -- Off-white text
+		Text = Color3.fromHex("E0E0E0"),
 		TextSec = Color3.fromHex("888888"),
-		Accent = Color3.fromHex("FFFFFF"), -- White Accent
-		AccentText = Color3.fromHex("000000"), -- Black text on accent
+		Accent = Color3.fromHex("FFFFFF"),
+		AccentText = Color3.fromHex("000000"),
 		
 		Hover = Color3.fromHex("252525"),
 		Element = Color3.fromHex("1E1E1E"),
@@ -26,13 +26,13 @@ local Themes = {
 		Description = Color3.fromHex("666666"),
 	},
 	Light = {
-		Main = Color3.fromHex("F5F5F5"), -- Soft White
+		Main = Color3.fromHex("F5F5F5"),
 		Secondary = Color3.fromHex("EBEBEB"),
 		Stroke = Color3.fromHex("D0D0D0"),
-		Text = Color3.fromHex("101010"), -- Soft Black Text
+		Text = Color3.fromHex("101010"),
 		TextSec = Color3.fromHex("606060"),
-		Accent = Color3.fromHex("151515"), -- Black Accent
-		AccentText = Color3.fromHex("FFFFFF"), -- White text on accent
+		Accent = Color3.fromHex("151515"),
+		AccentText = Color3.fromHex("FFFFFF"),
 
 		Hover = Color3.fromHex("E0E0E0"),
 		Element = Color3.fromHex("FFFFFF"),
@@ -51,7 +51,6 @@ end)
 
 if not SuccessIcon then
 	warn("[EnvielUI] Failed to load IconLib:", ErrIcon)
-	-- Mock IconLib to prevent errors
 	IconLib = { GetIcon = function(...) return "" end }
 else
 	print("[EnvielUI] IconLib loaded successfully")
@@ -141,10 +140,9 @@ function EnvielUI:CreateWindow(Config)
 	if Themes[Theme] then 
 		self.Theme = Themes[Theme] 
 	else
-		self.Theme = Themes.Dark -- Default safer
+		self.Theme = Themes.Dark
 	end
 	
-	-- Merge defaults
 	for key, val in pairs(Themes.Dark) do
 		if self.Theme[key] == nil then
 			self.Theme[key] = val
@@ -156,21 +154,18 @@ function EnvielUI:CreateWindow(Config)
 	print("[EnvielUI] Initializing...")
 	
 	local function GetCorrectParent()
-		-- 1. Try secure gethui (Standard for modern executors)
 		local Success, Parent = pcall(function() return gethui() end)
 		if Success and Parent then 
 			print("[EnvielUI] Using gethui()")
 			return Parent 
 		end
 		
-		-- 2. Try regular CoreGui (Legacy/Unsafe but effective)
 		Success, Parent = pcall(function() return game:GetService("CoreGui") end)
 		if Success and Parent then 
 			print("[EnvielUI] Using CoreGui")
 			return Parent 
 		end
 		
-		-- 3. Fallback to PlayerGui (Safe but covered by ESC menu)
 		print("[EnvielUI] Using PlayerGui (Fallback)")
 		return Players.LocalPlayer:WaitForChild("PlayerGui")
 	end
@@ -200,7 +195,7 @@ function EnvielUI:CreateWindow(Config)
 		IgnoreGuiInset = true,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		ResetOnSpawn = false,
-		DisplayOrder = 10000 -- Force UI to be on top of everything
+		DisplayOrder = 10000
 	})
 	ScreenGui:SetAttribute("EnvielID", "MainInstance")
 	
@@ -213,10 +208,10 @@ function EnvielUI:CreateWindow(Config)
 		Parent = ScreenGui,
 		BackgroundColor3 = self.Theme.Main,
 		BorderSizePixel = 0,
-		AnchorPoint = Vector2.new(0.5, 0.5), -- Center Anchor for pop-up animation
-		Position = UDim2.new(0.5, 0, 0.5, 0), -- Perfectly centered
-		Size = UDim2.new(0, 0, 0, 0), -- Start tiny
-		BackgroundTransparency = 1, -- Start invisible
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0.5, 0, 0.5, 0),
+		Size = UDim2.new(0, 0, 0, 0),
+		BackgroundTransparency = 1,
 		ClipsDescendants = true
 	})
 	print("[EnvielUI] Debug: MainFrame Created.")
@@ -231,7 +226,6 @@ function EnvielUI:CreateWindow(Config)
 	
 	Dragify(MainFrame)
 	
-	-- "Cool" Entry Animation: Elastic Pop-up + Fade In
 	Tween(MainFrame, {
 		Size = OpenSize, 
 		BackgroundTransparency = 0
@@ -456,7 +450,6 @@ function EnvielUI:CreateWindow(Config)
 	local Window = {
 		Tabs = {},
 		Instance = self,
-		-- Expose Core UI for Theme Updater
 		MainFrame = MainFrame,
 		Sidebar = Sidebar,
 		Pages = Pages,
@@ -469,43 +462,35 @@ function EnvielUI:CreateWindow(Config)
 		self.Instance.Theme = Themes[ThemeName]
 		local T = self.Instance.Theme
 		
-		-- Update Core Window
 		Tween(MainFrame, {BackgroundColor3 = T.Main}, 0.3)
 		Tween(MainFrame.UIStroke, {Color = T.Stroke}, 0.3)
 		Tween(Title, {TextColor3 = T.TextSec}, 0.3)
 		
-		-- Update Sidebar Tabs
 		for _, btn in pairs(Sidebar:GetChildren()) do
 			if btn:IsA("TextButton") then
 				local label = btn:FindFirstChild("Label")
 				local icon = btn:FindFirstChild("ImageLabel")
 				local stroke = btn:FindFirstChild("UIStroke")
 				
-				-- Check if active or inactive? For now reset to inactive style, SelectTab will fix active one
 				Tween(btn.UIStroke, {Color = T.Accent}, 0.3)
 				if label then Tween(label, {TextColor3 = T.Accent}, 0.3) end
 				if icon then Tween(icon, {ImageColor3 = T.Accent}, 0.3) end
 			end
 		end
 		
-		-- Update Elements (Using heuristic or tags)
 		for _, page in pairs(Pages:GetChildren()) do
 			for _, frame in pairs(page:GetChildren()) do
 				if frame:IsA("Frame") and frame:FindFirstChild("UIStroke") then
-					-- Assume it's an Element Container
 					Tween(frame, {BackgroundColor3 = T.Element}, 0.3)
 					Tween(frame.UIStroke, {Color = T.Stroke}, 0.3)
-					
-					-- Update Texts inside
+
 					for _, desc in pairs(frame:GetDescendants()) do
 						if desc:IsA("TextLabel") then
-							if desc.Text == "Interact" then -- Button Label
-								-- Ignore, handled by parent button usually
+							if desc.Text == "Interact" then
 							else
 								Tween(desc, {TextColor3 = T.Text}, 0.3)
 							end
 						elseif desc:IsA("TextButton") and desc:FindFirstChild("UICorner") and desc.Size.Y.Offset < 30 then
-							-- Action Button (Interact)
 							Tween(desc, {BackgroundColor3 = T.Accent}, 0.3)
 							Tween(desc, {TextColor3 = T.AccentText}, 0.3)
 						end
@@ -513,9 +498,7 @@ function EnvielUI:CreateWindow(Config)
 				end
 			end
 		end
-		
-		-- Re-Select current tab to refresh active state colors
-		-- (Need to track active tab? For now checking Visibility)
+
 		for _, page in pairs(Pages:GetChildren()) do
 			if page.Visible then
 				Window:SelectTab(page.Name)
@@ -567,31 +550,29 @@ function EnvielUI:CreateWindow(Config)
 			BackgroundColor3 = self.Instance.Theme.Accent,
 			BackgroundTransparency = 1, 
 			Size = UDim2.new(1, 0, 0, 36),
-			Text = "", -- Clear native text
+			Text = "",
 			AutoButtonColor = false
 		})
 		
 		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 8)})
 		Create("UIStroke", {Parent = TabBtn, Color = self.Instance.Theme.Accent, Thickness = 1, Transparency = 1})
 		
-		-- Icon Position (Left)
 		if IconAsset ~= "" then
 			Create("ImageLabel", {
 				Parent = TabBtn,
 				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 12, 0.5, -9), -- Centered Vertically
+				Position = UDim2.new(0, 12, 0.5, -9),
 				Size = UDim2.new(0, 18, 0, 18),
 				Image = IconAsset,
 				ImageColor3 = self.Instance.Theme.Accent
 			})
 		end
 		
-		-- Label Position (Offset right)
 		local TabLabel = Create("TextLabel", {
 			Parent = TabBtn,
 			Name = "Label",
 			BackgroundTransparency = 1,
-			Position = UDim2.new(0, 40, 0, 0), -- Fixed offset for text
+			Position = UDim2.new(0, 40, 0, 0),
 			Size = UDim2.new(1, -45, 1, 0),
 			Text = Name,
 			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
@@ -624,7 +605,7 @@ function EnvielUI:CreateWindow(Config)
 		table.insert(Window.Tabs, TabId)
 		
 		local Elements = {}
-		Elements.Instance = self.Instance -- Fix for missing Instance reference
+		Elements.Instance = self.Instance
 		
 		function Elements:CreateButton(Config)
 			local Name = Config.Name or "Button"
@@ -936,23 +917,20 @@ function EnvielUI:CreateWindow(Config)
 			TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true
 		})
 		
-		-- Initial State: Off-screen (Right) & Invisible
 		NotifFrame.Position = UDim2.new(1, 50, 0, 0)
 		NotifFrame.BackgroundTransparency = 1
 		Icon.ImageTransparency = 1
-		TitleLabel.TextTransparency = 0 -- Fix: Make text visible by default
-		ContentLabel.TextTransparency = 0 -- Fix: Make text visible by default
+		TitleLabel.TextTransparency = 0
+		ContentLabel.TextTransparency = 0
 		TitleLabel.ZIndex = 2
 		ContentLabel.ZIndex = 2
-		
-		-- Animate IN (Slide Left + Fade In)
+
 		Tween(NotifFrame, {Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 0.2}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 		Tween(Icon, {ImageTransparency = 0}, 0.5)
 		Tween(TitleLabel, {TextTransparency = 0}, 0.5)
 		Tween(ContentLabel, {TextTransparency = 0}, 0.5)
 		
 		task.delay(Duration, function()
-			-- Animate OUT (Slide Right + Fade Out)
 			Tween(NotifFrame, {Position = UDim2.new(1, 50, 0, 0), BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In)
 			Tween(Icon, {ImageTransparency = 1}, 0.5)
 			Tween(TitleLabel, {TextTransparency = 1}, 0.5)
