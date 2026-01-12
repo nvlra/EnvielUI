@@ -1,14 +1,6 @@
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local CoreGui = game:GetService("CoreGui")
-local VirtualUser = game:GetService("VirtualUser")
-local HttpService = game:GetService("HttpService")
-
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
-EnvielUI.Version = "Validation_v9_UltimateBeta"
+EnvielUI.Version = "Validation_v10_SecurityFixed"
 
 -- Security Handling (Rayfield-style)
 local cloneref = (cloneref or clonereference or function(instance) return instance end)
@@ -22,6 +14,8 @@ local UserInputService = GetService("UserInputService")
 local Players = GetService("Players")
 local CoreGui = GetService("CoreGui")
 local Stats = GetService("Stats")
+local VirtualUser = GetService("VirtualUser")
+local HttpService = GetService("HttpService")
 
 local Themes = {
 	Dark = {
@@ -181,10 +175,10 @@ function EnvielUI:CreateWindow(Config)
 			return Parent 
 		end
 		
-		Success, Parent = pcall(function() return game:GetService("CoreGui") end)
-		if Success and Parent then 
+		-- Use the safe CoreGui reference we defined earlier
+		if CoreGui then 
 			print("[EnvielUI] Using CoreGui")
-			return Parent 
+			return CoreGui 
 		end
 		
 		print("[EnvielUI] Using PlayerGui (Fallback)")
