@@ -1,5 +1,16 @@
+print("Starting Script...")
+print("[EnvielUI] Script starting...") -- Tanda script jalan
 -- Load the Library
-local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/refs/heads/main/EnvielUI.lua"))()
+-- NOTE: URL "refs/heads/main" itu SALAH untuk raw.githubusercontent. Kita pakai "/main/" saja.
+local LibraryURL = "https://raw.githubusercontent.com/nvlra/EnvielUI/refs/heads/main/EnvielUI.lua"
+local EnvielUI = loadstring(game:HttpGet(LibraryURL))()
+
+if EnvielUI.Version then
+	print("[Check] Library Version:", EnvielUI.Version)
+else
+	warn("[Check] OLD VERSION DETECTED! CACHE STILL ACTIVE.")
+end
+print("[EnvielUI] Library loaded successfully!")
 
 -- Create Window
 local Window = EnvielUI.new():CreateWindow({
@@ -29,6 +40,18 @@ TabHome:CreateButton({
 			Content = "Killed all enemies in radius!",
 			Duration = 3,
 			Image = "skull" -- Lucide Icon
+		})
+	end
+})
+
+TabHome:CreateButton({
+	Name = "Test Notification",
+	Callback = function()
+		Window:Notify({
+			Title = "Test Notification",
+			Content = "This is how a notification looks like!",
+			Duration = 3,
+			Image = "bell"
 		})
 	end
 })

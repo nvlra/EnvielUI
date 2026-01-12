@@ -455,8 +455,74 @@ function EnvielUI:CreateWindow(Config)
 	
 	local Window = {
 		Tabs = {},
-		Instance = self
+		Instance = self,
+		-- Expose Core UI for Theme Updater
+		MainFrame = MainFrame,
+		Sidebar = Sidebar,
+		Pages = Pages,
+		TitleLabel = Title,
+		Search = SearchBar
 	}
+	
+	function Window:SetTheme(ThemeName)
+		if not Themes[ThemeName] then warn("Theme not found: " .. tostring(ThemeName)) return end
+		self.Instance.Theme = Themes[ThemeName]
+		local T = self.Instance.Theme
+		
+		-- Update Core Window
+		Tween(MainFrame, {BackgroundColor3 = T.Main}, 0.3)
+		Tween(MainFrame.UIStroke, {Color = T.Stroke}, 0.3)
+		Tween(Title, {TextColor3 = T.TextSec}, 0.3)
+		
+		-- Update Sidebar Tabs
+		for _, btn in pairs(Sidebar:GetChildren()) do
+			if btn:IsA("TextButton") then
+				local label = btn:FindFirstChild("Label")
+				local icon = btn:FindFirstChild("ImageLabel")
+				local stroke = btn:FindFirstChild("UIStroke")
+				
+				-- Check if active or inactive? For now reset to inactive style, SelectTab will fix active one
+				Tween(btn.UIStroke, {Color = T.Accent}, 0.3)
+				if label then Tween(label, {TextColor3 = T.Accent}, 0.3) end
+				if icon then Tween(icon, {ImageColor3 = T.Accent}, 0.3) end
+			end
+		end
+		
+		-- Update Elements (Using heuristic or tags)
+		for _, page in pairs(Pages:GetChildren()) do
+			for _, frame in pairs(page:GetChildren()) do
+				if frame:IsA("Frame") and frame:FindFirstChild("UIStroke") then
+					-- Assume it's an Element Container
+					Tween(frame, {BackgroundColor3 = T.Element}, 0.3)
+					Tween(frame.UIStroke, {Color = T.Stroke}, 0.3)
+					
+					-- Update Texts inside
+					for _, desc in pairs(frame:GetDescendants()) do
+						if desc:IsA("TextLabel") then
+							if desc.Text == "Interact" then -- Button Label
+								-- Ignore, handled by parent button usually
+							else
+								Tween(desc, {TextColor3 = T.Text}, 0.3)
+							end
+						elseif desc:IsA("TextButton") and desc:FindFirstChild("UICorner") and desc.Size.Y.Offset < 30 then
+							-- Action Button (Interact)
+							Tween(desc, {BackgroundColor3 = T.Accent}, 0.3)
+							Tween(desc, {TextColor3 = T.AccentText}, 0.3)
+						end
+					end
+				end
+			end
+		end
+		
+		-- Re-Select current tab to refresh active state colors
+		-- (Need to track active tab? For now checking Visibility)
+		for _, page in pairs(Pages:GetChildren()) do
+			if page.Visible then
+				Window:SelectTab(page.Name)
+				break
+			end
+		end
+	end
 	
 	function Window:SelectTab(TabId)
 		for _, page in pairs(Pages:GetChildren()) do
