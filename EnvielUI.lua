@@ -213,8 +213,10 @@ function EnvielUI:CreateWindow(Config)
 		Parent = ScreenGui,
 		BackgroundColor3 = self.Theme.Main,
 		BorderSizePixel = 0,
-		Position = UDim2.new(0.5, -350, 0.5, -225),
-		Size = OpenSize, -- UDim2.new(0, 0, 0, 0), -- Fixed: Start visible to avoid tween issues
+		AnchorPoint = Vector2.new(0.5, 0.5), -- Center Anchor for pop-up animation
+		Position = UDim2.new(0.5, 0, 0.5, 0), -- Perfectly centered
+		Size = UDim2.new(0, 0, 0, 0), -- Start tiny
+		BackgroundTransparency = 1, -- Start invisible
 		ClipsDescendants = true
 	})
 	print("[EnvielUI] Debug: MainFrame Created.")
@@ -229,7 +231,11 @@ function EnvielUI:CreateWindow(Config)
 	
 	Dragify(MainFrame)
 	
-	Tween(MainFrame, {Size = OpenSize}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+	-- "Cool" Entry Animation: Elastic Pop-up + Fade In
+	Tween(MainFrame, {
+		Size = OpenSize, 
+		BackgroundTransparency = 0
+	}, 0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
 	
 	local OpenBtn = Create("ImageButton", {
 		Name = "OpenButton",
