@@ -100,6 +100,25 @@ local TabSettings = Window:CreateTab({
 	Icon = "settings"
 })
 
+-- == THEME SWITCHER ==
+TabSettings:CreateSection("Theme UI")
+
+TabSettings:CreateButton({
+	Name = "Switch to Light Mode",
+	Callback = function()
+		Window:SetTheme("Light")
+		Window:Notify({Title="Theme", Content="Switched to Light Mode", Image="sun"})
+	end
+})
+
+TabSettings:CreateButton({
+	Name = "Switch to Dark Mode",
+	Callback = function()
+		Window:SetTheme("Dark")
+		Window:Notify({Title="Theme", Content="Switched to Dark Mode", Image="moon"})
+	end
+})
+
 TabSettings:CreateSection("Configuration")
 
 TabSettings:CreateInput({
