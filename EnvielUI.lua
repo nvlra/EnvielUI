@@ -171,7 +171,7 @@ function EnvielUI:CreateWindow(Config)
 		local Success, Parent = pcall(function() return gethui() end)
 		if Success and Parent then 
 			print("[EnvielUI] Using gethui()")
-			return Parent 
+			return cloneref(Parent)
 		end
 		
 		if CoreGui then 
