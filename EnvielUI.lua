@@ -616,10 +616,13 @@ function EnvielUI:CreateWindow(Config)
 			if page:IsA("ScrollingFrame") then page.Visible = false end
 		end
 		for _, btn in pairs(Sidebar:GetChildren()) do
-			if btn:IsA("TextButton") then
+			if btn:IsA("TextButton") and btn.Name ~= TabId.."Btn" then
 				Tween(btn, {BackgroundTransparency = 1, TextTransparency = 0.6, TextColor3 = self.Instance.Theme.TextSec}, 0.3)
 				btn.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal)
 				if btn:FindFirstChild("UIStroke") then Tween(btn.UIStroke, {Transparency = 1}, 0.3) end
+				
+				local icon = btn:FindFirstChild("ImageLabel")
+				if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSec}, 0.3) end
 			end
 		end
 		
@@ -672,6 +675,11 @@ function EnvielUI:CreateWindow(Config)
 		TabBtn.MouseLeave:Connect(function()
 			if Window.ActiveTab ~= TabId then
 				Tween(TabBtn, {BackgroundTransparency = 1}, 0.2)
+				local icon = TabBtn:FindFirstChild("ImageLabel")
+				if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.Accent}, 0.2) end
+			else
+				-- Enforce Active State just in case
+				Tween(TabBtn, {BackgroundTransparency = 0, BackgroundColor3 = self.Instance.Theme.TabActive}, 0.2)
 			end
 		end)
 		
