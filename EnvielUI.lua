@@ -8,7 +8,7 @@ local HttpService = game:GetService("HttpService")
 
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
-EnvielUI.Version = "Validation_v3_Final"
+EnvielUI.Version = "Validation_v4_NoScroll"
 
 local Themes = {
 	Dark = {
@@ -615,7 +615,7 @@ function EnvielUI:CreateWindow(Config)
 			Parent = Pages,
 			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 1, 0),
-			ScrollBarThickness = 2,
+			ScrollBarThickness = 0,
 			ScrollBarImageColor3 = self.Instance.Theme.Stroke,
 			Visible = false,
 			CanvasSize = UDim2.new(0,0,0,0)
