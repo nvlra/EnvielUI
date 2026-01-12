@@ -8,6 +8,7 @@ local HttpService = game:GetService("HttpService")
 
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
+EnvielUI.Version = "Validation_v1" -- To check if user has latest update
 
 local Themes = {
 	Dark = {
@@ -474,7 +475,7 @@ function EnvielUI:CreateWindow(Config)
 			BackgroundTransparency = 1, 
 			Size = UDim2.new(1, 0, 0, 36),
 			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-			Text = Name,
+			Text = "       " .. Name, -- Manual padding fix to prevent overlap
 			TextColor3 = self.Instance.Theme.Accent,
 			TextSize = 13,
 			TextTransparency = 0.6,
@@ -797,6 +798,8 @@ function EnvielUI:CreateWindow(Config)
 		local ContentText = Config.Content or "Message"
 		local Duration = Config.Duration or 3
 		local Image = Config.Image or "rbxassetid://4483345998"
+		
+		print("[EnvielUI] Debug: Notify called.", TitleText)
 		
 		local NotifFrame = Create("Frame", {
 			Parent = NotificationContainer,
