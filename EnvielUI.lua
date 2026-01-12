@@ -8,7 +8,7 @@ local HttpService = game:GetService("HttpService")
 
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
-EnvielUI.Version = "Validation_v1"
+EnvielUI.Version = "Validation_v3_Final"
 
 local Themes = {
 	Dark = {
