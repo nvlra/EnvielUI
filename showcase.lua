@@ -98,14 +98,7 @@ CombatTab:CreateColorPicker({
     end
 })
 
-CombatTab:CreateKeybind({
-    Name = "Aimbot Key",
-    CurrentKey = Enum.KeyCode.E,
-    HoldToInteract = true,
-    Callback = function(Key)
-        print("Keybind set to:", Key.Name)
-    end
-})
+
 
 -- 5. Information Tab (Text Display)
 local InfoSection = MainTab:CreateSection("Documentation")

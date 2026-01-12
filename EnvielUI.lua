@@ -1073,58 +1073,7 @@ function EnvielUI:CreateWindow(Config)
 			Create("UIListLayout", {Parent = Frame, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
 		end
 
-		function Elements:CreateKeybind(Config)
-			local Name = Config.Name or "Keybind"
-			local Default = Config.CurrentKeybind or nil -- Fixed: Enum.KeyCode.None is invalid
-			local Callback = Config.Callback or function() end
-			
-			local Value = Default
-			
-			local Frame = Create("Frame", {
-				Parent = Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,46), BackgroundTransparency = 0
-			})
-			Create("UICorner", {Parent=Frame, CornerRadius=UDim.new(0,8)})
-			Create("UIStroke", {Parent=Frame, Color=self.Instance.Theme.Stroke, Thickness=1, Transparency=0.5})
 
-			Create("TextLabel", {
-				Parent=Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,0), Size=UDim2.new(1,-120,1,0),
-				Font=Enum.Font.GothamMedium, Text=Name, TextColor3=self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
-			})
-			
-			local BindBtn = Create("TextButton", {
-				Parent=Frame, BackgroundColor3=self.Instance.Theme.Stroke, Position=UDim2.new(1,-100,0.5,-12), Size=UDim2.new(0,90,0,24),
-				Font=Enum.Font.GothamBold, Text=(Value and Value.Name or "None"), TextColor3=self.Instance.Theme.TextSec, TextSize=12, AutoButtonColor=false
-			})
-			Create("UICorner", {Parent=BindBtn, CornerRadius=UDim.new(0,6)})
-			
-			local Listening = false
-			
-			BindBtn.MouseButton1Click:Connect(function()
-				if Listening then return end
-				Listening = true
-				BindBtn.Text = "..."
-				BindBtn.TextColor3 = self.Instance.Theme.Accent
-				
-				local Connection
-				Connection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-					if gameProcessed then return end
-					
-					if input.UserInputType == Enum.UserInputType.Keyboard then
-						Value = input.KeyCode
-						BindBtn.Text = Value.Name
-						BindBtn.TextColor3 = self.Instance.Theme.TextSec
-						Callback(Value)
-						Listening = false
-						Connection:Disconnect()
-					elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
-						Listening = false
-						BindBtn.Text = (Value and Value.Name or "None")
-						BindBtn.TextColor3 = self.Instance.Theme.TextSec
-						Connection:Disconnect()
-					end
-				end)
-			end)
-		end
 		
 		function Elements:CreateColorPicker(Config)
 			local Name = Config.Name or "Color Picker"
@@ -1283,7 +1232,7 @@ function EnvielUI:CreateWindow(Config)
 			function GroupElements:CreateDropdown(Cfg) Cfg.Parent = GroupContent return Elements:CreateDropdown(Cfg) end
 			function GroupElements:CreateInput(Cfg) Cfg.Parent = GroupContent return Elements:CreateInput(Cfg) end
 			function GroupElements:CreateColorPicker(Cfg) Cfg.Parent = GroupContent return Elements:CreateColorPicker(Cfg) end
-			function GroupElements:CreateKeybind(Cfg) Cfg.Parent = GroupContent return Elements:CreateKeybind(Cfg) end
+
 			function GroupElements:CreateParagraph(Cfg) Cfg.Parent = GroupContent return Elements:CreateParagraph(Cfg) end
 			function GroupElements:CreateSection(Name) return Elements:CreateSection(Name) end 
 			
