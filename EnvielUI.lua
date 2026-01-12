@@ -3,6 +3,8 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
+local VirtualUser = game:GetService("VirtualUser") -- Added VirtualUser
+local HttpService = game:GetService("HttpService") -- Added HttpService
 
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
@@ -16,6 +18,12 @@ local Themes = {
 		TextSec = Color3.fromHex("888888"),
 		Accent = Color3.fromHex("FFDE25"),
 		AccentText = Color3.fromHex("1A1A1A"),
+		
+		-- New Rayfield-style keys
+		Hover = Color3.fromHex("252525"),
+		Element = Color3.fromHex("222222"),
+		TextSelected = Color3.fromHex("FFFFFF"),
+		Description = Color3.fromHex("666666"),
 	},
 	Light = {
 		Main = Color3.fromHex("FFFFFF"),
@@ -25,6 +33,12 @@ local Themes = {
 		TextSec = Color3.fromHex("666666"),
 		Accent = Color3.fromHex("A78F0A"),
 		AccentText = Color3.fromHex("FFFFFF"),
+
+		-- New Rayfield-style keys
+		Hover = Color3.fromHex("EEEEEE"),
+		Element = Color3.fromHex("F5F5F5"),
+		TextSelected = Color3.fromHex("111111"),
+		Description = Color3.fromHex("888888"),
 	}
 }
 
@@ -104,6 +118,7 @@ end
 function EnvielUI.new()
 	local self = setmetatable({}, EnvielUI)
 	self.Theme = Themes.Dark 
+	self.Flags = {} -- Configuration Flags
 	return self
 end
 
@@ -111,24 +126,51 @@ function EnvielUI:CreateWindow(Config)
 	local WindowName = Config.Name or "Enviel UI"
 	local Theme = Config.Theme or "Dark"
 	
-	if Themes[Theme] then self.Theme = Themes[Theme] end
+	if Themes[Theme] then 
+		self.Theme = Themes[Theme] 
+	else
+		-- Backward Compatibility / Custom Theme Validation
+		local DefaultTheme = Themes.Dark
+		for key, val in pairs(DefaultTheme) do
+			if self.Theme[key] == nil then
+				self.Theme[key] = val
+			end
+		end
+	end
 	
-	local Success, ParentTarget = pcall(function() return CoreGui end)
+	-- Secure Parenting Logic
+	local Success, ParentTarget = pcall(function()
+		return (gethui and gethui()) or (syn and syn.protect_gui and syn.protect_gui(Create("ScreenGui", {})) and CoreGui) or CoreGui
+	end)
+	
 	if not Success or not ParentTarget then
 		ParentTarget = Players.LocalPlayer:WaitForChild("PlayerGui")
 	end
 	
-	if ParentTarget:FindFirstChild("EnvielLibrary") then
-		ParentTarget.EnvielLibrary:Destroy()
+	-- Random Name Generation for Anti-Detection
+	local function RandomString(length)
+		local str = ""
+		for i = 1, length do
+			str = str .. string.char(math.random(97, 122))
+		end
+		return str
+	end
+
+	-- Remove existing if found (by exact name search might fail if randomized, but we'll try standard just in case)
+	for _, child in pairs(ParentTarget:GetChildren()) do
+		if child:GetAttribute("EnvielID") == "MainInstance" then
+			child:Destroy()
+		end
 	end
 	
 	local ScreenGui = Create("ScreenGui", {
-		Name = "EnvielLibrary",
+		Name = RandomString(10), -- Randomized Name
 		Parent = ParentTarget,
 		IgnoreGuiInset = true,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		ResetOnSpawn = false
 	})
+	ScreenGui:SetAttribute("EnvielID", "MainInstance") -- Attribute for robust identification
 	
 	local Minimized = false
 	local OpenSize = UDim2.new(0, 700, 0, 450)
@@ -202,6 +244,48 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end)
 
+	-- Mobile Toggle Button
+	if UserInputService.TouchEnabled then
+		local MobileToggle = Create("TextButton", {
+			Name = "EnvielMobileToggle",
+			Parent = ScreenGui,
+			BackgroundColor3 = self.Theme.Main,
+			Position = UDim2.new(0.5, -25, 0, 10), -- Top Center
+			Size = UDim2.new(0, 50, 0, 50),
+			Text = "",
+			AutoButtonColor = false
+		})
+		Create("UICorner", {Parent = MobileToggle, CornerRadius = UDim.new(1, 0)})
+		Create("UIStroke", {Parent = MobileToggle, Color = self.Theme.Accent, Thickness = 2})
+		Create("ImageLabel", {
+			Parent = MobileToggle,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0.5, -12, 0.5, -12),
+			Size = UDim2.new(0, 24, 0, 24),
+			Image = GetIcon("menu"), -- Assuming "menu" icon exists, otherwise generic
+			ImageColor3 = self.Theme.Accent
+		})
+		
+		local MobileOpen = true
+		MobileToggle.MouseButton1Click:Connect(function()
+			MobileOpen = not MobileOpen
+			-- Re-using the toggle logic logic roughly
+			ScreenGui.Enabled = true -- Ensure enabled
+			if not MobileOpen then
+				if not Minimized then
+					Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In).Completed:Wait()
+				end
+				MainFrame.Visible = false
+			else
+				MainFrame.Visible = true
+				if not Minimized then
+					MainFrame.Size = UDim2.new(0,0,0,0)
+					Tween(MainFrame, {Size = OpenSize}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+				end
+			end
+		end)
+	end
+
 	local Header = Create("Frame", {
 		Name = "Header",
 		Parent = MainFrame,
@@ -257,23 +341,73 @@ function EnvielUI:CreateWindow(Config)
 	})
 	MinBtn.MouseButton1Click:Connect(ToggleMinimize)
 
+	-- Mobile Scaling
+	if UserInputService.TouchEnabled then
+		Create("UIScale", {
+			Parent = MainFrame,
+			Scale = 1.2
+		})
+	end
+
 	local ContentContainer = Create("Frame", {
-		Name = "Content",
+		Name = "ContentContainer",
 		Parent = MainFrame,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, 0, 0, 60),
-		Size = UDim2.new(1, 0, 1, -60)
+		Size = UDim2.new(1, 0, 1, -50),
+		Position = UDim2.new(0, 0, 0, 50)
 	})
 	
+	-- Search Bar
+	local SearchBarFrame = Create("Frame", {
+		Parent = ContentContainer,
+		BackgroundTransparency = 1,
+		Position = UDim2.new(0, 20, 0, 5),
+		Size = UDim2.new(0, 160, 0, 32)
+	})
+	local SearchBar = Create("TextBox", {
+		Parent = SearchBarFrame,
+		BackgroundColor3 = self.Theme.Secondary,
+		Size = UDim2.new(1, 0, 1, 0),
+		Text = "",
+		PlaceholderText = "Search...",
+		TextColor3 = self.Theme.Text,
+		PlaceholderColor3 = self.Theme.TextSec,
+		TextSize = 14,
+		FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+		TextXAlignment = Enum.TextXAlignment.Left
+	})
+	Create("UICorner", {Parent = SearchBar, CornerRadius = UDim.new(0, 6)})
+	Create("UIPadding", {Parent = SearchBar, PaddingLeft = UDim.new(0, 10)})
+	Create("UIStroke", {Parent = SearchBar, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+
 	local Sidebar = Create("ScrollingFrame", {
 		Name = "Sidebar",
 		Parent = ContentContainer,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, 20, 0, 0),
-		Size = UDim2.new(0, 160, 1, -20),
+		Position = UDim2.new(0, 20, 0, 45), -- Adjusted for SearchBar
+		Size = UDim2.new(0, 160, 1, -55), -- Adjusted height
 		ScrollBarThickness = 0,
 		CanvasSize = UDim2.new(0,0,0,0)
 	})
+	
+	-- Search Logic
+	SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
+		local Input = SearchBar.Text:lower()
+		for _, page in pairs(ContentContainer:FindFirstChild("Pages"):GetChildren()) do
+			if page:IsA("ScrollingFrame") then
+				for _, frame in pairs(page:GetChildren()) do
+					if frame:IsA("Frame") and frame:FindFirstChild("TextLabel") then
+						local NameLabel = frame:FindFirstChild("TextLabel")
+						if NameLabel and NameLabel.Text:lower():find(Input) then
+							frame.Visible = true
+						else
+							frame.Visible = false
+						end
+					end
+				end
+			end
+		end
+	end)
 	Create("UIListLayout", {Parent = Sidebar, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder})
 	
 	local Pages = Create("Frame", {
@@ -295,7 +429,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 		for _, btn in pairs(Sidebar:GetChildren()) do
 			if btn:IsA("TextButton") then
-				Tween(btn, {BackgroundTransparency = 1, TextTransparency = 0.6}, 0.3)
+				Tween(btn, {BackgroundTransparency = 1, TextTransparency = 0.6, TextColor3 = self.Instance.Theme.TextSec}, 0.3)
 				btn.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal)
 				if btn:FindFirstChild("UIStroke") then Tween(btn.UIStroke, {Transparency = 1}, 0.3) end
 			end
@@ -304,7 +438,7 @@ function EnvielUI:CreateWindow(Config)
 		if Pages:FindFirstChild(TabId) then Pages[TabId].Visible = true end
 		if Sidebar:FindFirstChild(TabId.."Btn") then
 			local btn = Sidebar[TabId.."Btn"]
-			Tween(btn, {BackgroundTransparency = 0.85, TextTransparency = 0}, 0.3)
+			Tween(btn, {BackgroundTransparency = 0.85, TextTransparency = 0, TextColor3 = self.Instance.Theme.TextSelected}, 0.3)
 			btn.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
 			if btn:FindFirstChild("UIStroke") then Tween(btn.UIStroke, {Transparency = 0}, 0.3) end
 		end
@@ -375,7 +509,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local Frame = Create("Frame", {
 				Parent = Page,
-				BackgroundColor3 = self.Instance.Theme.Secondary,
+				BackgroundColor3 = self.Instance.Theme.Element,
 				Size = UDim2.new(1, 0, 0, 42),
 				BackgroundTransparency = 0,
 			})
@@ -404,12 +538,19 @@ function EnvielUI:CreateWindow(Config)
 
 		function Elements:CreateToggle(Config)
 			local Name = Config.Name or "Toggle"
+			local Flag = Config.Flag or Name
 			local Default = Config.CurrentValue or false
 			local Callback = Config.Callback or function() end
+			
+			if self.Instance.Flags[Flag] ~= nil then
+				Default = self.Instance.Flags[Flag]
+			end
+			
 			local Value = Default
+			self.Instance.Flags[Flag] = Value
 			
 			local Frame = Create("Frame", {
-				Parent = Page, BackgroundColor3 = self.Instance.Theme.Secondary, Size = UDim2.new(1,0,0,44), BackgroundTransparency = 0
+				Parent = Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,44), BackgroundTransparency = 0
 			})
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
@@ -434,6 +575,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			Switch.MouseButton1Click:Connect(function()
 				Value = not Value
+				self.Instance.Flags[Flag] = Value
 				Callback(Value)
 				Tween(Switch, {BackgroundColor3=Value and self.Instance.Theme.Accent or self.Instance.Theme.Stroke}, 0.2)
 				Tween(Circle, {Position=Value and UDim2.new(1,-22,0.5,-9) or UDim2.new(0,2,0.5,-9)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
@@ -442,15 +584,21 @@ function EnvielUI:CreateWindow(Config)
 		
 		function Elements:CreateSlider(Config)
 			local Name = Config.Name or "Slider"
+			local Flag = Config.Flag or Name
 			local Min = Config.Range[1] or 0
 			local Max = Config.Range[2] or 100
 			local Default = Config.CurrentValue or Min
 			local Callback = Config.Callback or function() end
 			
+			if self.Instance.Flags[Flag] ~= nil then
+				Default = self.Instance.Flags[Flag]
+			end
+			
 			local Value = math.clamp(Default, Min, Max)
+			self.Instance.Flags[Flag] = Value
 			
 			local Frame = Create("Frame", {
-				Parent = Page, BackgroundColor3 = self.Instance.Theme.Secondary, Size = UDim2.new(1,0,0,60), BackgroundTransparency = 0
+				Parent = Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,60), BackgroundTransparency = 0
 			})
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
@@ -489,6 +637,7 @@ function EnvielUI:CreateWindow(Config)
 				ValueLabel.Text = tostring(Value)
 				Tween(Fill, {Size = UDim2.new(Percent, 0, 1, 0)}, 0.05)
 				Tween(Thumb, {Position = UDim2.new(Percent, -7, 0.5, -7)}, 0.05)
+				self.Instance.Flags[Flag] = Value
 				Callback(Value)
 			end
 			
@@ -517,9 +666,16 @@ function EnvielUI:CreateWindow(Config)
 		
 		function Elements:CreateDropdown(Config)
 			local Name = Config.Name or "Dropdown"
+			local Flag = Config.Flag or Name
 			local Options = Config.Options or {}
 			local Default = Config.CurrentValue or Options[1]
 			local Callback = Config.Callback or function() end
+			
+			if self.Instance.Flags[Flag] ~= nil then
+				Default = self.Instance.Flags[Flag]
+			end
+			
+			self.Instance.Flags[Flag] = Default
 			
 			local Expanded = false
 			local DropHeight = 44
@@ -527,7 +683,7 @@ function EnvielUI:CreateWindow(Config)
 			local TotalOptionsHeight = math.min(#Options, 6) * OptionHeight
 			
 			local Frame = Create("Frame", {
-				Parent = Page, BackgroundColor3 = self.Instance.Theme.Secondary, Size = UDim2.new(1,0,0,DropHeight), BackgroundTransparency = 0, ClipsDescendants = true
+				Parent = Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,DropHeight), BackgroundTransparency = 0, ClipsDescendants = true
 			})
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
@@ -561,7 +717,7 @@ function EnvielUI:CreateWindow(Config)
 				
 				for _, opt in pairs(Options) do
 					local Btn = Create("TextButton", {
-						Parent=OptionContainer, BackgroundTransparency=0, BackgroundColor3=self.Instance.Theme.Secondary,
+						Parent=OptionContainer, BackgroundTransparency=0, BackgroundColor3=self.Instance.Theme.Element,
 						Size=UDim2.new(1,0,0,OptionHeight), Text="    "..tostring(opt),
 						FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 						TextColor3 = (opt == Default) and self.Instance.Theme.Accent or self.Instance.Theme.TextSec,
@@ -569,20 +725,21 @@ function EnvielUI:CreateWindow(Config)
 					})
 					
 					Btn.MouseEnter:Connect(function() 
-						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Stroke}, 0.2)
+						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Hover}, 0.2) -- Changed to Hover
 					end)
 					Btn.MouseLeave:Connect(function() 
-						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Secondary}, 0.2)
+						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Element}, 0.2) -- Changed to Element
 					end)
 					
 					Btn.MouseButton1Click:Connect(function()
 						Default = opt
-						Label.Text = Name .. " : " .. tostring(opt)
-						Callback(opt)
+						self.Instance.Flags[Flag] = Default
+						Callback(Default)
+						Label.Text = Name .. " : " .. tostring(Default)
 						Expanded = false
-						Tween(Frame, {Size = UDim2.new(1,0,0,DropHeight)}, 0.3)
-						Tween(Arrow, {Rotation = 0}, 0.3)
-						RefreshOptions() 
+						Tween(Frame, {Size=UDim2.new(1,0,0,DropHeight)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+						Tween(Arrow, {Rotation=0}, 0.3)
+						RefreshOptions() -- Refresh to update selection color
 					end)
 				end
 			end
@@ -684,6 +841,65 @@ function EnvielUI:CreateWindow(Config)
 				Font=Enum.Font.GothamBold, Text=Name, TextColor3=self.Instance.Theme.TextSec, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			return Label
+		end
+
+		function Elements:CreateInput(Config)
+			local Name = Config.Name or "Input"
+			local Flag = Config.Flag or Name
+			local Placeholder = Config.PlaceholderText or "Type here..."
+			local Callback = Config.Callback or function() end
+			local RemoveTextAfterFocusLost = Config.RemoveTextAfterFocusLost or false
+			
+			local Frame = Create("Frame", {
+				Parent = Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,44), BackgroundTransparency = 0
+			})
+			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
+			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+			
+			local Label = Create("TextLabel", {
+				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,0), Size=UDim2.new(1,-15,0,20),
+				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+				Text = Name, TextColor3 = self.Instance.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left
+			})
+			
+			local InputBox = Create("TextBox", {
+				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,22), Size=UDim2.new(1,-30,0,18),
+				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+				Text = "", PlaceholderText = Placeholder, TextColor3 = self.Instance.Theme.Accent, PlaceholderColor3 = self.Instance.Theme.TextSec,
+				TextSize = 13, TextXAlignment=Enum.TextXAlignment.Left, ClearTextOnFocus = false
+			})
+			
+			InputBox.FocusLost:Connect(function(enterPressed)
+				local Text = InputBox.Text
+				if RemoveTextAfterFocusLost then InputBox.Text = "" end
+				self.Instance.Flags[Flag] = Text
+				Callback(Text)
+			end)
+		end
+		
+		function Elements:CreateParagraph(Config)
+			local Title = Config.Title or "Paragraph"
+			local Content = Config.Content or "Content"
+			
+			local Frame = Create("Frame", {
+				Parent = Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,0), BackgroundTransparency = 0, AutomaticSize = Enum.AutomaticSize.Y
+			})
+			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
+			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+			Create("UIPadding", {Parent = Frame, PaddingTop=UDim.new(0,10), PaddingBottom=UDim.new(0,10), PaddingLeft=UDim.new(0,15), PaddingRight=UDim.new(0,15)})
+			
+			local TitleLabel = Create("TextLabel", {
+				Parent = Frame, BackgroundTransparency=1, Size=UDim2.new(1,0,0,16),
+				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
+				Text = Title, TextColor3 = self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
+			})
+			
+			local ContentLabel = Create("TextLabel", {
+				Parent = Frame, BackgroundTransparency=1, Size=UDim2.new(1,0,0,0), AutomaticSize = Enum.AutomaticSize.Y,
+				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+				Text = Content, TextColor3 = self.Instance.Theme.Description, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, TextWrapped = true
+			})
+			Create("UIListLayout", {Parent = Frame, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
 		end
 
 		function Elements:CreateKeybind(Config)
