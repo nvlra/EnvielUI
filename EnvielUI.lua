@@ -8,7 +8,7 @@ local HttpService = game:GetService("HttpService")
 
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
-EnvielUI.Version = "Validation_v4_NoScroll"
+EnvielUI.Version = "Validation_v5_FixLightState"
 
 local Themes = {
 	Dark = {
@@ -26,6 +26,8 @@ local Themes = {
 		Description = Color3.fromHex("666666"),
 		
 		AccentHover = Color3.fromHex("D0D0D0"),
+		TabActive = Color3.fromHex("2A2A2A"),
+		TabHover = Color3.fromHex("222222"),
 	},
 	Light = {
 		Main = Color3.fromHex("F5F5F5"),
@@ -42,6 +44,8 @@ local Themes = {
 		Description = Color3.fromHex("808080"),
 		
 		AccentHover = Color3.fromHex("303030"),
+		TabActive = Color3.fromHex("E0E0E0"),
+		TabHover = Color3.fromHex("EBEBEB"),
 	}
 }
 
@@ -470,7 +474,6 @@ function EnvielUI:CreateWindow(Config)
 		Tween(MainFrame.UIStroke, {Color = T.Stroke}, 0.3)
 		Tween(Title, {TextColor3 = T.TextSec}, 0.3)
 		
-		for _, btn in pairs(Sidebar:GetChildren()) do
 			if btn:IsA("TextButton") then
 				local label = btn:FindFirstChild("Label")
 				local icon = btn:FindFirstChild("ImageLabel")
@@ -479,6 +482,13 @@ function EnvielUI:CreateWindow(Config)
 				Tween(btn.UIStroke, {Color = T.Accent}, 0.3)
 				if label then Tween(label, {TextColor3 = T.Accent}, 0.3) end
 				if icon then Tween(icon, {ImageColor3 = T.Accent}, 0.3) end
+				
+				-- Check Active State
+				if Window.ActiveTab and btn.Name == Window.ActiveTab.."Btn" then
+					Tween(btn, {BackgroundColor3 = T.TabActive}, 0.3)
+					if label then Tween(label, {TextColor3 = T.TextSelected}, 0.3) end
+					if icon then Tween(icon, {ImageColor3 = T.TextSelected}, 0.3) end
+				end
 			end
 		end
 		
@@ -558,9 +568,10 @@ function EnvielUI:CreateWindow(Config)
 			
 			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSelected}, 0.3) end
 			
-			Tween(btn, {BackgroundTransparency = 0.85}, 0.3)
+			Tween(btn, {BackgroundTransparency = 0, BackgroundColor3 = self.Instance.Theme.TabActive}, 0.3)
 			if btn:FindFirstChild("UIStroke") then Tween(btn.UIStroke, {Transparency = 0}, 0.3) end
 		end
+		Window.ActiveTab = TabId
 	end
 	
 	function Window:CreateTab(Config)
@@ -582,6 +593,19 @@ function EnvielUI:CreateWindow(Config)
 		
 		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 8)})
 		Create("UIStroke", {Parent = TabBtn, Color = self.Instance.Theme.Accent, Thickness = 1, Transparency = 1})
+		
+		TabBtn.MouseEnter:Connect(function()
+			if Window.ActiveTab ~= TabId then
+				Tween(TabBtn, {BackgroundTransparency = 0}, 0.2)
+				Tween(TabBtn, {BackgroundColor3 = self.Instance.Theme.TabHover}, 0.2)
+			end
+		end)
+		
+		TabBtn.MouseLeave:Connect(function()
+			if Window.ActiveTab ~= TabId then
+				Tween(TabBtn, {BackgroundTransparency = 1}, 0.2)
+			end
+		end)
 		
 		if IconAsset ~= "" then
 			Create("ImageLabel", {
