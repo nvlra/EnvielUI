@@ -821,14 +821,14 @@ function EnvielUI:CreateWindow(Config)
 		local TitleLabel = Create("TextLabel", {
 			Parent = NotifFrame, BackgroundTransparency = 1,
 			Position = UDim2.new(0, 70, 0, 10), Size = UDim2.new(1, -80, 0, 20),
-			Font = Enum.Font.GothamBold, Text = TitleText, TextColor3 = self.Theme.Text,
+			Font = Enum.Font.GothamBold, Text = TitleText, TextColor3 = self.Instance.Theme.Text,
 			TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
 		})
 		
 		local ContentLabel = Create("TextLabel", {
 			Parent = NotifFrame, BackgroundTransparency = 1,
 			Position = UDim2.new(0, 70, 0, 30), Size = UDim2.new(1, -80, 0, 30),
-			Font = Enum.Font.GothamMedium, Text = ContentText, TextColor3 = self.Theme.TextSec,
+			Font = Enum.Font.GothamMedium, Text = ContentText, TextColor3 = self.Instance.Theme.TextSec,
 			TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true
 		})
 		
