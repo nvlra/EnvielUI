@@ -25,7 +25,7 @@ local Themes = {
 		TextSelected = Color3.fromHex("FFFFFF"),
 		Description = Color3.fromHex("666666"),
 		
-		AccentHover = Color3.fromHex("D0D0D0"), -- Dimmer White
+		AccentHover = Color3.fromHex("D0D0D0"),
 	},
 	Light = {
 		Main = Color3.fromHex("F5F5F5"),
@@ -41,7 +41,7 @@ local Themes = {
 		TextSelected = Color3.fromHex("000000"),
 		Description = Color3.fromHex("808080"),
 		
-		AccentHover = Color3.fromHex("303030"), -- Lighter Black
+		AccentHover = Color3.fromHex("303030"),
 	}
 }
 
@@ -470,7 +470,6 @@ function EnvielUI:CreateWindow(Config)
 		Tween(MainFrame.UIStroke, {Color = T.Stroke}, 0.3)
 		Tween(Title, {TextColor3 = T.TextSec}, 0.3)
 		
-		-- Update Sidebar
 		for _, btn in pairs(Sidebar:GetChildren()) do
 			if btn:IsA("TextButton") then
 				local label = btn:FindFirstChild("Label")
@@ -483,10 +482,8 @@ function EnvielUI:CreateWindow(Config)
 			end
 		end
 		
-		-- Update Pages & Elements
 		for _, page in pairs(Pages:GetChildren()) do
 			if page:IsA("ScrollingFrame") then
-				-- Fix: Update ScrollBar Color
 				page.ScrollBarImageColor3 = T.Stroke 
 				
 				for _, frame in pairs(page:GetChildren()) do
@@ -507,7 +504,6 @@ function EnvielUI:CreateWindow(Config)
 									Tween(desc, {BackgroundColor3 = T.Accent}, 0.3)
 									Tween(desc, {TextColor3 = T.AccentText}, 0.3)
 								elseif Type == "ToggleSwitch" then
-									-- Smart Toggle Update
 									local FlagName = desc:GetAttribute("EnvielFlag")
 									local IsOn = self.Instance.Flags[FlagName]
 									
@@ -517,7 +513,7 @@ function EnvielUI:CreateWindow(Config)
 										Tween(desc, {BackgroundColor3 = T.Stroke}, 0.3)
 									end
 									
-									local Circle = desc:FindFirstChild("Frame") -- The toggle circle
+									local Circle = desc:FindFirstChild("Frame")
 									if Circle then
 										Tween(Circle, {BackgroundColor3 = T.Main}, 0.3)
 									end
@@ -529,7 +525,6 @@ function EnvielUI:CreateWindow(Config)
 			end
 		end
 		
-		-- Refresh active tab
 		for _, page in pairs(Pages:GetChildren()) do
 			if page.Visible then
 				Window:SelectTab(page.Name)
@@ -714,7 +709,7 @@ function EnvielUI:CreateWindow(Config)
 			Switch:SetAttribute("EnvielFlag", Flag)
 			
 			local Circle = Create("Frame", {
-				Name="Frame", -- Named Frame for finder in SetTheme
+				Name="Frame",
 				Parent=Switch, BackgroundColor3=self.Instance.Theme.Main,
 				Position=Value and UDim2.new(1,-22,0.5,-9) or UDim2.new(0,2,0.5,-9), Size=UDim2.new(0,18,0,18)
 			})
