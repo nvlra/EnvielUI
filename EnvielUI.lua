@@ -1149,11 +1149,10 @@ function EnvielUI:CreateWindow(Config)
 			Create("UIListLayout", {Parent = Frame, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
 			
 			return {
-				Set = function(self, NewConfig)
-					if type(NewConfig) == "table" then
-						if NewConfig.Title then TitleLabel.Text = NewConfig.Title end
-						if NewConfig.Content then ContentLabel.Text = NewConfig.Content end
-						if NewConfig.Description then ContentLabel.Text = NewConfig.Description end
+				Set = function(self, Properties)
+					if type(Properties) == "table" then
+						if Properties.Title then TitleLabel.Text = Properties.Title end
+						if Properties.Content then ContentLabel.Text = Properties.Content end
 					end
 				end
 			}
