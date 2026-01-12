@@ -1416,7 +1416,8 @@ function EnvielUI:CreateWindow(Config)
 			Parent = MainFrame, Name = "Watermark", BackgroundColor3 = self.Instance.Theme.Stroke,
 			Size = UDim2.new(0, 0, 0, 22),
 			Position = UDim2.new(0, 15, 1, -35),
-			Visible = true
+			Visible = true,
+			ZIndex = 2
 		})
 		Create("UICorner", {Parent = WatermarkFrame, CornerRadius = UDim.new(0, 4)})
 		Create("UIStroke", {Parent = WatermarkFrame, Color = self.Instance.Theme.Stroke, Thickness = 1})
@@ -1424,7 +1425,7 @@ function EnvielUI:CreateWindow(Config)
 		local Text = Create("TextLabel", {
 			Parent = WatermarkFrame, Name = "WatermarkText", BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0),
 			Font = Enum.Font.GothamMedium, TextSize = 11, TextColor3 = self.Instance.Theme.Text,
-			Text = "Enviel UI v1.0",
+			Text = Config.Title or Config.Text or "Enviel UI",
 			TextXAlignment = Enum.TextXAlignment.Center
 		})
 		
