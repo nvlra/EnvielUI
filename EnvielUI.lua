@@ -1051,6 +1051,14 @@ function EnvielUI:CreateWindow(Config)
 				self.Instance.Flags[Flag] = Text
 				Callback(Text)
 			end)
+			
+			return {
+				Set = function(self, NewVal)
+					if type(NewVal) == "table" and NewVal.Text then NewVal = NewVal.Text end
+					InputBox.Text = tostring(NewVal)
+					self.Instance.Flags[Flag] = tostring(NewVal)
+				end
+			}
 		end
 		
 		function Elements:CreateParagraph(Config)
@@ -1076,6 +1084,16 @@ function EnvielUI:CreateWindow(Config)
 				Text = Content, TextColor3 = self.Instance.Theme.Description, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, TextWrapped = true
 			})
 			Create("UIListLayout", {Parent = Frame, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
+			
+			return {
+				Set = function(self, NewConfig)
+					if type(NewConfig) == "table" then
+						if NewConfig.Title then TitleLabel.Text = NewConfig.Title end
+						if NewConfig.Content then ContentLabel.Text = NewConfig.Content end
+						if NewConfig.Description then ContentLabel.Text = NewConfig.Description end
+					end
+				end
+			}
 		end
 
 
