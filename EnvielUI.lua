@@ -481,7 +481,7 @@ function EnvielUI:CreateWindow(Config)
 			TextXAlignment = Enum.TextXAlignment.Left,
 			AutoButtonColor = false
 		})
-		Create("UIPadding", {Parent = TabBtn, PaddingLeft = UDim.new(0, 35)})
+		Create("UIPadding", {Parent = TabBtn, PaddingLeft = UDim.new(0, 42)})
 		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 8)})
 		Create("UIStroke", {Parent = TabBtn, Color = self.Instance.Theme.Accent, Thickness = 1, Transparency = 1})
 		
@@ -800,13 +800,13 @@ function EnvielUI:CreateWindow(Config)
 		
 		local NotifFrame = Create("Frame", {
 			Parent = NotificationContainer,
-			BackgroundColor3 = self.Theme.Secondary,
+			BackgroundColor3 = self.Instance.Theme.Secondary,
 			Size = UDim2.new(1, 0, 0, 70),
 			BackgroundTransparency = 0.2,
 			LayoutOrder = tick()
 		})
 		Create("UICorner", {Parent = NotifFrame, CornerRadius = UDim.new(0, 8)})
-		Create("UIStroke", {Parent = NotifFrame, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+		Create("UIStroke", {Parent = NotifFrame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 		
 		local Icon = Create("ImageLabel", {
 			Parent = NotifFrame, BackgroundTransparency = 1,
