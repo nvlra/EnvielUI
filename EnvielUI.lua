@@ -28,18 +28,15 @@ local Themes = {
 	}
 }
 
-
 local IconLib = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"))()
-IconLib.SetIconsType("lucide") -- Default to Lucide
+IconLib.SetIconsType("lucide")
 
 local function GetIcon(Name)
 	if not Name or Name == "" then return "" end
-	-- If it's already an asset ID, return it
 	if string.find(Name, "rbxassetid://") then return Name end
-	-- Try to get from library (Lucide/Geist)
 	local Success, Icon = pcall(function() return IconLib.GetIcon(Name) end)
 	if Success and Icon then return Icon end
-	return "" -- Return empty if not found
+	return ""
 end
 
 local function Create(msg, prop)
@@ -73,7 +70,6 @@ local function Dragify(Frame, DragObject)
 			StartPos.Y.Scale, 
 			StartPos.Y.Offset + Delta.Y
 		)
-		-- Smooth Tween
 		local DragTween = TweenService:Create(Frame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = TargetPos})
 		DragTween:Play()
 	end
@@ -107,7 +103,7 @@ end
 
 function EnvielUI.new()
 	local self = setmetatable({}, EnvielUI)
-	self.Theme = Themes.Dark -- Default
+	self.Theme = Themes.Dark 
 	return self
 end
 
@@ -117,18 +113,15 @@ function EnvielUI:CreateWindow(Config)
 	
 	if Themes[Theme] then self.Theme = Themes[Theme] end
 	
-
 	local Success, ParentTarget = pcall(function() return CoreGui end)
 	if not Success or not ParentTarget then
 		ParentTarget = Players.LocalPlayer:WaitForChild("PlayerGui")
 	end
 	
-
 	if ParentTarget:FindFirstChild("EnvielLibrary") then
 		ParentTarget.EnvielLibrary:Destroy()
 	end
 	
-
 	local ScreenGui = Create("ScreenGui", {
 		Name = "EnvielLibrary",
 		Parent = ParentTarget,
@@ -137,18 +130,16 @@ function EnvielUI:CreateWindow(Config)
 		ResetOnSpawn = false
 	})
 	
-
 	local Minimized = false
 	local OpenSize = UDim2.new(0, 700, 0, 450)
 	
-
 	local MainFrame = Create("Frame", {
 		Name = "MainFrame",
 		Parent = ScreenGui,
 		BackgroundColor3 = self.Theme.Main,
 		BorderSizePixel = 0,
 		Position = UDim2.new(0.5, -350, 0.5, -225),
-		Size = UDim2.new(0, 0, 0, 0), -- Animated Start
+		Size = UDim2.new(0, 0, 0, 0), 
 		ClipsDescendants = true
 	})
 	
@@ -160,38 +151,32 @@ function EnvielUI:CreateWindow(Config)
 		Transparency = 0.5
 	})
 	
-
 	Dragify(MainFrame)
 	
-
 	Tween(MainFrame, {Size = OpenSize}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 	
-
 	local OpenBtn = Create("ImageButton", {
 		Name = "OpenButton",
 		Parent = ScreenGui,
 		BackgroundTransparency = 1,
 		Position = UDim2.new(0, 30, 0.5, -25),
 		Size = UDim2.new(0, 50, 0, 50),
-		Image = "rbxassetid://4483345998", -- Placeholder Logo
+		Image = "rbxassetid://4483345998",
 		Visible = false,
 		AutoButtonColor = false
 	})
 	Create("UICorner", {Parent = OpenBtn, CornerRadius = UDim.new(0, 12)})
 	Dragify(OpenBtn)
 	
-
 	local function ToggleMinimize()
 		Minimized = not Minimized
 		if Minimized then
-			-- Switch to Icon Mode
 			Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In).Completed:Wait()
 			MainFrame.Visible = false
 			OpenBtn.Visible = true
 			OpenBtn.Size = UDim2.new(0, 0, 0, 0)
 			Tween(OpenBtn, {Size = UDim2.new(0, 50, 0, 50)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 		else
-			-- Restore Window
 			OpenBtn.Visible = false
 			MainFrame.Visible = true
 			Tween(MainFrame, {Size = OpenSize}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
@@ -199,18 +184,15 @@ function EnvielUI:CreateWindow(Config)
 	end
 	OpenBtn.MouseButton1Click:Connect(ToggleMinimize)
 	
-
 	local ToggleKey = Config.Keybind or Enum.KeyCode.RightControl
 	UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		if not gameProcessed and input.KeyCode == ToggleKey then
 			if ScreenGui.Enabled then
-				-- Closing
 				if not Minimized then
 					Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In).Completed:Wait()
 				end
 				ScreenGui.Enabled = false
 			else
-				-- Opening
 				ScreenGui.Enabled = true
 				if not Minimized then
 					MainFrame.Size = UDim2.new(0,0,0,0)
@@ -219,7 +201,6 @@ function EnvielUI:CreateWindow(Config)
 			end
 		end
 	end)
-
 
 	local Header = Create("Frame", {
 		Name = "Header",
@@ -241,7 +222,6 @@ function EnvielUI:CreateWindow(Config)
 		TextXAlignment = Enum.TextXAlignment.Left
 	})
 	
-
 	local Controls = Create("Frame", {
 		Name = "Controls",
 		Parent = Header,
@@ -277,7 +257,6 @@ function EnvielUI:CreateWindow(Config)
 	})
 	MinBtn.MouseButton1Click:Connect(ToggleMinimize)
 
-
 	local ContentContainer = Create("Frame", {
 		Name = "Content",
 		Parent = MainFrame,
@@ -310,14 +289,12 @@ function EnvielUI:CreateWindow(Config)
 		Instance = self
 	}
 	
-
 	function Window:SelectTab(TabId)
 		for _, page in pairs(Pages:GetChildren()) do
 			if page:IsA("ScrollingFrame") then page.Visible = false end
 		end
 		for _, btn in pairs(Sidebar:GetChildren()) do
 			if btn:IsA("TextButton") then
-				-- Inactive
 				Tween(btn, {BackgroundTransparency = 1, TextTransparency = 0.6}, 0.3)
 				btn.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal)
 				if btn:FindFirstChild("UIStroke") then Tween(btn.UIStroke, {Transparency = 1}, 0.3) end
@@ -327,7 +304,6 @@ function EnvielUI:CreateWindow(Config)
 		if Pages:FindFirstChild(TabId) then Pages[TabId].Visible = true end
 		if Sidebar:FindFirstChild(TabId.."Btn") then
 			local btn = Sidebar[TabId.."Btn"]
-			-- Active
 			Tween(btn, {BackgroundTransparency = 0.85, TextTransparency = 0}, 0.3)
 			btn.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
 			if btn:FindFirstChild("UIStroke") then Tween(btn.UIStroke, {Transparency = 0}, 0.3) end
@@ -565,7 +541,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local Arrow = Create("ImageLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(1,-35,0,12), Size=UDim2.new(0,20,0,20),
-				Image = "rbxassetid://6034818372", ImageColor3 = self.Instance.Theme.TextSec -- Arrow Icon
+				Image = "rbxassetid://6034818372", ImageColor3 = self.Instance.Theme.TextSec 
 			})
 			
 			local Trigger = Create("TextButton", {
@@ -603,11 +579,10 @@ function EnvielUI:CreateWindow(Config)
 						Default = opt
 						Label.Text = Name .. " : " .. tostring(opt)
 						Callback(opt)
-						-- Close
 						Expanded = false
 						Tween(Frame, {Size = UDim2.new(1,0,0,DropHeight)}, 0.3)
 						Tween(Arrow, {Rotation = 0}, 0.3)
-						RefreshOptions() -- Refresh colors
+						RefreshOptions() 
 					end)
 				end
 			end
@@ -679,11 +654,7 @@ function EnvielUI:CreateWindow(Config)
 			TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true
 		})
 		
-		-- Animation: Slide In
-		NotifFrame.Position = UDim2.new(1, 100, 0, 0) -- Start off-screen (if no list layout) but ListLayout handles it
-		-- Since ListLayout enforces position, we animate transparency or size? 
-		-- Better: Use CanvasGroup if possible, but for compatibility, we just Fade/Slide logically or ignore pos tween if ListLayout.
-		-- Workaround: Parent to a folder first? No, just fade in.
+		NotifFrame.Position = UDim2.new(1, 100, 0, 0)
 		
 		NotifFrame.BackgroundTransparency = 1
 		Icon.ImageTransparency = 1
@@ -756,7 +727,6 @@ function EnvielUI:CreateWindow(Config)
 						Listening = false
 						Connection:Disconnect()
 					elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
-						-- Optional: reset or click outside logic
 						Listening = false
 						BindBtn.Text = (Value and Value.Name or "None")
 						BindBtn.TextColor3 = self.Instance.Theme.TextSec
@@ -790,15 +760,13 @@ function EnvielUI:CreateWindow(Config)
 			})
 			Create("UICorner", {Parent=ColorDisplay, CornerRadius=UDim.new(0,6)})
 			
-			-- Expanded Pickers
 			local PickerFrame = Create("Frame", {
 				Parent=Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,50), Size=UDim2.new(1,-30,0,110)
 			})
 			
-			-- Hue Slider (Spectrum)
 			local HueBar = Create("ImageButton", {
 				Parent=PickerFrame, Position=UDim2.new(0,0,0,0), Size=UDim2.new(1,0,0,15), AutoButtonColor=false,
-				Image = "rbxassetid://0", -- Empty image, utilizing Gradient
+				Image = "rbxassetid://0", 
 				BackgroundColor3 = Color3.new(1,1,1)
 			})
 			Create("UICorner", {Parent=HueBar, CornerRadius=UDim.new(0,4)})
@@ -812,7 +780,6 @@ function EnvielUI:CreateWindow(Config)
 				}
 			})
 			
-			-- RGB Sliders
 			local r, g, b = math.floor(Value.R*255), math.floor(Value.G*255), math.floor(Value.B*255)
 			
 			local function UpdateColor()
@@ -858,14 +825,13 @@ function EnvielUI:CreateWindow(Config)
 					end
 				end)
 				
-				return Fill -- Return handle to update visually later if needed
+				return Fill 
 			end
 			
 			local fillR = makeSlider(25, "R", r, function(v) r = v end)
 			local fillG = makeSlider(50, "G", g, function(v) g = v end)
 			local fillB = makeSlider(75, "B", b, function(v) b = v end)
 			
-			-- Hue Logic
 			local HueSliding = false
 			HueBar.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 then HueSliding=true end end)
 			UserInputService.InputEnded:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 then HueSliding=false end end)
@@ -877,7 +843,6 @@ function EnvielUI:CreateWindow(Config)
 					local HueColor = Color3.fromHSV(rel, 1, 1)
 					r, g, b = math.floor(HueColor.R*255), math.floor(HueColor.G*255), math.floor(HueColor.B*255)
 					
-					-- Update Sliders Visually
 					fillR.Size = UDim2.new(r/255, 0, 1, 0)
 					fillG.Size = UDim2.new(g/255, 0, 1, 0)
 					fillB.Size = UDim2.new(b/255, 0, 1, 0)
