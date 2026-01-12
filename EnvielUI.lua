@@ -455,8 +455,17 @@ function EnvielUI:CreateWindow(Config)
 		if Pages:FindFirstChild(TabId) then Pages[TabId].Visible = true end
 		if Sidebar:FindFirstChild(TabId.."Btn") then
 			local btn = Sidebar[TabId.."Btn"]
-			Tween(btn, {BackgroundTransparency = 0.85, TextTransparency = 0, TextColor3 = self.Instance.Theme.TextSelected}, 0.3)
-			btn.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+			local label = btn:FindFirstChild("Label")
+			local icon = btn:FindFirstChild("ImageLabel")
+			
+			if label then
+				Tween(label, {TextTransparency = 0, TextColor3 = self.Instance.Theme.TextSelected}, 0.3)
+				label.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+			end
+			
+			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSelected}, 0.3) end
+			
+			Tween(btn, {BackgroundTransparency = 0.85}, 0.3)
 			if btn:FindFirstChild("UIStroke") then Tween(btn.UIStroke, {Transparency = 0}, 0.3) end
 		end
 	end
@@ -474,28 +483,39 @@ function EnvielUI:CreateWindow(Config)
 			BackgroundColor3 = self.Instance.Theme.Accent,
 			BackgroundTransparency = 1, 
 			Size = UDim2.new(1, 0, 0, 36),
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-			Text = "       " .. Name, -- Manual padding fix to prevent overlap
-			TextColor3 = self.Instance.Theme.Accent,
-			TextSize = 13,
-			TextTransparency = 0.6,
-			TextXAlignment = Enum.TextXAlignment.Left,
+			Text = "", -- Clear native text
 			AutoButtonColor = false
 		})
-		Create("UIPadding", {Parent = TabBtn, PaddingLeft = UDim.new(0, 42)})
+		
 		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 8)})
 		Create("UIStroke", {Parent = TabBtn, Color = self.Instance.Theme.Accent, Thickness = 1, Transparency = 1})
 		
+		-- Icon Position (Left)
 		if IconAsset ~= "" then
 			Create("ImageLabel", {
 				Parent = TabBtn,
 				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 10, 0.5, -8),
-				Size = UDim2.new(0, 16, 0, 16),
+				Position = UDim2.new(0, 12, 0.5, -9), -- Centered Vertically
+				Size = UDim2.new(0, 18, 0, 18),
 				Image = IconAsset,
 				ImageColor3 = self.Instance.Theme.Accent
 			})
 		end
+		
+		-- Label Position (Offset right)
+		local TabLabel = Create("TextLabel", {
+			Parent = TabBtn,
+			Name = "Label",
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0, 40, 0, 0), -- Fixed offset for text
+			Size = UDim2.new(1, -45, 1, 0),
+			Text = Name,
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+			TextColor3 = self.Instance.Theme.Accent,
+			TextSize = 13,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			TextTransparency = 0.6
+		})
 		
 		TabBtn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
 		
