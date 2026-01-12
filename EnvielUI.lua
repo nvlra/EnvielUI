@@ -458,13 +458,14 @@ function EnvielUI:CreateWindow(Config)
 			BackgroundTransparency = 1, 
 			Size = UDim2.new(1, 0, 0, 36),
 			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-			Text = "       "..Name,
+			Text = Name,
 			TextColor3 = self.Instance.Theme.Accent,
 			TextSize = 13,
 			TextTransparency = 0.6,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			AutoButtonColor = false
 		})
+		Create("UIPadding", {Parent = TabBtn, PaddingLeft = UDim.new(0, 35)})
 		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 8)})
 		Create("UIStroke", {Parent = TabBtn, Color = self.Instance.Theme.Accent, Thickness = 1, Transparency = 1})
 		
