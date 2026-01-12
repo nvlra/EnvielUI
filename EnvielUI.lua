@@ -124,6 +124,17 @@ function EnvielUI:CreateWindow(Config)
 	local WindowName = Config.Name or "Enviel UI"
 	local Theme = Config.Theme or "Dark"
 	
+	if Themes[Theme] then 
+		self.Theme = Themes[Theme] 
+	else
+		local DefaultTheme = Themes.Dark
+		for key, val in pairs(DefaultTheme) do
+			if self.Theme[key] == nil then
+				self.Theme[key] = val
+			end
+		end
+	end
+	
 	print("[EnvielUI] Initializing...")
 	
 	local Success, ParentTarget = pcall(function()
@@ -174,6 +185,10 @@ function EnvielUI:CreateWindow(Config)
 		Size = UDim2.new(0, 0, 0, 0), 
 		ClipsDescendants = true
 	})
+-- ... (skipping unchanged lines implicitly by using large range if possible or multiple replaces)
+-- Actually, replace_file_content needs contiguous block. I'll split this or just do the big block if range allows. 
+-- Wait, the range 124-490 is huge. I should use multi_replace.
+
 	
 	Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 16)})
 	Create("UIStroke", {
@@ -487,6 +502,7 @@ function EnvielUI:CreateWindow(Config)
 		table.insert(Window.Tabs, TabId)
 		
 		local Elements = {}
+		Elements.Instance = self.Instance -- Fix for missing Instance reference
 		
 		function Elements:CreateButton(Config)
 			local Name = Config.Name or "Button"
