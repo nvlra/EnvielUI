@@ -40,7 +40,7 @@ Tabs are created within a Window. You can use direct names for icons.
 ```lua
 local HomeTab = Window:CreateTab({
     Name = "Home",
-    Icon = "layout-dashboard" -- Lucide Icon Name
+    Icon = "layout-dashboard"
 })
 ```
 
