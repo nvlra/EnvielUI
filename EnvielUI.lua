@@ -2,7 +2,6 @@ local EnvielUI = {}
 EnvielUI.__index = EnvielUI
 EnvielUI.Version = "Validation_v10_SecurityFixed"
 
--- Security Handling (Rayfield-style)
 local cloneref = (cloneref or clonereference or function(instance) return instance end)
 local function GetService(Name)
 	return cloneref(game:GetService(Name))
@@ -175,7 +174,6 @@ function EnvielUI:CreateWindow(Config)
 			return Parent 
 		end
 		
-		-- Use the safe CoreGui reference we defined earlier
 		if CoreGui then 
 			print("[EnvielUI] Using CoreGui")
 			return CoreGui 
@@ -492,7 +490,6 @@ function EnvielUI:CreateWindow(Config)
 				if label then Tween(label, {TextColor3 = T.Accent}, 0.3) end
 				if icon then Tween(icon, {ImageColor3 = T.Accent}, 0.3) end
 				
-				-- Check Active State
 				if Window.ActiveTab and btn.Name == Window.ActiveTab.."Btn" then
 					Tween(btn, {BackgroundColor3 = T.TabActive}, 0.3)
 					if label then Tween(label, {TextColor3 = T.TextSelected}, 0.3) end
@@ -542,8 +539,6 @@ function EnvielUI:CreateWindow(Config)
 									if IsSelected then
 										Tween(desc, {TextColor3 = T.Accent}, 0.3)
 									else
-										Tween(desc, {TextColor3 = T.TextSec}, 0.3)
-									end
 										Tween(desc, {TextColor3 = T.TextSec}, 0.3)
 									end
 								end
@@ -1096,7 +1091,6 @@ function EnvielUI:CreateWindow(Config)
 		})
 		Create("UIListLayout", {Parent = ButtonContainer, FillDirection=Enum.FillDirection.Horizontal, HorizontalAlignment=Enum.HorizontalAlignment.Center, Padding=UDim.new(0,10)})
 		
-		-- Dynamic resizing hack
 		ContentLbl:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
 			ButtonContainer.Position = UDim2.new(0,0,0, ContentLbl.AbsoluteSize.Y + 45)
 		end)
