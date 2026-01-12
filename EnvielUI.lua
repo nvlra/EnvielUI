@@ -798,6 +798,13 @@ function EnvielUI:CreateWindow(Config)
 				Tween(Btn, {Size = UDim2.new(0,90,0,26)}, 0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 				Callback()
 			end)
+			
+			return {
+				SetText = function(self, newText)
+					Btn.Text = newText
+				end,
+				Instance = Btn
+			}
 		end
 
 		function Elements:CreateToggle(Config)
