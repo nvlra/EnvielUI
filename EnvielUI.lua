@@ -1064,6 +1064,50 @@ function EnvielUI:CreateWindow(Config)
 		end)
 	end
 
+	function Elements:CreateGroup(Config)
+			local Title = Config.Title or "Group"
+			local GroupConfig = {
+				Name = Title,
+				Parent = Page,
+				BackgroundColor3 = self.Instance.Theme.Element,
+				Size = UDim2.new(1, 0, 0, 0), -- Auto size
+				AutomaticSize = Enum.AutomaticSize.Y
+			}
+			
+			local GroupFrame = Create("Frame", GroupConfig)
+			Create("UICorner", {Parent = GroupFrame, CornerRadius = UDim.new(0, 8)})
+			Create("UIStroke", {Parent = GroupFrame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+			Create("UIPadding", {Parent = GroupFrame, PaddingTop=UDim.new(0,8), PaddingBottom=UDim.new(0,8), PaddingLeft=UDim.new(0,0), PaddingRight=UDim.new(0,0)})
+			
+			-- Title
+			if Title ~= "" then
+				local TitleLbl = Create("TextLabel", {
+					Parent = GroupFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -20, 0, 20), Position = UDim2.new(0, 10, 0, 0),
+					Text = Title, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = self.Instance.Theme.TextSec, TextXAlignment = Enum.TextXAlignment.Left
+				})
+				Create("Frame", { -- Divider
+					Parent = GroupFrame, BackgroundColor3 = self.Instance.Theme.Stroke, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 0, 24), BackgroundTransparency = 0.8
+				})
+			end
+			
+			local GroupContent = Create("Frame", {
+				Parent = GroupFrame, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y
+			})
+			Create("UIListLayout", {Parent = GroupContent, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
+			Create("UIPadding", {Parent = GroupContent, PaddingTop=UDim.new(0, Title~="" and 28 or 5), PaddingBottom=UDim.new(0,5), PaddingLeft=UDim.new(0,10), PaddingRight=UDim.new(0,10)})
+			
+			-- Mimic Elements API but parented to Group
+			local GroupElements = setmetatable({}, Elements)
+			function GroupElements:CreateButton(Cfg) Cfg.Parent = GroupContent return Elements:CreateButton(Cfg) end
+			function GroupElements:CreateToggle(Cfg) Cfg.Parent = GroupContent return Elements:CreateToggle(Cfg) end
+			function GroupElements:CreateSlider(Cfg) Cfg.Parent = GroupContent return Elements:CreateSlider(Cfg) end
+			function GroupElements:CreateDropdown(Cfg) Cfg.Parent = GroupContent return Elements:CreateDropdown(Cfg) end
+			function GroupElements:CreateInput(Cfg) Cfg.Parent = GroupContent return Elements:CreateInput(Cfg) end
+			function GroupElements:CreateColorPicker(Cfg) Cfg.Parent = GroupContent return Elements:CreateColorPicker(Cfg) end
+			
+			return GroupElements
+		end
+		
 		function Elements:CreateSection(Name)
 			local SectionFrame = Create("Frame", {
 				Parent = Page, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,30)
