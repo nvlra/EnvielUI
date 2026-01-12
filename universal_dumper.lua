@@ -1,6 +1,6 @@
 -- Enviel Universal Explorer & Dumper
 -- Loads the EnvielUI library (Remote)
-local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua?v=15"))()
+local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua?v=16"))()
 local Window = EnvielUI:CreateWindow({
     Name = "Enviel Explorer",
     Theme = { -- Dark Theme
@@ -186,6 +186,10 @@ DumpAllBtn = GroupDump:CreateButton({
         
         local services = {}
         
+        -- 0. PRIORITIZE ReplicatedStorage (Game Logic!)
+        local rep = game:GetService("ReplicatedStorage")
+        if rep then table.insert(services, rep) end
+
         -- 1. Scan Game Services (Excluding Heavy/Protected)
         local blocked = {
             ["Workspace"] = true,
@@ -194,7 +198,9 @@ DumpAllBtn = GroupDump:CreateButton({
             ["NetworkClient"] = true,
             ["Stats"] = true,
             ["SoundService"] = true,
-            ["LogService"] = true
+            ["LogService"] = true,
+            ["Players"] = true, -- Block main Players service (contains all players, too big)
+            ["ReplicatedStorage"] = true -- Already added manually
         }
         
         for _, s in ipairs(game:GetChildren()) do
@@ -207,6 +213,7 @@ DumpAllBtn = GroupDump:CreateButton({
         local lp = game:GetService("Players").LocalPlayer
         if lp then
             if lp:FindFirstChild("PlayerGui") then table.insert(services, lp.PlayerGui) end
+            if lp:FindFirstChild("PlayerScripts") then table.insert(services, lp.PlayerScripts) end
             if lp:FindFirstChild("Backpack") then table.insert(services, lp.Backpack) end
             if lp.Character then table.insert(services, lp.Character) end
         end
