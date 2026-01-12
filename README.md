@@ -1,6 +1,6 @@
 # Enviel UI Library
 
-Enviel UI is a premium, minimalistic User Interface library for Roblox developers. It features a modern acrylic aesthetic, smooth Tween animations, and a robust component system designed for professional scripts.
+Enviel UI is a just simple library ui.
 
 ## Features
 
