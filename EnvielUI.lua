@@ -8,7 +8,7 @@ local HttpService = game:GetService("HttpService")
 
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
-EnvielUI.Version = "Validation_v1" -- To check if user has latest update
+EnvielUI.Version = "Validation_v2" -- Updated version
 
 local Themes = {
 	Dark = {
@@ -836,8 +836,10 @@ function EnvielUI:CreateWindow(Config)
 		NotifFrame.Position = UDim2.new(1, 50, 0, 0)
 		NotifFrame.BackgroundTransparency = 1
 		Icon.ImageTransparency = 1
-		TitleLabel.TextTransparency = 1
-		ContentLabel.TextTransparency = 1
+		TitleLabel.TextTransparency = 0 -- Fix: Make text visible by default
+		ContentLabel.TextTransparency = 0 -- Fix: Make text visible by default
+		TitleLabel.ZIndex = 2
+		ContentLabel.ZIndex = 2
 		
 		-- Animate IN (Slide Left + Fade In)
 		Tween(NotifFrame, {Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 0.2}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
