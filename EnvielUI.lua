@@ -812,9 +812,21 @@ function EnvielUI:CreateWindow(Config)
 				Value = not Value
 				self.Instance.Flags[Flag] = Value
 				Callback(Value)
-				Tween(Switch, {BackgroundColor3=Value and self.Instance.Theme.Accent or self.Instance.Theme.Stroke}, 0.2)
+				Tween(Swift, {BackgroundColor3=Value and self.Instance.Theme.Accent or self.Instance.Theme.Stroke}, 0.2)
 				Tween(Circle, {Position=Value and UDim2.new(1,-22,0.5,-9) or UDim2.new(0,2,0.5,-9)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 			end)
+			
+			return {
+				Set = function(self, NewVal)
+					if type(NewVal) == "boolean" then
+						Value = NewVal
+						self.Instance.Flags[Flag] = Value
+						Callback(Value)
+						Tween(Switch, {BackgroundColor3=Value and self.Instance.Theme.Accent or self.Instance.Theme.Stroke}, 0.2)
+						Tween(Circle, {Position=Value and UDim2.new(1,-22,0.5,-9) or UDim2.new(0,2,0.5,-9)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+					end
+				end
+			}
 		end
 		
 		function Elements:CreateSlider(Config)
@@ -1238,7 +1250,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 		
 		function Elements:CreateGroup(Config)
-			local Title = Config.Title or "Group"
+			local Title = Config.Title or Config.Name or "Group"
 			local GroupConfig = {
 				Name = Title,
 				Parent = Config.Parent or Page,
