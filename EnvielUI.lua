@@ -474,6 +474,8 @@ function EnvielUI:CreateWindow(Config)
 		Tween(MainFrame.UIStroke, {Color = T.Stroke}, 0.3)
 		Tween(Title, {TextColor3 = T.TextSec}, 0.3)
 		
+		
+		for _, btn in pairs(Sidebar:GetChildren()) do
 			if btn:IsA("TextButton") then
 				local label = btn:FindFirstChild("Label")
 				local icon = btn:FindFirstChild("ImageLabel")
