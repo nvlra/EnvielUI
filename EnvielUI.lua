@@ -498,27 +498,25 @@ function EnvielUI:CreateWindow(Config)
 			end
 		end
 		
+
 		for _, page in pairs(Pages:GetChildren()) do
 			if page:IsA("ScrollingFrame") then
-				page.ScrollBarImageColor3 = T.Stroke 
+				page.ScrollBarImageColor3 = T.Stroke
 				
 				for _, frame in pairs(page:GetChildren()) do
 					if frame:IsA("Frame") and frame:FindFirstChild("UIStroke") then
 						Tween(frame, {BackgroundColor3 = T.Element}, 0.3)
 						Tween(frame.UIStroke, {Color = T.Stroke}, 0.3)
-	
+
 						for _, desc in pairs(frame:GetDescendants()) do
 							if desc:IsA("TextLabel") then
-								if desc.Text == "Interact" then
-								else
+								if desc.Text ~= "Interact" then
 									Tween(desc, {TextColor3 = T.Text}, 0.3)
 								end
 							elseif desc:IsA("TextButton") then
 								local Type = desc:GetAttribute("EnvielType")
-								
 								if Type == "ActionButton" then
-									Tween(desc, {BackgroundColor3 = T.Accent}, 0.3)
-									Tween(desc, {TextColor3 = T.AccentText}, 0.3)
+									Tween(desc, {BackgroundColor3 = T.Accent, TextColor3 = T.AccentText}, 0.3)
 								elseif Type == "ToggleSwitch" then
 									local FlagName = desc:GetAttribute("EnvielFlag")
 									local IsOn = self.Instance.Flags[FlagName]
@@ -530,23 +528,16 @@ function EnvielUI:CreateWindow(Config)
 									end
 									
 									local Circle = desc:FindFirstChild("Frame")
-									if Circle then
-										Tween(Circle, {BackgroundColor3 = T.Main}, 0.3)
-									end
+									if Circle then Tween(Circle, {BackgroundColor3 = T.Main}, 0.3) end
 								elseif Type == "DropdownOption" then
 									Tween(desc, {BackgroundColor3 = T.Element}, 0.3)
 									local IsSelected = desc:GetAttribute("EnvielSelected")
-									if IsSelected then
-										Tween(desc, {TextColor3 = T.Accent}, 0.3)
-									else
-										Tween(desc, {TextColor3 = T.TextSec}, 0.3)
-									end
+									Tween(desc, {TextColor3 = IsSelected and T.Accent or T.TextSec}, 0.3)
 								end
 							elseif desc:IsA("TextBox") then
 								local Type = desc:GetAttribute("EnvielType")
 								if Type == "InputBox" then
-									Tween(desc, {TextColor3 = T.Accent}, 0.3)
-									Tween(desc, {PlaceholderColor3 = T.TextSec}, 0.3)
+									Tween(desc, {TextColor3 = T.Accent, PlaceholderColor3 = T.TextSec}, 0.3)
 								end
 							end
 						end
@@ -554,7 +545,7 @@ function EnvielUI:CreateWindow(Config)
 				end
 			end
 		end
-		
+
 		for _, page in pairs(Pages:GetChildren()) do
 			if page.Visible then
 				Window:SelectTab(page.Name)
@@ -1111,7 +1102,6 @@ function EnvielUI:CreateWindow(Config)
 			end)
 		end
 		
-		-- Intro Animation
 		Tween(Overlay, {BackgroundTransparency = 0.6}, 0.3)
 		PromptFrame.Size = UDim2.new(0, 320, 0, 0) 
 		Tween(PromptFrame, {Size = UDim2.new(0, 320, 0, 150 + ContentLbl.AbsoluteSize.Y)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
@@ -1123,7 +1113,7 @@ function EnvielUI:CreateWindow(Config)
 				Name = Title,
 				Parent = Page,
 				BackgroundColor3 = self.Instance.Theme.Element,
-				Size = UDim2.new(1, 0, 0, 0), -- Auto size
+				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y
 			}
 			
@@ -1132,13 +1122,12 @@ function EnvielUI:CreateWindow(Config)
 			Create("UIStroke", {Parent = GroupFrame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 			Create("UIPadding", {Parent = GroupFrame, PaddingTop=UDim.new(0,8), PaddingBottom=UDim.new(0,8), PaddingLeft=UDim.new(0,0), PaddingRight=UDim.new(0,0)})
 			
-			-- Title
 			if Title ~= "" then
 				local TitleLbl = Create("TextLabel", {
 					Parent = GroupFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -20, 0, 20), Position = UDim2.new(0, 10, 0, 0),
 					Text = Title, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = self.Instance.Theme.TextSec, TextXAlignment = Enum.TextXAlignment.Left
 				})
-				Create("Frame", { -- Divider
+				Create("Frame", {
 					Parent = GroupFrame, BackgroundColor3 = self.Instance.Theme.Stroke, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 0, 24), BackgroundTransparency = 0.8
 				})
 			end
@@ -1149,7 +1138,6 @@ function EnvielUI:CreateWindow(Config)
 			Create("UIListLayout", {Parent = GroupContent, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
 			Create("UIPadding", {Parent = GroupContent, PaddingTop=UDim.new(0, Title~="" and 28 or 5), PaddingBottom=UDim.new(0,5), PaddingLeft=UDim.new(0,10), PaddingRight=UDim.new(0,10)})
 			
-			-- Mimic Elements API but parented to Group
 			local GroupElements = setmetatable({}, Elements)
 			function GroupElements:CreateButton(Cfg) Cfg.Parent = GroupContent return Elements:CreateButton(Cfg) end
 			function GroupElements:CreateToggle(Cfg) Cfg.Parent = GroupContent return Elements:CreateToggle(Cfg) end
