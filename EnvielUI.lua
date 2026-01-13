@@ -1382,8 +1382,8 @@ function EnvielUI:CreateWindow(Config)
 	})
 	
 	function Window:Notify(Config)
-		local TitleText = "Enviel System"
-		local ContentText = Config.Content or "Message"
+		local TitleText = Config.Title or "Enviel System"
+		local ContentText = Config.Content or Config.Description or "Message"
 		local Duration = Config.Duration or 3
 		local Image = GetIcon("megaphone")
 		
