@@ -977,7 +977,13 @@ function EnvielUI:CreateWindow(Config)
 			local Name = Config.Name or "Dropdown"
 			local Flag = Config.Flag or Name
 			local Options = Config.Options or {}
-			local Default = Config.CurrentValue or Options[1]
+			local Multi = Config.Multi or false
+			local Default
+			if Multi then
+				Default = Config.Default or {}
+			else
+				Default = Config.Default or Options[1]
+			end
 			local Callback = Config.Callback or function() end
 			
 			if self.Instance.Flags[Flag] ~= nil then
@@ -998,10 +1004,19 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 			
+			local function GetLabelText()
+				if Multi then
+					if #Default == 0 then return Name .. " : None" end
+					return Name .. " : " .. table.concat(Default, ", ")
+				else
+					return Name .. " : " .. tostring(Default)
+				end
+			end
+
 			local Label = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,0), Size=UDim2.new(1,-50,0,DropHeight),
 				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-				Text = Name .. " : " .. tostring(Default),
+				Text = GetLabelText(),
 				TextColor3 = self.Instance.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
@@ -1026,16 +1041,23 @@ function EnvielUI:CreateWindow(Config)
 				end
 				
 				for _, opt in pairs(Options) do
+					local IsSelected
+					if Multi then
+						IsSelected = table.find(Default, opt)
+					else
+						IsSelected = (opt == Default)
+					end
+
 					local Btn = Create("TextButton", {
 						Parent=OptionContainer, BackgroundTransparency=0, BackgroundColor3=self.Instance.Theme.Element,
 						Size=UDim2.new(1,0,0,OptionHeight), Text="    "..tostring(opt),
 						FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-						TextColor3 = (opt == Default) and self.Instance.Theme.Accent or self.Instance.Theme.TextSec,
+						TextColor3 = IsSelected and self.Instance.Theme.Accent or self.Instance.Theme.TextSec,
 						TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, AutoButtonColor=false,
 						BorderSizePixel = 0
 					})
 					Btn:SetAttribute("EnvielType", "DropdownOption")
-					Btn:SetAttribute("EnvielSelected", (opt == Default))
+					Btn:SetAttribute("EnvielSelected", IsSelected)
 					
 					Btn.MouseEnter:Connect(function() 
 						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Hover}, 0.2)
@@ -1045,14 +1067,26 @@ function EnvielUI:CreateWindow(Config)
 					end)
 					
 					Btn.MouseButton1Click:Connect(function()
-						Default = opt
-						self.Instance.Flags[Flag] = Default
-						Callback(Default)
-						Label.Text = Name .. " : " .. tostring(Default)
-						Expanded = false
-						Tween(Frame, {Size=UDim2.new(1,0,0,DropHeight)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-						Tween(Arrow, {Rotation=0}, 0.3)
-						RefreshOptions()
+						if Multi then
+							if table.find(Default, opt) then
+								table.remove(Default, table.find(Default, opt))
+							else
+								table.insert(Default, opt)
+							end
+							self.Instance.Flags[Flag] = Default
+							Callback(Default)
+							Label.Text = GetLabelText()
+							RefreshOptions() -- Refresh to update visual state immediately
+						else
+							Default = opt
+							self.Instance.Flags[Flag] = Default
+							Callback(Default)
+							Label.Text = GetLabelText()
+							Expanded = false
+							Tween(Frame, {Size=UDim2.new(1,0,0,DropHeight)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+							Tween(Arrow, {Rotation=0}, 0.3)
+							RefreshOptions()
+						end
 					end)
 				end
 			end
