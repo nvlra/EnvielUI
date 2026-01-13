@@ -1120,7 +1120,7 @@ function EnvielUI:CreateWindow(Config)
 		function Elements:CreateInput(Config)
 			local Name = Config.Name or "Input"
 			local Flag = Config.Flag or Name
-			local Placeholder = Config.PlaceholderText or "Type here..."
+			local Placeholder = Config.PlaceholderText or Config.Placeholder or "Type here..."
 			local Callback = Config.Callback or function() end
 			local RemoveTextAfterFocusLost = Config.RemoveTextAfterFocusLost or false
 			
