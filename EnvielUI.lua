@@ -173,10 +173,6 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end
 	
-	
-	
-	print("[EnvielUI] Initializing...")
-	
 	local function GetCorrectParent()
 		local Success, Parent = pcall(function() return gethui() end)
 		if Success and Parent then 
