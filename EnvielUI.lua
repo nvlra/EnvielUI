@@ -231,7 +231,8 @@ function EnvielUI:CreateWindow(Config)
 		Position = UDim2.new(0.5, 0, 0.5, 0),
 		Size = UDim2.new(0, 0, 0, 0),
 		BackgroundTransparency = 1,
-		ClipsDescendants = true
+		ClipsDescendants = true,
+		Active = true
 	})
 	
 
@@ -247,7 +248,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	Tween(MainFrame, {
 		Size = OpenSize, 
-		BackgroundTransparency = 0
+		BackgroundTransparency = 0.1
 	}, 0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
 	
 	local OpenBtn = Create("TextButton", {
@@ -1191,6 +1192,68 @@ function EnvielUI:CreateWindow(Config)
 						if Properties.Title then TitleLabel.Text = Properties.Title end
 						if Properties.Content then ContentLabel.Text = Properties.Content end
 					end
+				end
+			}
+		end
+
+		function Elements:CreateClickableList(Config)
+			local Title = Config.Title or "List"
+			local Flag = Config.Flag or (Title .. "List")
+			local Callback = Config.Callback or function() end
+			local Height = Config.Height or UDim2.new(1, 0, 0, 200)
+			
+			local Content = Config.Content or {} -- List of strings
+			
+			local Frame = Create("Frame", {
+				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = Height, BackgroundTransparency = 0
+			})
+			Frame:SetAttribute("EnvielTheme", "Element")
+			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
+			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+			
+			local Header = Create("TextLabel", {
+				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,5), Size=UDim2.new(1,-30,0,20),
+				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
+				Text = Title, TextColor3 = self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
+			})
+			
+			local ListContainer = Create("ScrollingFrame", {
+				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,10,0,30), Size=UDim2.new(1,-20,1,-40),
+				ScrollBarThickness=4, ScrollBarImageColor3=self.Instance.Theme.Stroke, CanvasSize=UDim2.new(0,0,0,0)
+			})
+			Create("UIListLayout", {Parent = ListContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
+			
+			local function Refresh(NewList)
+				for _, v in pairs(ListContainer:GetChildren()) do
+					if v:IsA("TextButton") then v:Destroy() end
+				end
+				
+				for i, itemText in ipairs(NewList) do
+					local Btn = Create("TextButton", {
+						Name = "Item_"..i,
+						Parent = ListContainer, BackgroundColor3 = self.Instance.Theme.Main, BackgroundTransparency=0.5,
+						Size = UDim2.new(1, 0, 0, 24), Text = "  " .. tostring(itemText),
+						FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+						TextColor3 = self.Instance.Theme.TextSec, TextSize = 12, TextXAlignment=Enum.TextXAlignment.Left, AutoButtonColor = false
+					})
+					Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 4)})
+					
+					Btn.MouseEnter:Connect(function() Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Hover, TextColor3 = self.Instance.Theme.Text}, 0.2) end)
+					Btn.MouseLeave:Connect(function() Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Main, TextColor3 = self.Instance.Theme.TextSec}, 0.2) end)
+					
+					Btn.MouseButton1Click:Connect(function()
+						Callback(itemText)
+					end)
+				end
+				
+				ListContainer.CanvasSize = UDim2.new(0, 0, 0, #NewList * 28)
+			end
+			
+			Refresh(Content)
+			
+			return {
+				Refresh = function(self, NewList)
+					Refresh(NewList)
 				end
 			}
 		end
