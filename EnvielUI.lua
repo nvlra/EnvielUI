@@ -1388,6 +1388,7 @@ function EnvielUI:CreateWindow(Config)
 				Name = Title,
 				Parent = Config.Parent or Page,
 				BackgroundColor3 = self.Instance.Theme.Element,
+				BackgroundTransparency = 0.25, -- Glassy Effect
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y
 			}
