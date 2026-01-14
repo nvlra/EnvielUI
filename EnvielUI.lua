@@ -1205,7 +1205,7 @@ function EnvielUI:CreateWindow(Config)
 			local Content = Config.Content or {} -- List of strings
 			
 			local Frame = Create("Frame", {
-				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = Height, BackgroundTransparency = 0
+				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = Height, BackgroundTransparency = 0.25
 			})
 			Frame:SetAttribute("EnvielTheme", "Element")
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
