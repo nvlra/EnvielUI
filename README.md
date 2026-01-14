@@ -13,6 +13,7 @@ Designed to be **reliable**, **customizable**, and **undetected**.
 - **Auto-Layout Tabs**: Smart layout system preventing checks.
 - **Lucide Icons**: Integrated support for thousands of icons (e.g., "home", "settings", "user").
 - **Theme System**: Full support for **Dark** and **Light** modes.
+- **Modern UX**: Auto-transparency (Glass effect) and Click-Through blocking enabled by default.
 
 ---
 
@@ -94,18 +95,19 @@ _(Note: Use the name, e.g., "arrow-right")_
 
 ## Component Reference
 
-| Component       | Description                                              |
-| :-------------- | :------------------------------------------------------- |
-| `CreateWindow`  | Creates the main draggable GUI window.                   |
-| `CreateTab`     | Adds a sidebar tab with an icon and text.                |
-| `CreateSection` | Adds a header text to organize elements.                 |
-| `CreateButton`  | A clickable button that executes a function.             |
-| `CreateToggle`  | A switch button for boolean (true/false) states.         |
-| `CreateSlider`  | A draggable bar to select a number within a range.       |
-| `CreateGroup`   | Creates a container to organize elements (WindUI Style). |
-| `Watermark`     | Shows the branded HUD overlay.                           |
-| `Prompt`        | Displays a rich alert popup with actions.                |
-| `Notify`        | Sends a temporary toast notification.                    |
+| Component             | Description                                              |
+| :-------------------- | :------------------------------------------------------- |
+| `CreateWindow`        | Creates the main draggable GUI window.                   |
+| `CreateTab`           | Adds a sidebar tab with an icon and text.                |
+| `CreateSection`       | Adds a header text to organize elements.                 |
+| `CreateButton`        | A clickable button that executes a function.             |
+| `CreateToggle`        | A switch button for boolean (true/false) states.         |
+| `CreateSlider`        | A draggable bar to select a number within a range.       |
+| `CreateGroup`         | Creates a container to organize elements (WindUI Style). |
+| `Watermark`           | Shows the branded HUD overlay.                           |
+| `Prompt`              | Displays a rich alert popup with actions.                |
+| `Notify`              | Sends a temporary toast notification.                    |
+| `CreateClickableList` | Creates a scrollable list of buttons.                    |
 
 ---
 
@@ -152,6 +154,24 @@ Window:Prompt({
         }
     }
 })
+```
+
+### 4. Clickable Lists (Explorer Style)
+
+Create a scrollable list where each item is a button. Perfect for files, players, or inventory.
+
+```lua
+local FileList = Tab:CreateClickableList({
+    Title = "Files",
+    Content = {"Folder1", "Script.lua", "Model"},
+    Height = UDim2.new(1, 0, 0, 200),
+    Callback = function(ItemName)
+        print("Clicked:", ItemName)
+    end
+})
+
+-- Update list dynamically
+FileList:Refresh({"New Item 1", "New Item 2"})
 ```
 
 ---

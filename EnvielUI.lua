@@ -1419,6 +1419,7 @@ function EnvielUI:CreateWindow(Config)
 			function GroupElements:CreateDropdown(Cfg) Cfg.Parent = GroupContent return Elements:CreateDropdown(Cfg) end
 			function GroupElements:CreateInput(Cfg) Cfg.Parent = GroupContent return Elements:CreateInput(Cfg) end
 			function GroupElements:CreateColorPicker(Cfg) Cfg.Parent = GroupContent return Elements:CreateColorPicker(Cfg) end
+			function GroupElements:CreateClickableList(Cfg) Cfg.Parent = GroupContent return Elements:CreateClickableList(Cfg) end
 
 			function GroupElements:CreateParagraph(Cfg) Cfg.Parent = GroupContent return Elements:CreateParagraph(Cfg) end
 			function GroupElements:CreateSection(Name) return Elements:CreateSection(Name) end 
