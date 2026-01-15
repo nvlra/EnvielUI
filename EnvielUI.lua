@@ -56,13 +56,10 @@ local Themes = {
 	}
 }
 
+local FontRegular = Font.fromEnum(Enum.Font.Gotham)
+local FontMedium = Font.fromEnum(Enum.Font.GothamMedium)
+local FontBold = Font.fromEnum(Enum.Font.GothamBold)
 
-
-
-local BaseFont = Font.fromEnum(Enum.Font.BuilderSans)
-local FontRegular = Font.new(BaseFont.Family, Enum.FontWeight.Regular, Enum.FontStyle.Normal)
-local FontMedium = Font.new(BaseFont.Family, Enum.FontWeight.Medium, Enum.FontStyle.Normal)
-local FontBold = Font.new(BaseFont.Family, Enum.FontWeight.Bold, Enum.FontStyle.Normal)
 
 local IconLib
 local SuccessIcon, ErrIcon = pcall(function()
