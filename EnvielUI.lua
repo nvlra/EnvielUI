@@ -488,7 +488,7 @@ function EnvielUI:CreateWindow(Config)
 		BackgroundTransparency = 1,
 		AnchorPoint = Vector2.new(1, 0.5),
 		Position = UDim2.new(1, -34, 0.5, 0),
-		Size = UDim2.new(0, 22, 0, 22),
+		Size = UDim2.new(0, 18, 0, 18),
 		Image = GetIcon("minimize"),
 		ImageColor3 = self.Theme.TextSec,
 		AutoButtonColor = false
