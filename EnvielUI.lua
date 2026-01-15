@@ -361,7 +361,7 @@ function EnvielUI:CreateWindow(Config)
 
 	local Logo = Create("ImageLabel", {
 		Name = "Logo", Parent = TitleContainer, BackgroundTransparency = 1, Size = UDim2.new(0, 24, 0, 24),
-		Image = "rbxthumb://type=Asset&id=128713784735036&w=150&h=150", ScaleType = Enum.ScaleType.Fit, LayoutOrder = 1
+		Image = "rbxthumb://type=Asset&id=130911854854919&w=150&h=150", ScaleType = Enum.ScaleType.Fit, LayoutOrder = 1
 	})
 	
 	local Title = Create("TextLabel", {
@@ -404,7 +404,7 @@ function EnvielUI:CreateWindow(Config)
 		Parent = Controls,
 		BackgroundTransparency = 1,
 		Position = UDim2.new(1, -60, 0, 10),
-		Size = UDim2.new(0, 30, 0, 30),
+		Size = UDim2.new(0, 24, 0, 24),
 		Image = GetIcon("minimize"),
 		ImageColor3 = self.Theme.TextSec,
 		AutoButtonColor = false
@@ -493,6 +493,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	local Window = {
 		Tabs = {},
+		Groups = {},
 		Instance = self,
 		MainFrame = MainFrame,
 		Sidebar = Sidebar,
@@ -757,6 +758,12 @@ function EnvielUI:CreateWindow(Config)
 		
 		Page.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 			Page.CanvasSize = UDim2.new(0, 0, 0, Page.UIListLayout.AbsoluteContentSize.Y + 20)
+			
+			-- Dynamic Window Height
+			if Window.ActiveTab == TabId and not Minimized then
+				local ContentH = Page.UIListLayout.AbsoluteContentSize.Y
+				Tween(MainFrame, {Size = UDim2.new(0, 360, 0, ContentH + 60)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+			end
 		end)
 		
 		if #Window.Tabs == 0 then Window:SelectTab(TabId) end
@@ -1437,17 +1444,39 @@ function EnvielUI:CreateWindow(Config)
 			
 			-- Toggle Logic
 			local Expanded = false
+			
+			function GroupElements:Collapse()
+				if not Expanded then return end
+				Expanded = false
+				GroupContent.Visible = false
+				Tween(Arrow, {Rotation = 0}, 0.2)
+			end
+			
+			function GroupElements:Expand()
+				if Expanded then return end
+				-- Accordion: Close others in same Page
+				for _, g in pairs(Window.Groups) do
+					if g.Instance == self and g.ParentPage == Page and g ~= GroupElements then
+						g:Collapse()
+					end
+				end
+				
+				Expanded = true
+				GroupContent.Visible = true
+				Tween(Arrow, {Rotation = 180}, 0.2)
+			end
+
 			HeaderBtn.MouseButton1Click:Connect(function()
-				Expanded = not Expanded
 				if Expanded then
-					GroupContent.Visible = true
-					Tween(Arrow, {Rotation = 180}, 0.2)
-					-- AutomaticSize handles height, but we toggle visibility to affect layout
+					GroupElements:Collapse()
 				else
-					GroupContent.Visible = false
-					Tween(Arrow, {Rotation = 0}, 0.2)
+					GroupElements:Expand()
 				end
 			end)
+			
+			table.insert(Window.Groups, GroupElements)
+			GroupElements.Instance = self.Instance -- Ensure compatibility with internal refs
+			GroupElements.ParentPage = Page -- Tag for accordion separation
 			
 			local GroupElements = setmetatable({}, Elements)
 			function GroupElements:CreateButton(Cfg) Cfg.Parent = GroupContent return Elements:CreateButton(Cfg) end
