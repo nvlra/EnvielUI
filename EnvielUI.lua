@@ -102,12 +102,16 @@ local function Tween(instance, properties, duration, style, direction)
 	return tween
 end
 
-local function Dragify(Frame, DragObject)
+local function Dragify(Frame, ClickCallback)
 	local Dragging, DragInput, DragStart, StartPos
-	local DragTarget = DragObject or Frame
+	local HasMoved = false
 	
 	local function Update(input)
 		local Delta = input.Position - DragStart
+		if Delta.Magnitude > 5 then
+			HasMoved = true
+		end
+		
 		local TargetPos = UDim2.new(
 			StartPos.X.Scale, 
 			StartPos.X.Offset + Delta.X, 
@@ -118,21 +122,25 @@ local function Dragify(Frame, DragObject)
 		DragTween:Play()
 	end
 	
-	DragTarget.InputBegan:Connect(function(input)
+	Frame.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			Dragging = true
+			HasMoved = false
 			DragStart = input.Position
 			StartPos = Frame.Position
 			
 			input.Changed:Connect(function()
 				if input.UserInputState == Enum.UserInputState.End then
 					Dragging = false
+					if not HasMoved and ClickCallback then
+						ClickCallback()
+					end
 				end
 			end)
 		end
 	end)
 	
-	DragTarget.InputChanged:Connect(function(input)
+	Frame.InputChanged:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 			DragInput = input
 		end
@@ -263,13 +271,17 @@ function EnvielUI:CreateWindow(Config)
 	})
 	Create("UICorner", {Parent = OpenBtn, CornerRadius = UDim.new(1, 0)})
 	Create("UIStroke", {Parent = OpenBtn, Color = self.Theme.Accent, Thickness = 2})
+	local WhiteLogo = "130911854854919"
+	local BlackLogo = "94760392643738"
+	local InitialLogo = (Theme == "Light") and BlackLogo or WhiteLogo
+
 	local OpenIcon = Create("ImageLabel", {
 		Parent = OpenBtn,
 		BackgroundTransparency = 1,
 		Position = UDim2.new(0.5, -16, 0.5, -16),
 		Size = UDim2.new(0, 32, 0, 32),
-		Image = "rbxassetid://86129438272762",
-		ImageColor3 = self.Theme.Accent
+		Image = "rbxthumb://type=Asset&id="..InitialLogo.."&w=150&h=150",
+		ScaleType = Enum.ScaleType.Fit
 	})
 	Dragify(OpenBtn)
 	
@@ -287,7 +299,9 @@ function EnvielUI:CreateWindow(Config)
 			Tween(MainFrame, {Size = OpenSize}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 		end
 	end
-	OpenBtn.MouseButton1Click:Connect(ToggleMinimize)
+	
+	-- Use Dragify with ClickCallback to prevent Drag-Open issue
+	Dragify(OpenBtn, ToggleMinimize)
 	
 	local ToggleKey = Config.Keybind or Enum.KeyCode.RightControl
 	UserInputService.InputBegan:Connect(function(input, gameProcessed)
@@ -408,7 +422,7 @@ function EnvielUI:CreateWindow(Config)
 		Parent = Controls,
 		BackgroundTransparency = 1,
 		Position = UDim2.new(1, -60, 0, 10),
-		Size = UDim2.new(0, 24, 0, 24),
+		Size = UDim2.new(0, 20, 0, 20),
 		Image = GetIcon("minimize"),
 		ImageColor3 = self.Theme.TextSec,
 		AutoButtonColor = false
@@ -420,12 +434,8 @@ function EnvielUI:CreateWindow(Config)
 		btn.MouseLeave:Connect(function() Tween(btn, {ImageColor3 = self.Theme.TextSec}, 0.2) end)
 	end
 
-	if UserInputService.TouchEnabled then
-		Create("UIScale", {
-			Parent = MainFrame,
-			Scale = 1.2
-		})
-	end
+	-- Removed forced UIScale for mobile to prevent overflow on small screens
+	-- 360px width is already mobile-friendly.
 
 	local ContentContainer = Create("Frame", {
 		Name = "ContentContainer",
@@ -438,7 +448,7 @@ function EnvielUI:CreateWindow(Config)
 	local Footer = Create("TextLabel", {
 		Name = "Footer", Parent = MainFrame, BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 1, -8), AnchorPoint = Vector2.new(0, 1),
-		Text = "Made by Enviel", TextSize = 10, Font = Enum.Font.Gotham, TextColor3 = self.Theme.TextSec, TextTransparency = 0.8
+		Text = "Made by Enviel", TextSize = 10, Font = Enum.Font.Gotham, TextColor3 = self.Theme.TextSec, TextTransparency = 0.25
 	})
 	
 	local SearchBar = Create("TextBox", {
@@ -511,7 +521,8 @@ function EnvielUI:CreateWindow(Config)
 		TitleLabel = Title,
 		Search = SearchBar,
 		Logo = Logo,
-		Footer = Footer
+		Footer = Footer,
+		OpenIcon = OpenIcon
 	}
 	
 	function Window:SetTheme(ThemeName)
@@ -519,11 +530,12 @@ function EnvielUI:CreateWindow(Config)
 		self.Instance.Theme = Themes[ThemeName]
 		local T = self.Instance.Theme
 		
-		-- Update Logo
+		-- Update Logo & OpenIcon
 		local WhiteLogo = "130911854854919"
 		local BlackLogo = "94760392643738"
 		local TargetLogo = (ThemeName == "Light") and BlackLogo or WhiteLogo
 		if self.Logo then self.Logo.Image = "rbxthumb://type=Asset&id="..TargetLogo.."&w=150&h=150" end
+		if self.OpenIcon then self.OpenIcon.Image = "rbxthumb://type=Asset&id="..TargetLogo.."&w=150&h=150" end
 		
 		Tween(MainFrame, {BackgroundColor3 = T.Main}, 0.3)
 		Tween(MainFrame.UIStroke, {Color = T.Stroke}, 0.3)
