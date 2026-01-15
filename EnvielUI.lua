@@ -433,21 +433,20 @@ function EnvielUI:CreateWindow(Config)
 	
 	local SearchBarFrame = Create("Frame", {
 		Parent = ContentContainer,
-		BackgroundTransparency = 1,
-		Position = UDim2.new(0, 20, 0, 5),
-		Size = UDim2.new(0, 160, 0, 32)
-	})
 	local SearchBar = Create("TextBox", {
-		Parent = SearchBarFrame,
-		BackgroundColor3 = self.Theme.Stroke,
-		Size = UDim2.new(1, 0, 1, 0),
+		Name = "SearchBar",
+		Parent = ContentContainer,
+		BackgroundColor3 = self.Theme.Element,
+		Position = UDim2.new(0, 20, 0, 10),
+		Size = UDim2.new(0, 160, 0, 30),
+		Font = Enum.Font.GothamMedium,
 		Text = "",
 		PlaceholderText = "Search...",
 		TextColor3 = self.Theme.Text,
 		PlaceholderColor3 = self.Theme.TextSec,
 		TextSize = 13,
-		FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-		TextXAlignment = Enum.TextXAlignment.Left
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Visible = not (Config.NoSidebar or false)
 	})
 	Create("UICorner", {Parent = SearchBar, CornerRadius = UDim.new(0, 6)})
 	Create("UIPadding", {Parent = SearchBar, PaddingLeft = UDim.new(0, 10)})
@@ -490,7 +489,7 @@ function EnvielUI:CreateWindow(Config)
 		Name = "Pages",
 		Parent = ContentContainer,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, NoSidebar and 20 or 200, 0, 0),
+		Position = UDim2.new(0, NoSidebar and 20 or 200, 0, NoSidebar and 0 or 0), -- Adjusted Y if needed, currently 0 is fine
 		Size = UDim2.new(1, NoSidebar and -40 or -220, 1, -20)
 	})
 	
