@@ -431,8 +431,6 @@ function EnvielUI:CreateWindow(Config)
 		Position = UDim2.new(0, 0, 0, 50)
 	})
 	
-	local SearchBarFrame = Create("Frame", {
-		Parent = ContentContainer,
 	local SearchBar = Create("TextBox", {
 		Name = "SearchBar",
 		Parent = ContentContainer,
