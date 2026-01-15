@@ -435,6 +435,12 @@ function EnvielUI:CreateWindow(Config)
 		Position = UDim2.new(0, 0, 0, 50)
 	})
 	
+	local Footer = Create("TextLabel", {
+		Name = "Footer", Parent = MainFrame, BackgroundTransparency = 1,
+		Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 1, -8), AnchorPoint = Vector2.new(0, 1),
+		Text = "Made by Enviel", TextSize = 10, Font = Enum.Font.Gotham, TextColor3 = self.Theme.TextSec, TextTransparency = 0.5
+	})
+	
 	local SearchBar = Create("TextBox", {
 		Name = "SearchBar",
 		Parent = ContentContainer,
@@ -504,7 +510,8 @@ function EnvielUI:CreateWindow(Config)
 		Pages = Pages,
 		TitleLabel = Title,
 		Search = SearchBar,
-		Logo = Logo
+		Logo = Logo,
+		Footer = Footer
 	}
 	
 	function Window:SetTheme(ThemeName)
@@ -521,6 +528,7 @@ function EnvielUI:CreateWindow(Config)
 		Tween(MainFrame, {BackgroundColor3 = T.Main}, 0.3)
 		Tween(MainFrame.UIStroke, {Color = T.Stroke}, 0.3)
 		Tween(Title, {TextColor3 = T.TextSec}, 0.3)
+		if self.Footer then Tween(self.Footer, {TextColor3 = T.TextSec}, 0.3) end
 		
 		if OpenBtn then
 			Tween(OpenBtn, {BackgroundColor3 = T.Element}, 0.3)
@@ -773,7 +781,7 @@ function EnvielUI:CreateWindow(Config)
 			-- Dynamic Window Height
 			if Window.ActiveTab == TabId and not Minimized then
 				local ContentH = Page.UIListLayout.AbsoluteContentSize.Y
-				local TargetH = math.max(ContentH + 60, 160) -- Minimum height to prevent cutoff
+				local TargetH = math.max(ContentH + 100, 200) -- Increased buffer for Footer (60 -> 100)
 				Tween(MainFrame, {Size = UDim2.new(0, 360, 0, TargetH)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 			end
 		end)
