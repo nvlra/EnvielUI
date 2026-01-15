@@ -359,9 +359,13 @@ function EnvielUI:CreateWindow(Config)
 	})
 	Create("UIListLayout", {Parent = TitleContainer, FillDirection = Enum.FillDirection.Horizontal, SortOrder = Enum.SortOrder.LayoutOrder, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 8)})
 
+	local WhiteLogo = "130911854854919"
+	local BlackLogo = "94760392643738"
+	local CurrentLogo = (Theme == "Light") and BlackLogo or WhiteLogo
+
 	local Logo = Create("ImageLabel", {
 		Name = "Logo", Parent = TitleContainer, BackgroundTransparency = 1, Size = UDim2.new(0, 24, 0, 24),
-		Image = "rbxthumb://type=Asset&id=130911854854919&w=150&h=150", ScaleType = Enum.ScaleType.Fit, LayoutOrder = 1
+		Image = "rbxthumb://type=Asset&id="..CurrentLogo.."&w=150&h=150", ScaleType = Enum.ScaleType.Fit, LayoutOrder = 1
 	})
 	
 	local Title = Create("TextLabel", {
@@ -499,13 +503,20 @@ function EnvielUI:CreateWindow(Config)
 		Sidebar = Sidebar,
 		Pages = Pages,
 		TitleLabel = Title,
-		Search = SearchBar
+		Search = SearchBar,
+		Logo = Logo
 	}
 	
 	function Window:SetTheme(ThemeName)
 		if not Themes[ThemeName] then warn("Theme not found: " .. tostring(ThemeName)) return end
 		self.Instance.Theme = Themes[ThemeName]
 		local T = self.Instance.Theme
+		
+		-- Update Logo
+		local WhiteLogo = "130911854854919"
+		local BlackLogo = "94760392643738"
+		local TargetLogo = (ThemeName == "Light") and BlackLogo or WhiteLogo
+		if self.Logo then self.Logo.Image = "rbxthumb://type=Asset&id="..TargetLogo.."&w=150&h=150" end
 		
 		Tween(MainFrame, {BackgroundColor3 = T.Main}, 0.3)
 		Tween(MainFrame.UIStroke, {Color = T.Stroke}, 0.3)
