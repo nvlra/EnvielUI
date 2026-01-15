@@ -108,32 +108,12 @@ local function Dragify(Frame, ClickCallback)
 	
 	local function Update(input)
 		local Delta = input.Position - DragStart
-		if Delta.Magnitude > 5 then
-			HasMoved = true
-		end
-		
-		-- Clamping Logic
-		local ViewPort = Frame.Parent and Frame.Parent.AbsoluteSize or workspace.CurrentCamera.ViewportSize
-		local FrameSize = Frame.AbsoluteSize
-		
-		local TargetX = StartPos.X.Offset + Delta.X
-		local TargetY = StartPos.Y.Offset + Delta.Y
-		
-		-- Convert to absolute X/Y to clamp safely against Viewport
-		local AbsX = (ViewPort.X * StartPos.X.Scale) + TargetX
-		local AbsY = (ViewPort.Y * StartPos.Y.Scale) + TargetY
-		
-		AbsX = math.clamp(AbsX, 0, ViewPort.X - FrameSize.X)
-		AbsY = math.clamp(AbsY, 0, ViewPort.Y - FrameSize.Y)
-		
-		local NewOffX = AbsX - (ViewPort.X * StartPos.X.Scale)
-		local NewOffY = AbsY - (ViewPort.Y * StartPos.Y.Scale)
 		
 		local TargetPos = UDim2.new(
 			StartPos.X.Scale, 
-			NewOffX, 
+			StartPos.X.Offset + Delta.X, 
 			StartPos.Y.Scale, 
-			NewOffY
+			StartPos.Y.Offset + Delta.Y
 		)
 		local DragTween = TweenService:Create(Frame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = TargetPos})
 		DragTween:Play()
@@ -238,7 +218,7 @@ function EnvielUI:CreateWindow(Config)
 		Parent = ParentTarget,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		ResetOnSpawn = false,
-		ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets -- Notch Support
+		ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
 	})
 	ScreenGui:SetAttribute("EnvielID", "MainInstance")
 	
@@ -302,7 +282,6 @@ function EnvielUI:CreateWindow(Config)
 	local function ToggleMinimize()
 		Minimized = not Minimized
 		if Minimized then
-			-- Parallel Animation (Faster)
 			local CloseTween = Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
 			
 			task.delay(0.1, function()
@@ -317,14 +296,11 @@ function EnvielUI:CreateWindow(Config)
 			OpenBtn.Visible = false
 			MainFrame.Visible = true
 			MainFrame.Size = UDim2.new(0,0,0,0)
-			
-			-- Parallel Open
+
 			Tween(MainFrame, {Size = OpenSize}, 0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out) 
 		end
 	end
 
-	-- Manual Input Handler for OpenBtn (Drag + Click)
-	-- Manual Input Handler for OpenBtn (Drag + Click)
 	local WasDragged = false
 	
 	local function EnableOpenBtnDrag()
@@ -356,8 +332,7 @@ function EnvielUI:CreateWindow(Config)
 				local Delta = input.Position - DragStart
 				if Delta.Magnitude > 2 then WasDragged = true end 
 				
-				-- Clamping for OpenBtn
-				local ViewPort = ScreenGui.AbsoluteSize -- Use ScreenGui size (Safe Area)
+				local ViewPort = ScreenGui.AbsoluteSize
 				local BtnSize = OpenBtn.AbsoluteSize
 				
 				local TargetX = StartPos.X.Offset + Delta.X
@@ -494,8 +469,8 @@ function EnvielUI:CreateWindow(Config)
 	local CloseBtn = Create("ImageButton", {
 		Parent = Controls,
 		BackgroundTransparency = 1,
-		AnchorPoint = Vector2.new(1, 0.5), -- Center vertically
-		Position = UDim2.new(1, -5, 0.5, 0), -- Y=0.5 (Center)
+		AnchorPoint = Vector2.new(1, 0.5),
+		Position = UDim2.new(1, -5, 0.5, 0),
 		Size = UDim2.new(0, 24, 0, 24),
 		Image = GetIcon("x"),
 		ImageColor3 = self.Theme.TextSec,
@@ -509,9 +484,9 @@ function EnvielUI:CreateWindow(Config)
 	local MinBtn = Create("ImageButton", {
 		Parent = Controls,
 		BackgroundTransparency = 1,
-		AnchorPoint = Vector2.new(1, 0.5), -- Center vertically
-		Position = UDim2.new(1, -34, 0.5, 0), -- Relative to CloseBtn (-5 - 24 - 5 gap = -34)
-		Size = UDim2.new(0, 24, 0, 24), -- Match Size 24x24 for better alignment
+		AnchorPoint = Vector2.new(1, 0.5),
+		Position = UDim2.new(1, -34, 0.5, 0),
+		Size = UDim2.new(0, 22, 0, 22),
 		Image = GetIcon("minimize"),
 		ImageColor3 = self.Theme.TextSec,
 		AutoButtonColor = false
