@@ -300,7 +300,6 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end
 	
-	-- Use Dragify with ClickCallback to prevent Drag-Open issue
 	Dragify(OpenBtn, ToggleMinimize)
 	
 	local ToggleKey = Config.Keybind or Enum.KeyCode.RightControl
@@ -391,7 +390,7 @@ function EnvielUI:CreateWindow(Config)
 		Font = Enum.Font.GothamBold,
 		Text = Config.Name or "Enviel UI",
 		TextColor3 = self.Theme.Text,
-		TextSize = 16, -- Slightly larger
+		TextSize = 16,
 		TextXAlignment = Enum.TextXAlignment.Left,
 		LayoutOrder = 2
 	})
@@ -433,9 +432,6 @@ function EnvielUI:CreateWindow(Config)
 		btn.MouseEnter:Connect(function() Tween(btn, {ImageColor3 = self.Theme.Accent}, 0.2) end)
 		btn.MouseLeave:Connect(function() Tween(btn, {ImageColor3 = self.Theme.TextSec}, 0.2) end)
 	end
-
-	-- Removed forced UIScale for mobile to prevent overflow on small screens
-	-- 360px width is already mobile-friendly.
 
 	local ContentContainer = Create("Frame", {
 		Name = "ContentContainer",
@@ -507,7 +503,7 @@ function EnvielUI:CreateWindow(Config)
 		Name = "Pages",
 		Parent = ContentContainer,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, NoSidebar and 20 or 200, 0, NoSidebar and 0 or 0), -- Adjusted Y if needed, currently 0 is fine
+		Position = UDim2.new(0, NoSidebar and 20 or 200, 0, NoSidebar and 0 or 0),
 		Size = UDim2.new(1, NoSidebar and -40 or -220, 1, -20)
 	})
 	
@@ -530,7 +526,6 @@ function EnvielUI:CreateWindow(Config)
 		self.Instance.Theme = Themes[ThemeName]
 		local T = self.Instance.Theme
 		
-		-- Update Logo & OpenIcon
 		local WhiteLogo = "130911854854919"
 		local BlackLogo = "94760392643738"
 		local TargetLogo = (ThemeName == "Light") and BlackLogo or WhiteLogo
@@ -790,10 +785,9 @@ function EnvielUI:CreateWindow(Config)
 		Page.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 			Page.CanvasSize = UDim2.new(0, 0, 0, Page.UIListLayout.AbsoluteContentSize.Y + 20)
 			
-			-- Dynamic Window Height
 			if Window.ActiveTab == TabId and not Minimized then
 				local ContentH = Page.UIListLayout.AbsoluteContentSize.Y
-				local TargetH = math.max(ContentH + 85, 160) -- Reduced buffer (100 -> 85)
+				local TargetH = math.max(ContentH + 85, 160)
 				Tween(MainFrame, {Size = UDim2.new(0, 360, 0, TargetH)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 			end
 		end)
@@ -1128,7 +1122,7 @@ function EnvielUI:CreateWindow(Config)
 							self.Instance.Flags[Flag] = Default
 							Callback(Default)
 							Label.Text = GetLabelText()
-							RefreshOptions() -- Refresh to update visual state immediately
+							RefreshOptions()
 						else
 							Default = opt
 							self.Instance.Flags[Flag] = Default
@@ -1253,7 +1247,7 @@ function EnvielUI:CreateWindow(Config)
 			local Callback = Config.Callback or function() end
 			local Height = Config.Height or UDim2.new(1, 0, 0, 200)
 			
-			local Content = Config.Content or {} -- List of strings
+			local Content = Config.Content or {}
 			
 			local Frame = Create("Frame", {
 				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = Height, BackgroundTransparency = 0.25
@@ -1440,7 +1434,7 @@ function EnvielUI:CreateWindow(Config)
 				Parent = Config.Parent or Page,
 				BackgroundColor3 = self.Instance.Theme.Element,
 				BackgroundTransparency = 0.25,
-				Size = UDim2.new(1, 0, 0, 32), -- Start collapsed/header height
+				Size = UDim2.new(1, 0, 0, 32),
 				AutomaticSize = Enum.AutomaticSize.Y,
 				ClipsDescendants = true
 			}
@@ -1450,7 +1444,6 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = GroupFrame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = GroupFrame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 			
-			-- Header Region (Clickable)
 			local HeaderBtn = Create("TextButton", {
 				Parent = GroupFrame, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 32), Text = "", AutoButtonColor = false
 			})
@@ -1465,7 +1458,6 @@ function EnvielUI:CreateWindow(Config)
 				Image = GetIcon("chevron-down"), ImageColor3 = self.Instance.Theme.TextSec
 			})
 			
-			-- Content Container
 			local GroupContent = Create("Frame", {
 				Parent = GroupFrame, BackgroundTransparency = 1, 
 				Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 32),
@@ -1474,10 +1466,8 @@ function EnvielUI:CreateWindow(Config)
 			Create("UIListLayout", {Parent = GroupContent, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
 			Create("UIPadding", {Parent = GroupContent, PaddingTop=UDim.new(0,5), PaddingBottom=UDim.new(0,10), PaddingLeft=UDim.new(0,10), PaddingRight=UDim.new(0,10)})
 			
-			-- Toggle Logic
 			local Expanded = false
-			
-			
+
 			local GroupElements = setmetatable({}, Elements)
 			
 			function GroupElements:Collapse()
@@ -1489,7 +1479,6 @@ function EnvielUI:CreateWindow(Config)
 			
 			function GroupElements:Expand()
 				if Expanded then return end
-				-- Accordion: Close others in same Page
 				for _, g in pairs(Window.Groups) do
 					if g.ParentPage == Page and g ~= GroupElements then
 						g:Collapse()
