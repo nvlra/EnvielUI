@@ -219,7 +219,7 @@ function EnvielUI:CreateWindow(Config)
 	ScreenGui:SetAttribute("EnvielID", "MainInstance")
 	
 	local Minimized = false
-	local OpenSize = UDim2.new(0, 700, 0, 450)
+	local OpenSize = UDim2.new(0, 360, 0, 480)
 	
 	
 	local MainFrame = Create("Frame", {
@@ -361,7 +361,7 @@ function EnvielUI:CreateWindow(Config)
 
 	local Logo = Create("ImageLabel", {
 		Name = "Logo", Parent = TitleContainer, BackgroundTransparency = 1, Size = UDim2.new(0, 24, 0, 24),
-		Image = "rbxassetid://133462191626250", ScaleType = Enum.ScaleType.Fit, LayoutOrder = 1
+		Image = "rbxthumb://type=Asset&id=133462191626250&w=150&h=150", ScaleType = Enum.ScaleType.Fit, LayoutOrder = 1
 	})
 	
 	local Title = Create("TextLabel", {
