@@ -217,8 +217,7 @@ function EnvielUI:CreateWindow(Config)
 		Name = RandomString(10),
 		Parent = ParentTarget,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-		ResetOnSpawn = false,
-		ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
+		ResetOnSpawn = false
 	})
 	ScreenGui:SetAttribute("EnvielID", "MainInstance")
 	
