@@ -449,7 +449,7 @@ function EnvielUI:CreateWindow(Config)
 		BackgroundTransparency = 1,
 		AutomaticSize = Enum.AutomaticSize.X,
 		Size = UDim2.new(0, 0, 1, 0),
-		Font = Enum.Font.GothamBold,
+		FontFace = Font.fromName("Poppins", Enum.FontWeight.Bold),
 		Text = Config.Name or "Enviel UI",
 		TextColor3 = self.Theme.Text,
 		TextSize = 16,
@@ -508,7 +508,7 @@ function EnvielUI:CreateWindow(Config)
 	local Footer = Create("TextLabel", {
 		Name = "Footer", Parent = MainFrame, BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 1, -8), AnchorPoint = Vector2.new(0, 1),
-		Text = "Made by Enviel", TextSize = 10, Font = Enum.Font.Gotham, TextColor3 = self.Theme.TextSec, TextTransparency = 0.25
+		Text = "Made by Enviel", TextSize = 10, FontFace = Font.fromName("Poppins", Enum.FontWeight.Regular), TextColor3 = self.Theme.TextSec, TextTransparency = 0
 	})
 	
 	local SearchBar = Create("TextBox", {
@@ -517,7 +517,7 @@ function EnvielUI:CreateWindow(Config)
 		BackgroundColor3 = self.Theme.Element,
 		Position = UDim2.new(0, 20, 0, 10),
 		Size = UDim2.new(0, 160, 0, 30),
-		Font = Enum.Font.GothamMedium,
+		FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium),
 		Text = "",
 		PlaceholderText = "Search...",
 		TextColor3 = self.Theme.Text,
@@ -741,7 +741,7 @@ function EnvielUI:CreateWindow(Config)
 		for _, btn in pairs(Sidebar:GetChildren()) do
 			if btn:IsA("TextButton") and btn.Name ~= TabId.."Btn" then
 				Tween(btn, {BackgroundTransparency = 1, TextTransparency = 0.6, TextColor3 = self.Instance.Theme.TextSec}, 0.3)
-				btn.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal)
+				btn.FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium)
 				if btn:FindFirstChild("UIStroke") then Tween(btn.UIStroke, {Transparency = 1}, 0.3) end
 				
 				local icon = btn:FindFirstChild("ImageLabel")
@@ -757,7 +757,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			if label then
 				Tween(label, {TextTransparency = 0, TextColor3 = self.Instance.Theme.TextSelected}, 0.3)
-				label.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+				label.FontFace = Font.fromName("Poppins", Enum.FontWeight.Bold)
 			end
 			
 			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSelected}, 0.3) end
@@ -824,7 +824,7 @@ function EnvielUI:CreateWindow(Config)
 			Position = UDim2.new(0, 40, 0, 0),
 			Size = UDim2.new(1, -45, 1, 0),
 			Text = Name,
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+			FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium),
 			TextColor3 = self.Instance.Theme.Accent,
 			TextSize = 13,
 			TextXAlignment = Enum.TextXAlignment.Left,
@@ -878,13 +878,13 @@ function EnvielUI:CreateWindow(Config)
 
 			Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency = 1, Position = UDim2.new(0,15,0,0), Size = UDim2.new(1,-120,1,0),
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+				FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium),
 				Text = Name, TextColor3 = self.Instance.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			
 			local Btn = Create("TextButton", {
 				Parent = Frame, BackgroundColor3 = self.Instance.Theme.Accent, Position = UDim2.new(1,-105,0.5,-13), Size = UDim2.new(0,90,0,26),
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
+				FontFace = Font.fromName("Poppins", Enum.FontWeight.Bold),
 				Text = Config.ButtonText or "Interact", TextColor3 = self.Instance.Theme.AccentText, TextSize = 11, AutoButtonColor = false,
 				TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
 			})
@@ -935,7 +935,7 @@ function EnvielUI:CreateWindow(Config)
 
 			Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,0), Size=UDim2.new(1,-70,1,0),
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+				FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium),
 				Text=Name, TextColor3=self.Instance.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
@@ -1009,12 +1009,12 @@ function EnvielUI:CreateWindow(Config)
 
 			local Label = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,8), Size=UDim2.new(1,-30,0,20),
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+				FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium),
 				Text=Name, TextColor3=self.Instance.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			local ValueLabel = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(1,-65,0,8), Size=UDim2.new(0,50,0,20),
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+				FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium),
 				Text=tostring(Value), TextColor3=self.Instance.Theme.TextSec, TextSize=13, TextXAlignment=Enum.TextXAlignment.Right
 			})
 			
@@ -1125,7 +1125,7 @@ function EnvielUI:CreateWindow(Config)
 
 			local Label = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,0), Size=UDim2.new(1,-50,0,DropHeight),
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+				FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium),
 				Text = GetLabelText(),
 				TextColor3 = self.Instance.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left
 			})
@@ -1161,7 +1161,7 @@ function EnvielUI:CreateWindow(Config)
 					local Btn = Create("TextButton", {
 						Parent=OptionContainer, BackgroundTransparency=0, BackgroundColor3=self.Instance.Theme.Element,
 						Size=UDim2.new(1,0,0,OptionHeight), Text="    "..tostring(opt),
-						FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+						FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium),
 						TextColor3 = IsSelected and self.Instance.Theme.Accent or self.Instance.Theme.TextSec,
 						TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, AutoButtonColor=false,
 						BorderSizePixel = 0
@@ -1243,13 +1243,13 @@ function EnvielUI:CreateWindow(Config)
 			
 			local Label = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,0), Size=UDim2.new(1,-15,0,20),
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+				FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium),
 				Text = Name, TextColor3 = self.Instance.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
 			local InputBox = Create("TextBox", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,22), Size=UDim2.new(1,-30,0,18),
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+				FontFace = Font.fromName("Poppins", Enum.FontWeight.Regular),
 				Text = "", PlaceholderText = Placeholder, TextColor3 = self.Instance.Theme.Accent, PlaceholderColor3 = self.Instance.Theme.TextSec,
 				TextSize = 13, TextXAlignment=Enum.TextXAlignment.Left, ClearTextOnFocus = false
 			})
@@ -1284,13 +1284,13 @@ function EnvielUI:CreateWindow(Config)
 			
 			local TitleLabel = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Size=UDim2.new(1,0,0,16),
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
+				FontFace = Font.fromName("Poppins", Enum.FontWeight.Bold),
 				Text = Title, TextColor3 = self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
 			local ContentLabel = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Size=UDim2.new(1,0,0,0), AutomaticSize = Enum.AutomaticSize.Y,
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+				FontFace = Font.fromName("Poppins", Enum.FontWeight.Regular),
 				Text = Content, TextColor3 = self.Instance.Theme.Description, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, TextWrapped = true
 			})
 			Create("UIListLayout", {Parent = Frame, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
@@ -1322,7 +1322,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local Header = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,5), Size=UDim2.new(1,-30,0,20),
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
+				FontFace = Font.fromName("Poppins", Enum.FontWeight.Bold),
 				Text = Title, TextColor3 = self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
@@ -1342,7 +1342,7 @@ function EnvielUI:CreateWindow(Config)
 						Name = "Item_"..i,
 						Parent = ListContainer, BackgroundColor3 = self.Instance.Theme.Main, BackgroundTransparency=0.5,
 						Size = UDim2.new(1, 0, 0, 24), Text = "  " .. tostring(itemText),
-						FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+						FontFace = Font.fromName("Poppins", Enum.FontWeight.Regular),
 						TextColor3 = self.Instance.Theme.TextSec, TextSize = 12, TextXAlignment=Enum.TextXAlignment.Left, AutoButtonColor = false
 					})
 					Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 4)})
@@ -1386,7 +1386,7 @@ function EnvielUI:CreateWindow(Config)
 
 			Create("TextLabel", {
 				Parent=Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,0), Size=UDim2.new(1,-60,0,46),
-				Font=Enum.Font.GothamMedium, Text=Name, TextColor3=self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
+				FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium), Text=Name, TextColor3=self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
 			local ColorDisplay = Create("TextButton", {
@@ -1426,7 +1426,7 @@ function EnvielUI:CreateWindow(Config)
 				local Label = Create("TextLabel", {
 					Parent=PickerFrame, Text=Text, TextColor3=self.Instance.Theme.Text, 
 					BackgroundTransparency=1, Position=UDim2.new(0,0,0,yPos), Size=UDim2.new(0,15,0,20),
-					Font = Enum.Font.GothamMedium, TextSize = 12
+					FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium), TextSize = 12
 				})
 				
 				local Track = Create("TextButton", {
@@ -1514,7 +1514,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local TitleLbl = Create("TextLabel", {
 				Parent = HeaderBtn, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 15, 0, 0),
-				Text = Title, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = self.Instance.Theme.Text, TextXAlignment = Enum.TextXAlignment.Left
+				Text = Title, FontFace = Font.fromName("Poppins", Enum.FontWeight.Bold), TextSize = 13, TextColor3 = self.Instance.Theme.Text, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			
 			local Arrow = Create("ImageLabel", {
@@ -1623,14 +1623,14 @@ function EnvielUI:CreateWindow(Config)
 		local TitleLabel = Create("TextLabel", {
 			Parent = NotifFrame, BackgroundTransparency = 1,
 			Position = UDim2.new(0, 70, 0, 10), Size = UDim2.new(1, -80, 0, 20),
-			Font = Enum.Font.GothamBold, Text = TitleText, TextColor3 = self.Instance.Theme.Text,
+			FontFace = Font.fromName("Poppins", Enum.FontWeight.Bold), Text = TitleText, TextColor3 = self.Instance.Theme.Text,
 			TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
 		})
 		
 		local ContentLabel = Create("TextLabel", {
 			Parent = NotifFrame, BackgroundTransparency = 1,
 			Position = UDim2.new(0, 70, 0, 30), Size = UDim2.new(1, -80, 0, 30),
-			Font = Enum.Font.GothamMedium, Text = ContentText, TextColor3 = self.Instance.Theme.TextSec,
+			FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium), Text = ContentText, TextColor3 = self.Instance.Theme.TextSec,
 			TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true
 		})
 		
@@ -1670,7 +1670,7 @@ function EnvielUI:CreateWindow(Config)
 		
 		local Text = Create("TextLabel", {
 			Parent = WatermarkFrame, Name = "WatermarkText", BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0),
-			Font = Enum.Font.GothamMedium, TextSize = 11, TextColor3 = self.Instance.Theme.Text,
+			FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium), TextSize = 11, TextColor3 = self.Instance.Theme.Text,
 			Text = Config.Title or Config.Text or "Enviel UI",
 			TextXAlignment = Enum.TextXAlignment.Center
 		})
@@ -1702,12 +1702,12 @@ function EnvielUI:CreateWindow(Config)
 		
 		local TitleLbl = Create("TextLabel", {
 			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,24),
-			Text = Title, Font = Enum.Font.GothamBold, TextSize = 18, TextColor3 = self.Instance.Theme.Text
+			Text = Title, FontFace = Font.fromName("Poppins", Enum.FontWeight.Bold), TextSize = 18, TextColor3 = self.Instance.Theme.Text
 		})
 		
 		local ContentLbl = Create("TextLabel", {
 			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,0), Position = UDim2.new(0,0,0,30),
-			Text = Content, Font = Enum.Font.GothamMedium, TextSize = 14, TextColor3 = self.Instance.Theme.TextSec,
+			Text = Content, FontFace = Font.fromName("Poppins", Enum.FontWeight.Medium), TextSize = 14, TextColor3 = self.Instance.Theme.TextSec,
 			TextWrapped = true, AutomaticSize = Enum.AutomaticSize.Y
 		})
 		
@@ -1727,7 +1727,7 @@ function EnvielUI:CreateWindow(Config)
 		for _, Action in pairs(Actions) do
 			local Btn = Create("TextButton", {
 				Parent = ButtonContainer, BackgroundColor3 = self.Instance.Theme.Accent, Size = UDim2.new(0, 100, 0, 32),
-				Text = Action.Text, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = self.Instance.Theme.AccentText,
+				Text = Action.Text, FontFace = Font.fromName("Poppins", Enum.FontWeight.Bold), TextSize = 13, TextColor3 = self.Instance.Theme.AccentText,
 				AutoButtonColor = false
 			})
 			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
