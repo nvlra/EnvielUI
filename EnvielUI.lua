@@ -394,7 +394,7 @@ function EnvielUI:CreateWindow(Config)
 		BackgroundTransparency = 1,
 		Position = UDim2.new(1, -60, 0, 10),
 		Size = UDim2.new(0, 30, 0, 30),
-		Image = GetIcon("minus"),
+		Image = GetIcon("minimize"),
 		ImageColor3 = self.Theme.TextSec,
 		AutoButtonColor = false
 	})
@@ -442,14 +442,18 @@ function EnvielUI:CreateWindow(Config)
 	Create("UIPadding", {Parent = SearchBar, PaddingLeft = UDim.new(0, 10)})
 	Create("UIStroke", {Parent = SearchBar, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 
+	local NoSidebar = Config.NoSidebar or false
+	local SidebarWidth = NoSidebar and 0 or 160
+	
 	local Sidebar = Create("ScrollingFrame", {
 		Name = "Sidebar",
 		Parent = ContentContainer,
 		BackgroundTransparency = 1,
 		Position = UDim2.new(0, 20, 0, 45),
-		Size = UDim2.new(0, 160, 1, -55),
+		Size = UDim2.new(0, SidebarWidth, 1, -55),
 		ScrollBarThickness = 0,
-		CanvasSize = UDim2.new(0,0,0,0)
+		CanvasSize = UDim2.new(0,0,0,0),
+		Visible = not NoSidebar
 	})
 	
 	SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
@@ -475,8 +479,8 @@ function EnvielUI:CreateWindow(Config)
 		Name = "Pages",
 		Parent = ContentContainer,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, 200, 0, 0),
-		Size = UDim2.new(1, -220, 1, -20)
+		Position = UDim2.new(0, NoSidebar and 20 or 200, 0, 0),
+		Size = UDim2.new(1, NoSidebar and -40 or -220, 1, -20)
 	})
 	
 	local Window = {
@@ -1388,30 +1392,54 @@ function EnvielUI:CreateWindow(Config)
 				Name = Title,
 				Parent = Config.Parent or Page,
 				BackgroundColor3 = self.Instance.Theme.Element,
-				BackgroundTransparency = 0.25, -- Glassy Effect
-				Size = UDim2.new(1, 0, 0, 0),
-				AutomaticSize = Enum.AutomaticSize.Y
+				BackgroundTransparency = 0.25,
+				Size = UDim2.new(1, 0, 0, 32), -- Start collapsed/header height
+				AutomaticSize = Enum.AutomaticSize.Y,
+				ClipsDescendants = true
 			}
 			
 			local GroupFrame = Create("Frame", GroupConfig)
 			GroupFrame:SetAttribute("EnvielTheme", "Element")
 			Create("UICorner", {Parent = GroupFrame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = GroupFrame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
-			Create("UIPadding", {Parent = GroupFrame, PaddingTop=UDim.new(0,8), PaddingBottom=UDim.new(0,8), PaddingLeft=UDim.new(0,0), PaddingRight=UDim.new(0,0)})
 			
-			if Title ~= "" then
-				local TitleLbl = Create("TextLabel", {
-					Parent = GroupFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -20, 0, 20), Position = UDim2.new(0, 10, 0, 0),
-					Text = Title, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = self.Instance.Theme.TextSec, TextXAlignment = Enum.TextXAlignment.Left
-				})
-
-			end
+			-- Header Region (Clickable)
+			local HeaderBtn = Create("TextButton", {
+				Parent = GroupFrame, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 32), Text = "", AutoButtonColor = false
+			})
 			
+			local TitleLbl = Create("TextLabel", {
+				Parent = HeaderBtn, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 15, 0, 0),
+				Text = Title, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = self.Instance.Theme.Text, TextXAlignment = Enum.TextXAlignment.Left
+			})
+			
+			local Arrow = Create("ImageLabel", {
+				Parent = HeaderBtn, BackgroundTransparency = 1, Position = UDim2.new(1, -28, 0.5, -8), Size = UDim2.new(0, 16, 0, 16),
+				Image = GetIcon("chevron-down"), ImageColor3 = self.Instance.Theme.TextSec
+			})
+			
+			-- Content Container
 			local GroupContent = Create("Frame", {
-				Parent = GroupFrame, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y
+				Parent = GroupFrame, BackgroundTransparency = 1, 
+				Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 32),
+				AutomaticSize = Enum.AutomaticSize.Y, Visible = false
 			})
 			Create("UIListLayout", {Parent = GroupContent, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
-			Create("UIPadding", {Parent = GroupContent, PaddingTop=UDim.new(0, Title~="" and 28 or 5), PaddingBottom=UDim.new(0,5), PaddingLeft=UDim.new(0,10), PaddingRight=UDim.new(0,10)})
+			Create("UIPadding", {Parent = GroupContent, PaddingTop=UDim.new(0,5), PaddingBottom=UDim.new(0,10), PaddingLeft=UDim.new(0,10), PaddingRight=UDim.new(0,10)})
+			
+			-- Toggle Logic
+			local Expanded = false
+			HeaderBtn.MouseButton1Click:Connect(function()
+				Expanded = not Expanded
+				if Expanded then
+					GroupContent.Visible = true
+					Tween(Arrow, {Rotation = 180}, 0.2)
+					-- AutomaticSize handles height, but we toggle visibility to affect layout
+				else
+					GroupContent.Visible = false
+					Tween(Arrow, {Rotation = 0}, 0.2)
+				end
+			end)
 			
 			local GroupElements = setmetatable({}, Elements)
 			function GroupElements:CreateButton(Cfg) Cfg.Parent = GroupContent return Elements:CreateButton(Cfg) end
@@ -1421,7 +1449,6 @@ function EnvielUI:CreateWindow(Config)
 			function GroupElements:CreateInput(Cfg) Cfg.Parent = GroupContent return Elements:CreateInput(Cfg) end
 			function GroupElements:CreateColorPicker(Cfg) Cfg.Parent = GroupContent return Elements:CreateColorPicker(Cfg) end
 			function GroupElements:CreateClickableList(Cfg) Cfg.Parent = GroupContent return Elements:CreateClickableList(Cfg) end
-
 			function GroupElements:CreateParagraph(Cfg) Cfg.Parent = GroupContent return Elements:CreateParagraph(Cfg) end
 			function GroupElements:CreateSection(Name) return Elements:CreateSection(Name) end 
 			
