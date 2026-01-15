@@ -1457,6 +1457,9 @@ function EnvielUI:CreateWindow(Config)
 			-- Toggle Logic
 			local Expanded = false
 			
+			
+			local GroupElements = setmetatable({}, Elements)
+			
 			function GroupElements:Collapse()
 				if not Expanded then return end
 				Expanded = false
@@ -1487,10 +1490,9 @@ function EnvielUI:CreateWindow(Config)
 			end)
 			
 			table.insert(Window.Groups, GroupElements)
-			GroupElements.Instance = self.Instance -- Ensure compatibility with internal refs
-			GroupElements.ParentPage = Page -- Tag for accordion separation
+			GroupElements.Instance = self.Instance 
+			GroupElements.ParentPage = Page
 			
-			local GroupElements = setmetatable({}, Elements)
 			function GroupElements:CreateButton(Cfg) Cfg.Parent = GroupContent return Elements:CreateButton(Cfg) end
 			function GroupElements:CreateToggle(Cfg) Cfg.Parent = GroupContent return Elements:CreateToggle(Cfg) end
 			function GroupElements:CreateSlider(Cfg) Cfg.Parent = GroupContent return Elements:CreateSlider(Cfg) end
