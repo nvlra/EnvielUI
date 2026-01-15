@@ -449,7 +449,7 @@ function EnvielUI:CreateWindow(Config)
 		BackgroundTransparency = 1,
 		AutomaticSize = Enum.AutomaticSize.X,
 		Size = UDim2.new(0, 0, 1, 0),
-		FontFace = Font.fromEnum(Enum.Font.BuilderSans) -- Bold handled by Weight property if needed, but Enum usually sets base.,
+		FontFace = Font.fromEnum(Enum.Font.BuilderSans),
 		Text = Config.Name or "Enviel UI",
 		TextColor3 = self.Theme.Text,
 		TextSize = 16,
@@ -884,7 +884,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local Btn = Create("TextButton", {
 				Parent = Frame, BackgroundColor3 = self.Instance.Theme.Accent, Position = UDim2.new(1,-105,0.5,-13), Size = UDim2.new(0,90,0,26),
-				FontFace = Font.fromEnum(Enum.Font.BuilderSans) -- Bold handled by Weight property if needed, but Enum usually sets base.,
+				FontFace = Font.fromEnum(Enum.Font.BuilderSans),
 				Text = Config.ButtonText or "Interact", TextColor3 = self.Instance.Theme.AccentText, TextSize = 11, AutoButtonColor = false,
 				TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
 			})
@@ -1284,7 +1284,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local TitleLabel = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Size=UDim2.new(1,0,0,16),
-				FontFace = Font.fromEnum(Enum.Font.BuilderSans) -- Bold handled by Weight property if needed, but Enum usually sets base.,
+				FontFace = Font.fromEnum(Enum.Font.BuilderSans),
 				Text = Title, TextColor3 = self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
@@ -1322,7 +1322,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local Header = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,5), Size=UDim2.new(1,-30,0,20),
-				FontFace = Font.fromEnum(Enum.Font.BuilderSans) -- Bold handled by Weight property if needed, but Enum usually sets base.,
+				FontFace = Font.fromEnum(Enum.Font.BuilderSans),
 				Text = Title, TextColor3 = self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
@@ -1514,7 +1514,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local TitleLbl = Create("TextLabel", {
 				Parent = HeaderBtn, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 15, 0, 0),
-				Text = Title, FontFace = Font.fromEnum(Enum.Font.BuilderSans) -- Bold handled by Weight property if needed, but Enum usually sets base., TextSize = 13, TextColor3 = self.Instance.Theme.Text, TextXAlignment = Enum.TextXAlignment.Left
+				Text = Title, FontFace = Font.fromEnum(Enum.Font.BuilderSans), TextSize = 13, TextColor3 = self.Instance.Theme.Text, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			
 			local Arrow = Create("ImageLabel", {
@@ -1623,7 +1623,7 @@ function EnvielUI:CreateWindow(Config)
 		local TitleLabel = Create("TextLabel", {
 			Parent = NotifFrame, BackgroundTransparency = 1,
 			Position = UDim2.new(0, 70, 0, 10), Size = UDim2.new(1, -80, 0, 20),
-			FontFace = Font.fromEnum(Enum.Font.BuilderSans) -- Bold handled by Weight property if needed, but Enum usually sets base., Text = TitleText, TextColor3 = self.Instance.Theme.Text,
+			FontFace = Font.fromEnum(Enum.Font.BuilderSans), Text = TitleText, TextColor3 = self.Instance.Theme.Text,
 			TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
 		})
 		
@@ -1702,7 +1702,7 @@ function EnvielUI:CreateWindow(Config)
 		
 		local TitleLbl = Create("TextLabel", {
 			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,24),
-			Text = Title, FontFace = Font.fromEnum(Enum.Font.BuilderSans) -- Bold handled by Weight property if needed, but Enum usually sets base., TextSize = 18, TextColor3 = self.Instance.Theme.Text
+			Text = Title, FontFace = Font.fromEnum(Enum.Font.BuilderSans), TextSize = 18, TextColor3 = self.Instance.Theme.Text
 		})
 		
 		local ContentLbl = Create("TextLabel", {
@@ -1727,7 +1727,7 @@ function EnvielUI:CreateWindow(Config)
 		for _, Action in pairs(Actions) do
 			local Btn = Create("TextButton", {
 				Parent = ButtonContainer, BackgroundColor3 = self.Instance.Theme.Accent, Size = UDim2.new(0, 100, 0, 32),
-				Text = Action.Text, FontFace = Font.fromEnum(Enum.Font.BuilderSans) -- Bold handled by Weight property if needed, but Enum usually sets base., TextSize = 13, TextColor3 = self.Instance.Theme.AccentText,
+				Text = Action.Text, FontFace = Font.fromEnum(Enum.Font.BuilderSans), TextSize = 13, TextColor3 = self.Instance.Theme.AccentText,
 				AutoButtonColor = false
 			})
 			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
