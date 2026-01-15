@@ -1471,7 +1471,7 @@ function EnvielUI:CreateWindow(Config)
 				if Expanded then return end
 				-- Accordion: Close others in same Page
 				for _, g in pairs(Window.Groups) do
-					if g.Instance == self and g.ParentPage == Page and g ~= GroupElements then
+					if g.ParentPage == Page and g ~= GroupElements then
 						g:Collapse()
 					end
 				end
