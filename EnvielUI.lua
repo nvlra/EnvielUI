@@ -390,7 +390,7 @@ function EnvielUI:CreateWindow(Config)
 		Parent = Controls,
 		BackgroundTransparency = 1,
 		Position = UDim2.new(1, -30, 0, 10),
-		Size = UDim2.new(0, 30, 0, 30),
+		Size = UDim2.new(0, 24, 0, 24),
 		Image = GetIcon("x"),
 		ImageColor3 = self.Theme.TextSec,
 		AutoButtonColor = false
