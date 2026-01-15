@@ -773,7 +773,8 @@ function EnvielUI:CreateWindow(Config)
 			-- Dynamic Window Height
 			if Window.ActiveTab == TabId and not Minimized then
 				local ContentH = Page.UIListLayout.AbsoluteContentSize.Y
-				Tween(MainFrame, {Size = UDim2.new(0, 360, 0, ContentH + 60)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+				local TargetH = math.max(ContentH + 60, 160) -- Minimum height to prevent cutoff
+				Tween(MainFrame, {Size = UDim2.new(0, 360, 0, TargetH)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 			end
 		end)
 		
