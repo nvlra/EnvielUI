@@ -269,7 +269,7 @@ function EnvielUI:CreateWindow(Config)
 		Visible = false,
 		AutoButtonColor = false
 	})
-	Create("UICorner", {Parent = OpenBtn, CornerRadius = UDim.new(1, 0)})
+	Create("UICorner", {Parent = OpenBtn, CornerRadius = UDim.new(0, 12)})
 	Create("UIStroke", {Parent = OpenBtn, Color = self.Theme.Accent, Thickness = 2})
 	local WhiteLogo = "130911854854919"
 	local BlackLogo = "94760392643738"
@@ -283,8 +283,6 @@ function EnvielUI:CreateWindow(Config)
 		Image = "rbxthumb://type=Asset&id="..InitialLogo.."&w=150&h=150",
 		ScaleType = Enum.ScaleType.Fit
 	})
-	Dragify(OpenBtn)
-	
 	local function ToggleMinimize()
 		Minimized = not Minimized
 		if Minimized then
@@ -299,8 +297,52 @@ function EnvielUI:CreateWindow(Config)
 			Tween(MainFrame, {Size = OpenSize}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 		end
 	end
-	
-	Dragify(OpenBtn, ToggleMinimize)
+
+	-- Manual Input Handler for OpenBtn (Drag + Click)
+	local function EnableOpenBtnDrag()
+		local Dragging, DragInput, DragStart, StartPos
+		local HasMoved = false
+
+		OpenBtn.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				Dragging = true
+				HasMoved = false
+				DragStart = input.Position
+				StartPos = OpenBtn.Position
+				
+				input.Changed:Connect(function()
+					if input.UserInputState == Enum.UserInputState.End then
+						Dragging = false
+						if not HasMoved then
+							ToggleMinimize()
+						end
+					end
+				end)
+			end
+		end)
+
+		OpenBtn.InputChanged:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				DragInput = input
+			end
+		end)
+
+		UserInputService.InputChanged:Connect(function(input)
+			if input == DragInput and Dragging then
+				local Delta = input.Position - DragStart
+				if Delta.Magnitude > 5 then HasMoved = true end
+				
+				local TargetPos = UDim2.new(
+					StartPos.X.Scale, 
+					StartPos.X.Offset + Delta.X, 
+					StartPos.Y.Scale, 
+					StartPos.Y.Offset + Delta.Y
+				)
+				OpenBtn.Position = TargetPos -- Direct set for responsiveness
+			end
+		end)
+	end
+	EnableOpenBtnDrag()
 	
 	local ToggleKey = Config.Keybind or Enum.KeyCode.RightControl
 	UserInputService.InputBegan:Connect(function(input, gameProcessed)
@@ -406,7 +448,8 @@ function EnvielUI:CreateWindow(Config)
 	local CloseBtn = Create("ImageButton", {
 		Parent = Controls,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(1, -30, 0, 10),
+		AnchorPoint = Vector2.new(1, 0.5), -- Center vertically
+		Position = UDim2.new(1, -5, 0.5, 0), -- Y=0.5 (Center)
 		Size = UDim2.new(0, 24, 0, 24),
 		Image = GetIcon("x"),
 		ImageColor3 = self.Theme.TextSec,
@@ -420,8 +463,9 @@ function EnvielUI:CreateWindow(Config)
 	local MinBtn = Create("ImageButton", {
 		Parent = Controls,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(1, -60, 0, 10),
-		Size = UDim2.new(0, 20, 0, 20),
+		AnchorPoint = Vector2.new(1, 0.5), -- Center vertically
+		Position = UDim2.new(1, -34, 0.5, 0), -- Relative to CloseBtn (-5 - 24 - 5 gap = -34)
+		Size = UDim2.new(0, 24, 0, 24), -- Match Size 24x24 for better alignment
 		Image = GetIcon("minimize"),
 		ImageColor3 = self.Theme.TextSec,
 		AutoButtonColor = false
