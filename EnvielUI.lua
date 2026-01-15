@@ -249,7 +249,7 @@ function EnvielUI:CreateWindow(Config)
 	Tween(MainFrame, {
 		Size = OpenSize, 
 		BackgroundTransparency = 0.1
-	}, 0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
+	}, 0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 	
 	local OpenBtn = Create("TextButton", {
 		Name = "OpenButton",
@@ -294,14 +294,14 @@ function EnvielUI:CreateWindow(Config)
 		if not gameProcessed and input.KeyCode == ToggleKey then
 			if ScreenGui.Enabled then
 				if not Minimized then
-					Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In).Completed:Wait()
+					Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.In).Completed:Wait()
 				end
 				ScreenGui.Enabled = false
 			else
 				ScreenGui.Enabled = true
 				if not Minimized then
 					MainFrame.Size = UDim2.new(0,0,0,0)
-					Tween(MainFrame, {Size = OpenSize}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+					Tween(MainFrame, {Size = OpenSize}, 0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 				end
 			end
 		end
@@ -334,14 +334,14 @@ function EnvielUI:CreateWindow(Config)
 			ScreenGui.Enabled = true
 			if not MobileOpen then
 				if not Minimized then
-					Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In).Completed:Wait()
+					Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.In).Completed:Wait()
 				end
 				MainFrame.Visible = false
 			else
 				MainFrame.Visible = true
 				if not Minimized then
 					MainFrame.Size = UDim2.new(0,0,0,0)
-					Tween(MainFrame, {Size = OpenSize}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+					Tween(MainFrame, {Size = OpenSize}, 0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 				end
 			end
 		end)
@@ -396,7 +396,7 @@ function EnvielUI:CreateWindow(Config)
 		AutoButtonColor = false
 	})
 	CloseBtn.MouseButton1Click:Connect(function()
-		Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In).Completed:Wait()
+		Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.In).Completed:Wait()
 		ScreenGui.Enabled = false
 	end)
 	
@@ -1635,7 +1635,7 @@ function EnvielUI:CreateWindow(Config)
 		PromptFrame.BackgroundTransparency = 1
 		Tween(PromptFrame, {BackgroundTransparency = 0}, 0.3)
 		Scale.Scale = 0.8 
-		Tween(Scale, {Scale = 1}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		Tween(Scale, {Scale = 1}, 0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 		PromptFrame.Size = UDim2.new(0, 320, 0, 150 + ContentLbl.AbsoluteSize.Y)
 	end
 	
