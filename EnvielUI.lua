@@ -276,15 +276,15 @@ function EnvielUI:CreateWindow(Config)
 	local function ToggleMinimize()
 		Minimized = not Minimized
 		if Minimized then
-			Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In).Completed:Wait()
+			Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In).Completed:Wait()
 			MainFrame.Visible = false
 			OpenBtn.Visible = true
 			OpenBtn.Size = UDim2.new(0, 0, 0, 0)
-			Tween(OpenBtn, {Size = UDim2.new(0, 50, 0, 50)}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+			Tween(OpenBtn, {Size = UDim2.new(0, 50, 0, 50)}, 0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 		else
 			OpenBtn.Visible = false
 			MainFrame.Visible = true
-			Tween(MainFrame, {Size = OpenSize}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+			Tween(MainFrame, {Size = OpenSize}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 		end
 	end
 	OpenBtn.MouseButton1Click:Connect(ToggleMinimize)
@@ -1518,13 +1518,13 @@ function EnvielUI:CreateWindow(Config)
 		TitleLabel.ZIndex = 2
 		ContentLabel.ZIndex = 2
 
-		Tween(NotifFrame, {Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 0.2}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		Tween(NotifFrame, {Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 0.2}, 0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 		Tween(Icon, {ImageTransparency = 0}, 0.5)
 		Tween(TitleLabel, {TextTransparency = 0}, 0.5)
 		Tween(ContentLabel, {TextTransparency = 0}, 0.5)
 		
 		task.delay(Duration, function()
-			Tween(NotifFrame, {Position = UDim2.new(1, 50, 0, 0), BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+			Tween(NotifFrame, {Position = UDim2.new(1, 50, 0, 0), BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
 			Tween(Icon, {ImageTransparency = 1}, 0.5)
 			Tween(TitleLabel, {TextTransparency = 1}, 0.5)
 			Tween(ContentLabel, {TextTransparency = 1}, 0.5).Completed:Wait()
