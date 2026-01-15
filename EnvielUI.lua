@@ -276,15 +276,15 @@ function EnvielUI:CreateWindow(Config)
 	local function ToggleMinimize()
 		Minimized = not Minimized
 		if Minimized then
-			Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In).Completed:Wait()
+			Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.In).Completed:Wait()
 			MainFrame.Visible = false
 			OpenBtn.Visible = true
 			OpenBtn.Size = UDim2.new(0, 0, 0, 0)
-			Tween(OpenBtn, {Size = UDim2.new(0, 50, 0, 50)}, 0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+			Tween(OpenBtn, {Size = UDim2.new(0, 50, 0, 50)}, 0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 		else
 			OpenBtn.Visible = false
 			MainFrame.Visible = true
-			Tween(MainFrame, {Size = OpenSize}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+			Tween(MainFrame, {Size = OpenSize}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 		end
 	end
 	OpenBtn.MouseButton1Click:Connect(ToggleMinimize)
@@ -354,17 +354,28 @@ function EnvielUI:CreateWindow(Config)
 		Size = UDim2.new(1, 0, 0, 50)
 	})
 	
+	local TitleContainer = Create("Frame", {
+		Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(1, -120, 1, 0), Position = UDim2.new(0, 15, 0, 0)
+	})
+	Create("UIListLayout", {Parent = TitleContainer, FillDirection = Enum.FillDirection.Horizontal, SortOrder = Enum.SortOrder.LayoutOrder, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 8)})
+
+	local Logo = Create("ImageLabel", {
+		Name = "Logo", Parent = TitleContainer, BackgroundTransparency = 1, Size = UDim2.new(0, 24, 0, 24),
+		Image = "rbxassetid://133462191626250", ScaleType = Enum.ScaleType.Fit, LayoutOrder = 1
+	})
+	
 	local Title = Create("TextLabel", {
 		Name = "Title",
-		Parent = Header,
+		Parent = TitleContainer,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, 24, 0, 0),
-		Size = UDim2.new(1, -48, 1, 0),
+		AutomaticSize = Enum.AutomaticSize.X,
+		Size = UDim2.new(0, 0, 1, 0),
 		Font = Enum.Font.GothamBold,
-		Text = WindowName,
-		TextColor3 = self.Theme.Accent,
-		TextSize = 18,
-		TextXAlignment = Enum.TextXAlignment.Left
+		Text = Config.Name or "Enviel UI",
+		TextColor3 = self.Theme.Text,
+		TextSize = 16, -- Slightly larger
+		TextXAlignment = Enum.TextXAlignment.Left,
+		LayoutOrder = 2
 	})
 	
 	local Controls = Create("Frame", {
@@ -1518,13 +1529,13 @@ function EnvielUI:CreateWindow(Config)
 		TitleLabel.ZIndex = 2
 		ContentLabel.ZIndex = 2
 
-		Tween(NotifFrame, {Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 0.2}, 0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+		Tween(NotifFrame, {Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 0.2}, 0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 		Tween(Icon, {ImageTransparency = 0}, 0.5)
 		Tween(TitleLabel, {TextTransparency = 0}, 0.5)
 		Tween(ContentLabel, {TextTransparency = 0}, 0.5)
 		
 		task.delay(Duration, function()
-			Tween(NotifFrame, {Position = UDim2.new(1, 50, 0, 0), BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
+			Tween(NotifFrame, {Position = UDim2.new(1, 50, 0, 0), BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
 			Tween(Icon, {ImageTransparency = 1}, 0.5)
 			Tween(TitleLabel, {TextTransparency = 1}, 0.5)
 			Tween(ContentLabel, {TextTransparency = 1}, 0.5).Completed:Wait()
