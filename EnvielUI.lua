@@ -299,23 +299,22 @@ function EnvielUI:CreateWindow(Config)
 	end
 
 	-- Manual Input Handler for OpenBtn (Drag + Click)
+	-- Manual Input Handler for OpenBtn (Drag + Click)
+	local WasDragged = false
+	
 	local function EnableOpenBtnDrag()
 		local Dragging, DragInput, DragStart, StartPos
-		local HasMoved = false
 
 		OpenBtn.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				Dragging = true
-				HasMoved = false
+				WasDragged = false
 				DragStart = input.Position
 				StartPos = OpenBtn.Position
 				
 				input.Changed:Connect(function()
 					if input.UserInputState == Enum.UserInputState.End then
 						Dragging = false
-						if not HasMoved then
-							ToggleMinimize()
-						end
 					end
 				end)
 			end
@@ -330,7 +329,7 @@ function EnvielUI:CreateWindow(Config)
 		UserInputService.InputChanged:Connect(function(input)
 			if input == DragInput and Dragging then
 				local Delta = input.Position - DragStart
-				if Delta.Magnitude > 5 then HasMoved = true end
+				if Delta.Magnitude > 2 then WasDragged = true end -- Small threshold
 				
 				local TargetPos = UDim2.new(
 					StartPos.X.Scale, 
@@ -338,11 +337,17 @@ function EnvielUI:CreateWindow(Config)
 					StartPos.Y.Scale, 
 					StartPos.Y.Offset + Delta.Y
 				)
-				OpenBtn.Position = TargetPos -- Direct set for responsiveness
+				OpenBtn.Position = TargetPos
 			end
 		end)
 	end
 	EnableOpenBtnDrag()
+	
+	OpenBtn.MouseButton1Click:Connect(function()
+		if not WasDragged then
+			ToggleMinimize()
+		end
+	end)
 	
 	local ToggleKey = Config.Keybind or Enum.KeyCode.RightControl
 	UserInputService.InputBegan:Connect(function(input, gameProcessed)
