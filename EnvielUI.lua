@@ -1522,11 +1522,11 @@ function EnvielUI:CreateWindow(Config)
 			
 			if IconAsset ~= "" then
 				Create("ImageLabel", {
-					Parent = HeaderBtn, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0.5, -9), Size = UDim2.new(0, 18, 0, 18),
+					Parent = HeaderBtn, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0.5, -7), Size = UDim2.new(0, 14, 0, 14),
 					Image = IconAsset, ImageColor3 = self.Instance.Theme.Accent
 				})
-				TitleX = 40
-				TitleW = -65
+				TitleX = 35 -- Adjusted Title Position
+				TitleW = -60
 			end
 			
 			local TitleLbl = Create("TextLabel", {
