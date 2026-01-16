@@ -269,8 +269,8 @@ function EnvielUI:CreateWindow(Config)
 	})
 	Create("UICorner", {Parent = OpenBtn, CornerRadius = UDim.new(0, 12)})
 	Create("UIStroke", {Parent = OpenBtn, Color = self.Theme.Accent, Thickness = 2})
-	local WhiteLogo = "130911854854919"
-	local BlackLogo = "94760392643738"
+	local WhiteLogo = "94854804824909"
+	local BlackLogo = "120261170817156"
 	local InitialLogo = (Theme == "Light") and BlackLogo or WhiteLogo
 
 	local OpenIcon = Create("ImageLabel", {
