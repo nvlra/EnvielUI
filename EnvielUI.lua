@@ -1293,7 +1293,6 @@ function EnvielUI:CreateWindow(Config)
 			}
 		end
 		
-
 		function Elements:CreateSection(Name)
 			local SectionFrame = Create("Frame", {
 				Parent = Config.Parent or Page, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,30)
