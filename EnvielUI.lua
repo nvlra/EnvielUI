@@ -437,8 +437,8 @@ function EnvielUI:CreateWindow(Config)
 	})
 	Create("UIListLayout", {Parent = TitleContainer, FillDirection = Enum.FillDirection.Horizontal, SortOrder = Enum.SortOrder.LayoutOrder, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 8)})
 
-	local WhiteLogo = "130911854854919"
-	local BlackLogo = "94760392643738"
+	local WhiteLogo = "94854804824909"
+	local BlackLogo = "120261170817156"
 	local CurrentLogo = (Theme == "Light") and BlackLogo or WhiteLogo
 
 	local Logo = Create("ImageLabel", {
