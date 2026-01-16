@@ -452,7 +452,7 @@ function EnvielUI:CreateWindow(Config)
 		BackgroundTransparency = 1,
 		AutomaticSize = Enum.AutomaticSize.X,
 		Size = UDim2.new(0, 0, 1, 0),
-		FontFace = FontBold,
+		Font = FontBold,
 		Text = Config.Name or "Enviel UI",
 		TextColor3 = self.Theme.Text,
 		TextSize = 16,
@@ -511,7 +511,7 @@ function EnvielUI:CreateWindow(Config)
 	local Footer = Create("TextLabel", {
 		Name = "Footer", Parent = MainFrame, BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 1, -8), AnchorPoint = Vector2.new(0, 1),
-		Text = "Made by Enviel", TextSize = 10, FontFace = FontBold, TextColor3 = self.Theme.TextSec, TextTransparency = 0
+		Text = "Made by Enviel", TextSize = 10, Font = FontBold, TextColor3 = self.Theme.TextSec, TextTransparency = 0
 	})
 	
 	local SearchBar = Create("TextBox", {
@@ -520,7 +520,7 @@ function EnvielUI:CreateWindow(Config)
 		BackgroundColor3 = self.Theme.Element,
 		Position = UDim2.new(0, 20, 0, 10),
 		Size = UDim2.new(0, 160, 0, 30),
-		FontFace = FontBold,
+		Font = FontBold,
 		Text = "",
 		PlaceholderText = "Search...",
 		TextColor3 = self.Theme.Text,
@@ -827,7 +827,7 @@ function EnvielUI:CreateWindow(Config)
 			Position = UDim2.new(0, 40, 0, 0),
 			Size = UDim2.new(1, -45, 1, 0),
 			Text = Name,
-			FontFace = FontBold,
+			Font = FontBold,
 			TextColor3 = self.Instance.Theme.Accent,
 			TextSize = 13,
 			TextXAlignment = Enum.TextXAlignment.Left,
@@ -1518,7 +1518,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local TitleLbl = Create("TextLabel", {
 				Parent = HeaderBtn, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 15, 0, 0),
-				Text = Title, FontFace = FontBold, TextSize = 13, TextColor3 = self.Instance.Theme.Text, TextXAlignment = Enum.TextXAlignment.Left
+				Text = Title, Font = FontBold, TextSize = 13, TextColor3 = self.Instance.Theme.Text, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			
 			local Arrow = Create("ImageLabel", {
@@ -1627,14 +1627,14 @@ function EnvielUI:CreateWindow(Config)
 		local TitleLabel = Create("TextLabel", {
 			Parent = NotifFrame, BackgroundTransparency = 1,
 			Position = UDim2.new(0, 70, 0, 10), Size = UDim2.new(1, -80, 0, 20),
-			FontFace = FontBold, Text = TitleText, TextColor3 = self.Instance.Theme.Text,
+			Font = FontBold, Text = TitleText, TextColor3 = self.Instance.Theme.Text,
 			TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
 		})
 		
 		local ContentLabel = Create("TextLabel", {
 			Parent = NotifFrame, BackgroundTransparency = 1,
 			Position = UDim2.new(0, 70, 0, 30), Size = UDim2.new(1, -80, 0, 30),
-			FontFace = FontBold, Text = ContentText, TextColor3 = self.Instance.Theme.TextSec,
+			Font = FontBold, Text = ContentText, TextColor3 = self.Instance.Theme.TextSec,
 			TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true
 		})
 		
@@ -1674,7 +1674,7 @@ function EnvielUI:CreateWindow(Config)
 		
 		local Text = Create("TextLabel", {
 			Parent = WatermarkFrame, Name = "WatermarkText", BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0),
-			FontFace = FontBold, TextSize = 11, TextColor3 = self.Instance.Theme.Text,
+			Font = FontBold, TextSize = 11, TextColor3 = self.Instance.Theme.Text,
 			Text = Config.Title or Config.Text or "Enviel UI",
 			TextXAlignment = Enum.TextXAlignment.Center
 		})
@@ -1706,12 +1706,12 @@ function EnvielUI:CreateWindow(Config)
 		
 		local TitleLbl = Create("TextLabel", {
 			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,24),
-			Text = Title, FontFace = FontBold, TextSize = 18, TextColor3 = self.Instance.Theme.Text
+			Text = Title, Font = FontBold, TextSize = 18, TextColor3 = self.Instance.Theme.Text
 		})
 		
 		local ContentLbl = Create("TextLabel", {
 			Parent = PromptFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,0), Position = UDim2.new(0,0,0,30),
-			Text = Content, FontFace = FontBold, TextSize = 14, TextColor3 = self.Instance.Theme.TextSec,
+			Text = Content, Font = FontBold, TextSize = 14, TextColor3 = self.Instance.Theme.TextSec,
 			TextWrapped = true, AutomaticSize = Enum.AutomaticSize.Y
 		})
 		
@@ -1731,7 +1731,7 @@ function EnvielUI:CreateWindow(Config)
 		for _, Action in pairs(Actions) do
 			local Btn = Create("TextButton", {
 				Parent = ButtonContainer, BackgroundColor3 = self.Instance.Theme.Accent, Size = UDim2.new(0, 100, 0, 32),
-				Text = Action.Text, FontFace = FontBold, TextSize = 13, TextColor3 = self.Instance.Theme.AccentText,
+				Text = Action.Text, Font = FontBold, TextSize = 13, TextColor3 = self.Instance.Theme.AccentText,
 				AutoButtonColor = false
 			})
 			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
