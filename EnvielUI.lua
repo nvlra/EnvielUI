@@ -1179,7 +1179,7 @@ function EnvielUI:CreateWindow(Config)
 			})
 			Create("UIListLayout", {Parent=OptionContainer, SortOrder=Enum.SortOrder.LayoutOrder})
 			
-			function RefreshOptions()
+			local function RefreshOptions()
 				for _, v in pairs(OptionContainer:GetChildren()) do
 					if v:IsA("TextButton") then v:Destroy() end
 				end
