@@ -1274,8 +1274,10 @@ function EnvielUI:CreateWindow(Config)
 			
 			return {
 				Refresh = function(self, NewOptions)
+                    print("[EnvielUI] Refreshing Dropdown Logic...")
 					Options = NewOptions
 					TotalOptionsHeight = math.min(#Options, 6) * OptionHeight
+                    OptionContainer.Size = UDim2.new(1,0,0,TotalOptionsHeight) -- FIX: Resize Container
 					ExpandedHeight = DropHeight + TotalOptionsHeight + (Search and 35 or 0)
 					RefreshOptions()
 				end,
