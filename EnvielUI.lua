@@ -1516,8 +1516,21 @@ function EnvielUI:CreateWindow(Config)
 				Parent = GroupFrame, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 32), Text = "", AutoButtonColor = false
 			})
 			
+			local IconAsset = GetIcon(Config.Icon)
+			local TitleX = 15
+			local TitleW = -40
+			
+			if IconAsset ~= "" then
+				Create("ImageLabel", {
+					Parent = HeaderBtn, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0.5, -9), Size = UDim2.new(0, 18, 0, 18),
+					Image = IconAsset, ImageColor3 = self.Instance.Theme.Accent
+				})
+				TitleX = 40
+				TitleW = -65
+			end
+			
 			local TitleLbl = Create("TextLabel", {
-				Parent = HeaderBtn, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 15, 0, 0),
+				Parent = HeaderBtn, BackgroundTransparency = 1, Size = UDim2.new(1, TitleW, 1, 0), Position = UDim2.new(0, TitleX, 0, 0),
 				Text = Title, Font = FontBold, TextSize = 13, TextColor3 = self.Instance.Theme.Text, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			
