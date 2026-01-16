@@ -593,8 +593,8 @@ function EnvielUI:CreateWindow(Config)
 		self.Instance.Theme = Themes[ThemeName]
 		local T = self.Instance.Theme
 		
-		local WhiteLogo = "130911854854919"
-		local BlackLogo = "94760392643738"
+		local WhiteLogo = "94854804824909"
+		local BlackLogo = "120261170817156"
 		local TargetLogo = (ThemeName == "Light") and BlackLogo or WhiteLogo
 		if self.Logo then self.Logo.Image = "rbxthumb://type=Asset&id="..TargetLogo.."&w=150&h=150" end
 		if self.OpenIcon then self.OpenIcon.Image = "rbxthumb://type=Asset&id="..TargetLogo.."&w=150&h=150" end
