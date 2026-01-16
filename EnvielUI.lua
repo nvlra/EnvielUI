@@ -1271,6 +1271,26 @@ function EnvielUI:CreateWindow(Config)
 					Tween(Arrow, {Rotation = 180}, 0.3)
 				end
 			end)
+			
+			return {
+				Refresh = function(self, NewOptions)
+					Options = NewOptions
+					TotalOptionsHeight = math.min(#Options, 6) * OptionHeight
+					ExpandedHeight = DropHeight + TotalOptionsHeight + (Search and 35 or 0)
+					RefreshOptions()
+				end,
+				Set = function(self, NewVal)
+					if Multi then
+						Default = NewVal
+					else
+						Default = NewVal
+					end
+					self.Instance.Flags[Flag] = Default
+					Callback(Default)
+					ValueLabel.Text = GetValueText()
+					RefreshOptions()
+				end
+			}
 		end
 		
 
