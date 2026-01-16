@@ -56,10 +56,9 @@ local Themes = {
 	}
 }
 
-local FontRegular = Font.fromEnum(Enum.Font.Gotham)
-local FontMedium = Font.fromEnum(Enum.Font.GothamMedium)
-local FontBold = Font.fromEnum(Enum.Font.GothamBold)
-
+local FontRegular = Enum.Font.Gotham
+local FontMedium = Enum.Font.GothamMedium
+local FontBold = Enum.Font.GothamBold
 
 local IconLib
 local SuccessIcon, ErrIcon = pcall(function()
@@ -745,7 +744,7 @@ function EnvielUI:CreateWindow(Config)
 		for _, btn in pairs(Sidebar:GetChildren()) do
 			if btn:IsA("TextButton") and btn.Name ~= TabId.."Btn" then
 				Tween(btn, {BackgroundTransparency = 1, TextTransparency = 0.6, TextColor3 = self.Instance.Theme.TextSec}, 0.3)
-				btn.FontFace = FontRegular
+				btn.Font = FontRegular
 				if btn:FindFirstChild("UIStroke") then Tween(btn.UIStroke, {Transparency = 1}, 0.3) end
 				
 				local icon = btn:FindFirstChild("ImageLabel")
@@ -761,7 +760,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			if label then
 				Tween(label, {TextTransparency = 0, TextColor3 = self.Instance.Theme.TextSelected}, 0.3)
-				label.FontFace = Font.fromEnum(Enum.Font.BuilderSans) -- Bold handled by Weight property if needed, but Enum usually sets base.
+				label.Font = Enum.Font.BuilderSans -- Bold handled by Weight property if needed, but Enum usually sets base.
 			end
 			
 			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSelected}, 0.3) end
@@ -856,7 +855,7 @@ function EnvielUI:CreateWindow(Config)
 			if Window.ActiveTab == TabId and not Minimized then
 				local ContentH = Page.UIListLayout.AbsoluteContentSize.Y
 				local TargetH = math.max(ContentH + 85, 160)
-				local WindowWidth = MainFrame.Size.X.Offset -- Use current width which should be correct
+				-- Fix: Always use the configured WindowWidth, not the current one (which might be 0 during open anim)
 				Tween(MainFrame, {Size = UDim2.new(0, WindowWidth, 0, TargetH)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 			end
 		end)
@@ -883,13 +882,13 @@ function EnvielUI:CreateWindow(Config)
 
 			Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency = 1, Position = UDim2.new(0,15,0,0), Size = UDim2.new(1,-120,1,0),
-				FontFace = FontBold,
+				Font = FontBold,
 				Text = Name, TextColor3 = self.Instance.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			
 			local Btn = Create("TextButton", {
 				Parent = Frame, BackgroundColor3 = self.Instance.Theme.Accent, Position = UDim2.new(1,-105,0.5,-13), Size = UDim2.new(0,90,0,26),
-				FontFace = FontBold,
+				Font = FontBold,
 				Text = Config.ButtonText or "Interact", TextColor3 = self.Instance.Theme.AccentText, TextSize = 11, AutoButtonColor = false,
 				TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
 			})
@@ -940,7 +939,7 @@ function EnvielUI:CreateWindow(Config)
 
 			Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,0), Size=UDim2.new(1,-70,1,0),
-				FontFace = FontBold,
+				Font = FontBold,
 				Text=Name, TextColor3=self.Instance.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
@@ -1014,12 +1013,12 @@ function EnvielUI:CreateWindow(Config)
 
 			local Label = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,8), Size=UDim2.new(1,-30,0,20),
-				FontFace = FontBold,
+				Font = FontBold,
 				Text=Name, TextColor3=self.Instance.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			local ValueLabel = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(1,-65,0,8), Size=UDim2.new(0,50,0,20),
-				FontFace = FontBold,
+				Font = FontBold,
 				Text=tostring(Value), TextColor3=self.Instance.Theme.TextSec, TextSize=13, TextXAlignment=Enum.TextXAlignment.Right
 			})
 			
@@ -1130,7 +1129,7 @@ function EnvielUI:CreateWindow(Config)
 
 			local Label = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,0), Size=UDim2.new(1,-50,0,DropHeight),
-				FontFace = FontBold,
+				Font = FontBold,
 				Text = GetLabelText(),
 				TextColor3 = self.Instance.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left
 			})
@@ -1166,7 +1165,7 @@ function EnvielUI:CreateWindow(Config)
 					local Btn = Create("TextButton", {
 						Parent=OptionContainer, BackgroundTransparency=0, BackgroundColor3=self.Instance.Theme.Element,
 						Size=UDim2.new(1,0,0,OptionHeight), Text="    "..tostring(opt),
-						FontFace = FontBold,
+						Font = FontBold,
 						TextColor3 = IsSelected and self.Instance.Theme.Accent or self.Instance.Theme.TextSec,
 						TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, AutoButtonColor=false,
 						BorderSizePixel = 0
@@ -1248,13 +1247,13 @@ function EnvielUI:CreateWindow(Config)
 			
 			local Label = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,0), Size=UDim2.new(1,-15,0,20),
-				FontFace = FontBold,
+				Font = FontBold,
 				Text = Name, TextColor3 = self.Instance.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
 			local InputBox = Create("TextBox", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,22), Size=UDim2.new(1,-30,0,18),
-				FontFace = FontBold,
+				Font = FontBold,
 				Text = "", PlaceholderText = Placeholder, TextColor3 = self.Instance.Theme.Accent, PlaceholderColor3 = self.Instance.Theme.TextSec,
 				TextSize = 13, TextXAlignment=Enum.TextXAlignment.Left, ClearTextOnFocus = false
 			})
@@ -1289,13 +1288,13 @@ function EnvielUI:CreateWindow(Config)
 			
 			local TitleLabel = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Size=UDim2.new(1,0,0,16),
-				FontFace = FontBold,
+				Font = FontBold,
 				Text = Title, TextColor3 = self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
 			local ContentLabel = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Size=UDim2.new(1,0,0,0), AutomaticSize = Enum.AutomaticSize.Y,
-				FontFace = FontBold,
+				Font = FontBold,
 				Text = Content, TextColor3 = self.Instance.Theme.Description, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, TextWrapped = true
 			})
 			Create("UIListLayout", {Parent = Frame, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
@@ -1327,7 +1326,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local Header = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,5), Size=UDim2.new(1,-30,0,20),
-				FontFace = FontBold,
+				Font = FontBold,
 				Text = Title, TextColor3 = self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
@@ -1347,7 +1346,7 @@ function EnvielUI:CreateWindow(Config)
 						Name = "Item_"..i,
 						Parent = ListContainer, BackgroundColor3 = self.Instance.Theme.Main, BackgroundTransparency=0.5,
 						Size = UDim2.new(1, 0, 0, 24), Text = "  " .. tostring(itemText),
-						FontFace = FontBold,
+						Font = FontBold,
 						TextColor3 = self.Instance.Theme.TextSec, TextSize = 12, TextXAlignment=Enum.TextXAlignment.Left, AutoButtonColor = false
 					})
 					Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 4)})
@@ -1391,7 +1390,7 @@ function EnvielUI:CreateWindow(Config)
 
 			Create("TextLabel", {
 				Parent=Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,0), Size=UDim2.new(1,-60,0,46),
-				FontFace = FontBold, Text=Name, TextColor3=self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
+				Font = FontBold, Text=Name, TextColor3=self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
 			})
 			
 			local ColorDisplay = Create("TextButton", {
@@ -1431,7 +1430,7 @@ function EnvielUI:CreateWindow(Config)
 				local Label = Create("TextLabel", {
 					Parent=PickerFrame, Text=Text, TextColor3=self.Instance.Theme.Text, 
 					BackgroundTransparency=1, Position=UDim2.new(0,0,0,yPos), Size=UDim2.new(0,15,0,20),
-					FontFace = FontBold, TextSize = 12
+					Font = FontBold, TextSize = 12
 				})
 				
 				local Track = Create("TextButton", {
