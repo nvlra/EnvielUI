@@ -1107,7 +1107,7 @@ function EnvielUI:CreateWindow(Config)
 			self.Instance.Flags[Flag] = Default
 			
 			local Expanded = false
-			local DropHeight = 44
+			local DropHeight = 60 -- Increased height for 2-line display
 			local OptionHeight = 32
 			local TotalOptionsHeight = math.min(#Options, 6) * OptionHeight
 			
@@ -1118,24 +1118,31 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 			
-			local function GetLabelText()
+			local function GetValueText()
 				if Multi then
-					if #Default == 0 then return Name .. " : None" end
-					return Name .. " : " .. table.concat(Default, ", ")
+					if #Default == 0 then return "Selected : None" end
+					return "Selected : " .. table.concat(Default, ", ")
 				else
-					return Name .. " : " .. tostring(Default)
+					return "Selected : " .. tostring(Default)
 				end
 			end
 
-			local Label = Create("TextLabel", {
-				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,0), Size=UDim2.new(1,-50,0,DropHeight),
+			local TitleLabel = Create("TextLabel", {
+				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,10), Size=UDim2.new(1,-50,0,20),
 				Font = FontBold,
-				Text = GetLabelText(),
-				TextColor3 = self.Instance.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left
+				Text = Name,
+				TextColor3 = self.Instance.Theme.Text, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left
+			})
+			
+			local ValueLabel = Create("TextLabel", {
+				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,15,0,30), Size=UDim2.new(1,-50,0,20),
+				Font = FontBold,
+				Text = GetValueText(),
+				TextColor3 = self.Instance.Theme.TextSec, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd
 			})
 			
 			local Arrow = Create("ImageLabel", {
-				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(1,-35,0,12), Size=UDim2.new(0,20,0,20),
+				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(1,-35,0,20), Size=UDim2.new(0,20,0,20),
 				Image = "rbxassetid://6034818372", ImageColor3 = self.Instance.Theme.TextSec 
 			})
 			
@@ -1189,13 +1196,13 @@ function EnvielUI:CreateWindow(Config)
 							end
 							self.Instance.Flags[Flag] = Default
 							Callback(Default)
-							Label.Text = GetLabelText()
+							ValueLabel.Text = GetValueText()
 							RefreshOptions()
 						else
 							Default = opt
 							self.Instance.Flags[Flag] = Default
 							Callback(Default)
-							Label.Text = GetLabelText()
+							ValueLabel.Text = GetValueText()
 							Expanded = false
 							Tween(Frame, {Size=UDim2.new(1,0,0,DropHeight)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 							Tween(Arrow, {Rotation=0}, 0.3)
@@ -1207,14 +1214,29 @@ function EnvielUI:CreateWindow(Config)
 			
 			RefreshOptions()
 			
+			local function CloseDropdown()
+				if not Expanded then return end
+				Expanded = false
+				Tween(Frame, {Size = UDim2.new(1,0,0,DropHeight)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+				Tween(Arrow, {Rotation = 0}, 0.3)
+				if self.Instance.ActiveDropdown == CloseDropdown then
+					self.Instance.ActiveDropdown = nil
+				end
+			end
+
 			Trigger.MouseButton1Click:Connect(function()
-				Expanded = not Expanded
 				if Expanded then
+					CloseDropdown()
+				else
+					-- Close other active dropdown if exists
+					if self.Instance.ActiveDropdown and type(self.Instance.ActiveDropdown) == "function" then
+						self.Instance.ActiveDropdown()
+					end
+					
+					Expanded = true
+					self.Instance.ActiveDropdown = CloseDropdown
 					Tween(Frame, {Size = UDim2.new(1,0,0,DropHeight + TotalOptionsHeight)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 					Tween(Arrow, {Rotation = 180}, 0.3)
-				else
-					Tween(Frame, {Size = UDim2.new(1,0,0,DropHeight)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-					Tween(Arrow, {Rotation = 0}, 0.3)
 				end
 			end)
 		end
@@ -1304,6 +1326,7 @@ function EnvielUI:CreateWindow(Config)
 					if type(Properties) == "table" then
 						if Properties.Title then TitleLabel.Text = Properties.Title end
 						if Properties.Content then ContentLabel.Text = Properties.Content end
+						if Properties.Visible ~= nil then Frame.Visible = Properties.Visible end
 					end
 				end
 			}
@@ -1619,7 +1642,6 @@ function EnvielUI:CreateWindow(Config)
 		local ContentText = Config.Content or Config.Description or "Message"
 		local Duration = Config.Duration or 3
 		local Image = GetIcon("megaphone")
-		
 		local NotifFrame = Create("Frame", {
 			Parent = NotificationContainer,
 			BackgroundColor3 = self.Instance.Theme.Secondary,
