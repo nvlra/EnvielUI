@@ -1106,10 +1106,13 @@ function EnvielUI:CreateWindow(Config)
 			
 			self.Instance.Flags[Flag] = Default
 			
+			local Search = Config.Search or false
+			
 			local Expanded = false
 			local DropHeight = 60 -- Increased height for 2-line display
 			local OptionHeight = 32
 			local TotalOptionsHeight = math.min(#Options, 6) * OptionHeight
+			local ExpandedHeight = DropHeight + TotalOptionsHeight + (Search and 35 or 0)
 			
 			local Frame = Create("Frame", {
 				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Element, Size = UDim2.new(1,0,0,DropHeight), BackgroundTransparency = 0, ClipsDescendants = true
@@ -1150,18 +1153,47 @@ function EnvielUI:CreateWindow(Config)
 				Parent = Frame, BackgroundTransparency=1, Size=UDim2.new(1,0,0,DropHeight), Text=""
 			})
 			
+			local SearchBar
+			local SearchText = ""
+			
+			if Search then
+				SearchBar = Create("TextBox", {
+					Parent = Frame, BackgroundColor3 = self.Instance.Theme.Main, Position = UDim2.new(0, 10, 0, DropHeight + 5), Size = UDim2.new(1, -20, 0, 25),
+					Font = FontBold, Text = "", PlaceholderText = "Search...", TextColor3 = self.Instance.Theme.Text, PlaceholderColor3 = self.Instance.Theme.TextSec,
+					TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false
+				})
+				Create("UICorner", {Parent = SearchBar, CornerRadius = UDim.new(0, 6)})
+				Create("UIPadding", {Parent = SearchBar, PaddingLeft = UDim.new(0, 8)})
+				
+				SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
+					SearchText = SearchBar.Text:lower()
+					RefreshOptions()
+				end)
+			end
+			
+			local ListOffsetY = DropHeight + (Search and 35 or 0)
+			
 			local OptionContainer = Create("ScrollingFrame", {
-				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,0,0,DropHeight), Size=UDim2.new(1,0,0,TotalOptionsHeight),
-				ScrollBarThickness=2, ScrollBarImageColor3=self.Instance.Theme.Accent, CanvasSize=UDim2.new(0,0,0,#Options * OptionHeight)
+				Parent = Frame, BackgroundTransparency=1, Position=UDim2.new(0,0,0,ListOffsetY), Size=UDim2.new(1,0,0,TotalOptionsHeight),
+				ScrollBarThickness=2, ScrollBarImageColor3=self.Instance.Theme.Accent, CanvasSize=UDim2.new(0,0,0,0)
 			})
 			Create("UIListLayout", {Parent=OptionContainer, SortOrder=Enum.SortOrder.LayoutOrder})
 			
-			local function RefreshOptions()
+			function RefreshOptions()
 				for _, v in pairs(OptionContainer:GetChildren()) do
 					if v:IsA("TextButton") then v:Destroy() end
 				end
 				
+				local FilteredOptions = {}
 				for _, opt in pairs(Options) do
+					if SearchText == "" or tostring(opt):lower():find(SearchText) then
+						table.insert(FilteredOptions, opt)
+					end
+				end
+				
+				OptionContainer.CanvasSize = UDim2.new(0,0,0,#FilteredOptions * OptionHeight)
+				
+				for _, opt in pairs(FilteredOptions) do
 					local IsSelected
 					if Multi then
 						IsSelected = table.find(Default, opt)
@@ -1235,7 +1267,7 @@ function EnvielUI:CreateWindow(Config)
 					
 					Expanded = true
 					self.Instance.ActiveDropdown = CloseDropdown
-					Tween(Frame, {Size = UDim2.new(1,0,0,DropHeight + TotalOptionsHeight)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+					Tween(Frame, {Size = UDim2.new(1,0,0,ExpandedHeight)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 					Tween(Arrow, {Rotation = 180}, 0.3)
 				end
 			end)
