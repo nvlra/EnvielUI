@@ -225,7 +225,8 @@ function EnvielUI:CreateWindow(Config)
 	ScreenGui:SetAttribute("EnvielID", "MainInstance")
 	
 	local Minimized = false
-	local OpenSize = UDim2.new(0, 360, 0, 480)
+	local WindowWidth = Config.Width or 360
+	local OpenSize = UDim2.new(0, WindowWidth, 0, 480)
 	
 	
 	local MainFrame = Create("Frame", {
@@ -855,7 +856,8 @@ function EnvielUI:CreateWindow(Config)
 			if Window.ActiveTab == TabId and not Minimized then
 				local ContentH = Page.UIListLayout.AbsoluteContentSize.Y
 				local TargetH = math.max(ContentH + 85, 160)
-				Tween(MainFrame, {Size = UDim2.new(0, 360, 0, TargetH)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+				local WindowWidth = MainFrame.Size.X.Offset -- Use current width which should be correct
+				Tween(MainFrame, {Size = UDim2.new(0, WindowWidth, 0, TargetH)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 			end
 		end)
 		
