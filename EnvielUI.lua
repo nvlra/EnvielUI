@@ -578,7 +578,7 @@ function EnvielUI:CreateWindow(Config)
 	})
 	
 	local TitleContainer = Create("Frame", {
-		Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(1, -120, 1, 0), Position = UDim2.new(0, 15, 0, 0)
+		Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(1, -120, 1, 0), Position = UDim2.new(0, 8, 0, 0) -- Adjusted Header Padding
 	})
 	Create("UIListLayout", {Parent = TitleContainer, FillDirection = Enum.FillDirection.Horizontal, SortOrder = Enum.SortOrder.LayoutOrder, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 8)})
 
@@ -691,14 +691,36 @@ function EnvielUI:CreateWindow(Config)
 		ScrollingDirection = Enum.ScrollingDirection.X
 	})
 	
-	Create("UIListLayout", {
+	-- Container for Buttons (Controlled by UIListLayout)
+	local ButtonHolder = Create("Frame", {
+		Name = "ButtonHolder",
 		Parent = NavbarInner,
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, 0, 1, 0),
+		AutomaticSize = Enum.AutomaticSize.X
+	})
+
+	Create("UIListLayout", {
+		Parent = ButtonHolder,
 		FillDirection = Enum.FillDirection.Horizontal,
 		HorizontalAlignment = Enum.HorizontalAlignment.Center,
 		VerticalAlignment = Enum.VerticalAlignment.Center,
 		Padding = UDim.new(0, 5),
 		SortOrder = Enum.SortOrder.LayoutOrder
 	})
+	
+	-- Sliding Active Indicator (Free Floating Sibling)
+	local ActiveIndicator = Create("Frame", {
+		Name = "ActiveIndicator",
+		Parent = NavbarInner,
+		BackgroundColor3 = self.Theme.Accent,
+		BackgroundTransparency = 0, -- Solid
+		Size = UDim2.new(0, 0, 0.85, 0), -- Match Target Height
+		Position = UDim2.new(0, 0, 0.5, 0),
+		AnchorPoint = Vector2.new(0, 0.5),
+		ZIndex = 0 -- Behind Text
+	})
+	Create("UICorner", {Parent = ActiveIndicator, CornerRadius = UDim.new(1, 0)})
 	
 	Create("UIPadding", {Parent = NavbarInner, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10)})
 	
@@ -730,7 +752,8 @@ function EnvielUI:CreateWindow(Config)
 	end)
 
     local function UpdateNavbarSize()
-        local ListLayout = NavbarInner:FindFirstChild("UIListLayout")
+        local ButtonHolder = NavbarInner:FindFirstChild("ButtonHolder")
+        local ListLayout = ButtonHolder and ButtonHolder:FindFirstChild("UIListLayout")
         local Padding = NavbarInner:FindFirstChild("UIPadding")
         if not ListLayout then return end
         
@@ -748,15 +771,15 @@ function EnvielUI:CreateWindow(Config)
         FloatingDock.Size = UDim2.new(0, TargetWidth, 0, 40)
     end
     
-    NavbarInner:WaitForChild("UIListLayout"):GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateNavbarSize)
+    NavbarInner:WaitForChild("ButtonHolder"):WaitForChild("UIListLayout"):GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateNavbarSize)
     MainFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(UpdateNavbarSize)
 	
 	local Pages = Create("Frame", {
 		Name = "Pages",
 		Parent = ContentContainer,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, 20, 0, 45),
-		Size = UDim2.new(1, -40, 1, -(NavbarHeight + 55))
+		Position = UDim2.new(0, 8, 0, 45), -- Reduced Margin (was 20)
+		Size = UDim2.new(1, -16, 1, -(NavbarHeight + 55)) -- Reduced Margin (was -40)
 	})
 	
 	local Window = {
@@ -828,22 +851,30 @@ function EnvielUI:CreateWindow(Config)
 		Tween(Navbar, {BackgroundColor3 = T.Secondary}, 0.3)
 		if Navbar:FindFirstChild("UIStroke") then Tween(Navbar.UIStroke, {Color = T.Stroke}, 0.3) end
 		
-		for _, btn in pairs(NavbarInner:GetChildren()) do
-			if btn:IsA("TextButton") then
-				local label = btn:FindFirstChild("Label")
-				local content = btn:FindFirstChild("Content")
-				if content then label = content:FindFirstChild("Label") end
-				
-				local icon = content and content:FindFirstChild("ImageLabel")
-				
-				if Window.ActiveTab and btn.Name == Window.ActiveTab.."Btn" then
-					Tween(btn, {BackgroundColor3 = T.Accent, BackgroundTransparency = 0}, 0.3) -- Active = Solid
-					if label then Tween(label, {TextColor3 = T.AccentText}, 0.3) end
-					if icon then Tween(icon, {ImageColor3 = T.AccentText}, 0.3) end
-				else
-					Tween(btn, {BackgroundTransparency = 1}, 0.3)
-					if label then Tween(label, {TextColor3 = T.TextSec}, 0.3) end
-					if icon then Tween(icon, {ImageColor3 = T.TextSec}, 0.3) end
+		local activeIndicator = NavbarInner:FindFirstChild("ActiveIndicator")
+		if activeIndicator then
+			Tween(activeIndicator, {BackgroundColor3 = T.Accent}, 0.3)
+		end
+
+		local buttonHolder = NavbarInner:FindFirstChild("ButtonHolder")
+		if buttonHolder then
+			for _, btn in pairs(buttonHolder:GetChildren()) do
+				if btn:IsA("TextButton") then
+					local label = btn:FindFirstChild("Label")
+					local content = btn:FindFirstChild("Content")
+					if content then label = content:FindFirstChild("Label") end
+					
+					local icon = content and content:FindFirstChild("ImageLabel")
+					
+					if Window.ActiveTab and btn.Name == Window.ActiveTab.."Btn" then
+						-- Active: Text/Icon AccentText
+						if label then Tween(label, {TextColor3 = T.AccentText}, 0.3) end
+						if icon then Tween(icon, {ImageColor3 = T.AccentText}, 0.3) end
+					else
+						-- Inactive: Text/Icon TextSec
+						if label then Tween(label, {TextColor3 = T.TextSec}, 0.3) end
+						if icon then Tween(icon, {ImageColor3 = T.TextSec}, 0.3) end
+					end
 				end
 			end
 		end
@@ -888,13 +919,23 @@ function EnvielUI:CreateWindow(Config)
 		
 		if Pages:FindFirstChild(TabId) then Pages[TabId].Visible = true end
 		
-		local btn = NavbarInner:FindFirstChild(TabId.."Btn")
+		local btn = NavbarInner:FindFirstChild("ButtonHolder"):FindFirstChild(TabId.."Btn")
 		if btn then
 			local content = btn:FindFirstChild("Content")
 			local label = content and content:FindFirstChild("Label")
 			local icon = content and content:FindFirstChild("ImageLabel")
-			btn.BackgroundColor3 = self.Instance.Theme.Accent
-			Tween(btn, {BackgroundTransparency = 0}, 0.3) -- Active = Solid
+			
+			-- Slide Indicator to New Button
+			local Indicator = NavbarInner:FindFirstChild("ActiveIndicator")
+			if Indicator then
+				Tween(Indicator, {
+					Size = UDim2.new(0, btn.AbsoluteSize.X, 0.85, 0),
+					Position = UDim2.new(0, btn.Position.X.Offset, 0.5, 0) -- Use Offset from UIListLayout
+				}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+			end
+			
+			-- btn.BackgroundColor3 = self.Instance.Theme.Accent -- Handled by Indicator
+			-- Tween(btn, {BackgroundTransparency = 0}, 0.3) -- REMOVED
 			
 			if label then 
 				label.TextColor3 = self.Instance.Theme.AccentText -- Force Update
@@ -916,13 +957,14 @@ function EnvielUI:CreateWindow(Config)
 		local IconAsset = GetIcon(IconName)
 		
 		local TabBtn = Create("TextButton", {
+		local TabBtn = Create("TextButton", {
 			Name = TabId.."Btn",
-			Parent = NavbarInner,
+			Parent = NavbarInner:WaitForChild("ButtonHolder"), -- Parent to Holder
 			BackgroundColor3 = self.Instance.Theme.Accent,
-			BackgroundTransparency = 1,
+			BackgroundTransparency = 1, -- Always Transparent (Indicator handles bg)
 			AnchorPoint = Vector2.new(0, 0.5), -- Center Vertically
 			Position = UDim2.new(0, 0, 0.5, 0), -- Center Vertically in Dock
-			Size = UDim2.new(0, 0, 0.70, 0), -- 70% Height for "Floating Pill" look
+			Size = UDim2.new(0, 0, 0.85, 0), -- 85% Height (Fuller Fit)
 			AutomaticSize = Enum.AutomaticSize.X,
 			Text = "",
 			AutoButtonColor = false
@@ -930,8 +972,8 @@ function EnvielUI:CreateWindow(Config)
 		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(1, 0)}) -- Full Pill Radius
 		Create("UIPadding", {
 			Parent = TabBtn, 
-			PaddingLeft = UDim.new(0, 16),
-			PaddingRight = UDim.new(0, 16),
+			PaddingLeft = UDim.new(0, 10), -- Reduced Horizontal Padding (was 16)
+			PaddingRight = UDim.new(0, 10), -- Reduced Horizontal Padding (was 16)
 			PaddingTop = UDim.new(0, 6),
 			PaddingBottom = UDim.new(0, 6)
 		})
@@ -949,7 +991,7 @@ function EnvielUI:CreateWindow(Config)
 			Parent = Content,
 			FillDirection = Enum.FillDirection.Horizontal,
 			VerticalAlignment = Enum.VerticalAlignment.Center,
-			Padding = UDim.new(0, 8),
+			Padding = UDim.new(0, 5), -- Reduced Item Spacing (was 8)
 			SortOrder = Enum.SortOrder.LayoutOrder
 		})
 		
@@ -974,22 +1016,6 @@ function EnvielUI:CreateWindow(Config)
 			TextColor3 = self.Instance.Theme.TextSec,
 			LayoutOrder = 2
 		})
-		
-		TabBtn.MouseEnter:Connect(function()
-			if Window.ActiveTab ~= TabId then
-				Tween(TabBtn, {BackgroundTransparency = 0.8}, 0.2)
-				if TextLabel then Tween(TextLabel, {TextColor3 = self.Instance.Theme.TextSelected}, 0.2) end
-				if IconLabel then Tween(IconLabel, {ImageColor3 = self.Instance.Theme.TextSelected}, 0.2) end
-			end
-		end)
-		
-		TabBtn.MouseLeave:Connect(function()
-			if Window.ActiveTab ~= TabId then
-				Tween(TabBtn, {BackgroundTransparency = 1}, 0.2)
-				if TextLabel then Tween(TextLabel, {TextColor3 = self.Instance.Theme.TextSec}, 0.2) end
-				if IconLabel then Tween(IconLabel, {ImageColor3 = self.Instance.Theme.TextSec}, 0.2) end
-			end
-		end)
 		
 		TabBtn.MouseButton1Click:Connect(function()
 			Window:SelectTab(TabId)
