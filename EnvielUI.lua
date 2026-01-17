@@ -820,29 +820,12 @@ function EnvielUI:CreateWindow(Config)
 		TabBtn.MouseLeave:Connect(function()
 			if Window.ActiveTab ~= TabId then
 				Tween(TabBtn, {BackgroundTransparency = 1}, 0.2)
-				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 12, 0.5, -9),
-				Size = UDim2.new(0, 18, 0, 18),
-				Image = IconAsset,
-				ImageColor3 = self.Instance.Theme.Accent
-			})
-		end
+			end
+		end)
 		
-		local TabLabel = Create("TextLabel", {
-			Parent = TabBtn,
-			Name = "Label",
-			BackgroundTransparency = 1,
-			Position = UDim2.new(0, 40, 0, 0),
-			Size = UDim2.new(1, -45, 1, 0),
-			Text = Name,
-			Font = FontBold,
-			TextColor3 = self.Instance.Theme.Accent,
-			TextSize = 13,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			TextTransparency = 0.6
-		})
-		
-		TabBtn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
+		TabBtn.MouseButton1Click:Connect(function()
+			Window:SelectTab(TabId)
+		end)
 		
 		local Page = Create("ScrollingFrame", {
 			Name = TabId,
@@ -859,12 +842,6 @@ function EnvielUI:CreateWindow(Config)
 		
 		Page.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 			Page.CanvasSize = UDim2.new(0, 0, 0, Page.UIListLayout.AbsoluteContentSize.Y + 20)
-			
-			if Window.ActiveTab == TabId and not Minimized then
-				local ContentH = Page.UIListLayout.AbsoluteContentSize.Y
-				local TargetH = math.max(ContentH + 85, 160)
-				Tween(MainFrame, {Size = UDim2.new(0, WindowWidth, 0, TargetH)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-			end
 		end)
 		
 		if #Window.Tabs == 0 then Window:SelectTab(TabId) end
