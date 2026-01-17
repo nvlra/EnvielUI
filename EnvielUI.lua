@@ -641,7 +641,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	local Footer = Create("TextLabel", {
 		Name = "Footer", Parent = MainFrame, BackgroundTransparency = 1,
-		Size = UDim2.new(0, 100, 0, 20), Position = UDim2.new(1, -60, 0, 15), AnchorPoint = Vector2.new(1, 0), -- Top Right
+		Size = UDim2.new(0, 100, 0, 20), Position = UDim2.new(1, -60, 0, 15), AnchorPoint = Vector2.new(1, 0),
 		Text = "Made by Enviel", TextSize = 10, Font = FontBold, TextColor3 = self.Theme.TextSec, TextTransparency = 0.5,
 		TextXAlignment = Enum.TextXAlignment.Right
 	})
@@ -680,8 +680,16 @@ function EnvielUI:CreateWindow(Config)
 		Visible = true, -- Always Visible
 		ZIndex = 20
 	})
-	Create("UICorner", {Parent = Navbar, CornerRadius = UDim.new(0, 16)}) -- Rounded Dock
+	Create("UICorner", {Parent = Navbar, CornerRadius = UDim.new(0, 16)})
 	Create("UIStroke", {Parent = Navbar, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+	
+	-- Navbar Shadow for Depth
+	local NavbarShadow = Create("ImageLabel", {
+		Name = "Shadow", Parent = Navbar, BackgroundTransparency = 1,
+		Position = UDim2.new(0, -15, 0, -15), Size = UDim2.new(1, 30, 1, 30),
+		Image = "rbxassetid://5554236805", ImageColor3 = Color3.new(0,0,0), ImageTransparency = 0.6,
+		ScaleType = Enum.ScaleType.Slice, SliceCenter = Rect.new(23,23,277,277), ZIndex = 19
+	})
 	
 	-- Inner Container (Scrolling)
 	local NavbarInner = Create("ScrollingFrame", {
@@ -739,9 +747,9 @@ function EnvielUI:CreateWindow(Config)
 		Name = "Pages",
 		Parent = ContentContainer,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, 20, 0, 0),
-		-- Content ends BEFORE the dock starts (Dock Height + Margin)
-		Size = UDim2.new(1, -40, 1, -(NavbarHeight + 25)) -- Always leave room for Floating Dock
+		Position = UDim2.new(0, 20, 0, 45), -- Start below Header
+		-- Content ends BEFORE the dock starts
+		Size = UDim2.new(1, -40, 1, -(NavbarHeight + 55)) -- Leave room for Dock + Header
 	})
 	
 	local Window = {
@@ -1163,7 +1171,11 @@ function EnvielUI:CreateWindow(Config)
 			Window.ThemeRegistry:Register(Label, { type = "Text" })
 			Window.ThemeRegistry:Register(ValueLabel, { type = "Text" }) 
 			Window.ThemeRegistry:Register(Fill, { properties = { BackgroundColor3 = function(t) return t.Accent end } })
-			Window.ThemeRegistry:Register(Thumb, { properties = { BackgroundColor3 = function(t) return t.AccentText end, Color = function(t) return t.Accent end }, updateStroke = true })
+			
+			-- Fix: Register Thumb and Stroke Separately
+			Window.ThemeRegistry:Register(Thumb, { properties = { BackgroundColor3 = function(t) return t.AccentText end } })
+			Window.ThemeRegistry:Register(Thumb:FindFirstChild("UIStroke"), { type = "Stroke", properties = { Color = function(t) return t.Accent end } })
+			
 			Window:RegisterSearchable(Frame, Name)
 
 			local function UpdateSlider(Input)
