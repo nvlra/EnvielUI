@@ -366,24 +366,34 @@ function EnvielUI:CreateWindow(Config)
 		local Multi = Config.Multi or false
 		local Current = Config.CurrentValue or (Multi and {} or Options[1])
 		
+		-- Blur Effect
+		local Blur = game:GetService("Lighting"):FindFirstChild("EnvielBlur") or Instance.new("BlurEffect", game:GetService("Lighting"))
+		Blur.Name = "EnvielBlur"
+		Blur.Enabled = true
+		Blur.Size = 0
+		
 		-- Overlay
 		local Overlay = Create("TextButton", {
 			Name = "ModalOverlay", Parent = ContentWindow, BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1,
 			Size = UDim2.fromScale(1, 1), AutoButtonColor = false, Text = "", ZIndex = 50
 		})
 		
-		-- Modal Container (Slide Up)
+		-- Modal Container (Bottom Sheet)
 		local Container = Create("Frame", {
 			Name = "DropdownModal", Parent = Overlay, BackgroundColor3 = Window.Theme.Main,
-			Size = UDim2.new(0.9, 0, 0, IsMobile and 250 or 300), Position = UDim2.new(0.5, 0, 1.5, 0), -- Start below
-			AnchorPoint = Vector2.new(0.5, 1), ZIndex = 10
+			Size = UDim2.new(1, 0, 0, IsMobile and 250 or 300), Position = UDim2.new(0.5, 0, 1.5, 0), -- Start below
+			AnchorPoint = Vector2.new(0.5, 1), ZIndex = 10, BorderSizePixel = 0
 		})
-		Create("UICorner", {Parent = Container, CornerRadius = UDim.new(0, 12)})
-		Create("UIStroke", {Parent = Container, Color = Window.Theme.Stroke, Thickness = 1})
+		Create("UICorner", {Parent = Container, CornerRadius = UDim.new(0, 16)})
+		-- Patch for square bottom corners
+		local Patch = Create("Frame", {
+			Parent = Container, BackgroundColor3 = Window.Theme.Main, Size = UDim2.new(1, 0, 0, 20),
+			Position = UDim2.new(0, 0, 1, -10), ZIndex = 9, BorderSizePixel = 0
+		})
 		
 		-- Header
 		local Header = Create("Frame", {
-			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 40)
+			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 46)
 		})
 		Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
 		Create("UIStroke", {Parent = Header, Color = Window.Theme.Stroke, Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border})
@@ -400,16 +410,18 @@ function EnvielUI:CreateWindow(Config)
 		
 		-- Content List
 		local List = Create("ScrollingFrame", {
-			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -50), Position = UDim2.new(0, 0, 0, 45),
+			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -50), Position = UDim2.new(0, 0, 0, 50),
 			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0)
 		})
 		Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
-		Create("UIPadding", {Parent = List, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12)})
+		Create("UIPadding", {Parent = List, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12), PaddingBottom = UDim.new(0, 20)})
 		
 		local function Close()
 			Tween(Container, {Position = UDim2.new(0.5, 0, 1.5, 0)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-			Tween(Overlay, {BackgroundTransparency = 1}, 0.3).Completed:Wait()
+			Tween(Overlay, {BackgroundTransparency = 1}, 0.3)
+			Tween(Blur, {Size = 0}, 0.3).Completed:Wait()
 			Overlay:Destroy()
+			Blur:Destroy()
 		end
 		
 		CloseBtn.MouseButton1Click:Connect(Close)
@@ -430,12 +442,12 @@ function EnvielUI:CreateWindow(Config)
 				
 				local Item = Create("TextButton", {
 					Parent = List, BackgroundColor3 = isSelected and Window.Theme.Secondary or Window.Theme.Main,
-					Size = UDim2.new(1, 0, 0, 36), Text = "  "..tostring(opt), Font = Enum.Font.Gotham,
+					Size = UDim2.new(1, 0, 0, 40), Text = "  "..tostring(opt), Font = Enum.Font.Gotham,
 					TextColor3 = isSelected and Window.Theme.Accent or Window.Theme.TextDark, TextSize = 13,
 					TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false,
 					BorderSizePixel = 0
 				})
-				Create("UICorner", {Parent = Item, CornerRadius = UDim.new(0, 6)})
+				Create("UICorner", {Parent = Item, CornerRadius = UDim.new(0, 8)})
 				if isSelected then Create("UIStroke", {Parent = Item, Color = Window.Theme.Stroke, Thickness = 1}) end
 				
 				Item.MouseButton1Click:Connect(function()
@@ -450,14 +462,15 @@ function EnvielUI:CreateWindow(Config)
 					end
 				end)
 			end
-			List.CanvasSize = UDim2.new(0, 0, 0, #Options * 41)
+			List.CanvasSize = UDim2.new(0, 0, 0, #Options * 45 + 10)
 		end
 		
 		Refresh()
 		
 		-- Animate In
 		Tween(Overlay, {BackgroundTransparency = 0.5}, 0.3)
-		Tween(Container, {Position = UDim2.new(0.5, 0, 1, -20)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+		Tween(Blur, {Size = 24}, 0.3)
+		Tween(Container, {Position = UDim2.new(0.5, 0, 1, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 	end
 
 	
