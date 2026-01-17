@@ -458,6 +458,7 @@ function EnvielUI:CreateWindow(Config)
 		-- Animate In
 		Tween(Overlay, {BackgroundTransparency = 0.5}, 0.3)
 		Tween(Container, {Position = UDim2.new(0.5, 0, 1, -20)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+	end
 
 	
 	local ContentHolder = Create("CanvasGroup", {
