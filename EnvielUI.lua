@@ -507,7 +507,7 @@ function EnvielUI:CreateWindow(Config)
 	local Navbar = Create("Frame", {
 		Name = "Navbar",
 		Parent = ContentContainer,
-		BackgroundColor3 = self.Instance.Theme.Secondary, 
+		BackgroundColor3 = self.Theme.Secondary, 
 		Position = UDim2.new(0.5, 0, 1, -15), -- Floats 15px from bottom
 		Size = UDim2.new(1, -30, 0, NavbarHeight), -- Width with margin
 		AnchorPoint = Vector2.new(0.5, 1),
@@ -516,7 +516,7 @@ function EnvielUI:CreateWindow(Config)
 		ZIndex = 20
 	})
 	Create("UICorner", {Parent = Navbar, CornerRadius = UDim.new(0, 16)}) -- Rounded Dock
-	Create("UIStroke", {Parent = Navbar, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+	Create("UIStroke", {Parent = Navbar, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 	
 	-- Inner Container (Scrolling)
 	local NavbarInner = Create("ScrollingFrame", {
