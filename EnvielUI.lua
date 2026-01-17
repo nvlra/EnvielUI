@@ -165,7 +165,7 @@ function EnvielUI:CreateWindow(Config)
 	-- Pop Animation
 	task.spawn(function()
 		ContentWindow.GroupTransparency = 1
-		Tween(MainScale, {Scale = 1}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		Tween(MainScale, {Scale = 1}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		Tween(ContentWindow, {GroupTransparency = 0}, 0.4)
 	end)
 
@@ -247,7 +247,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	-- Restore logic
 	MiniClick.MouseButton1Click:Connect(function()
-		Tween(MiniScale, {Scale = 0}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+		Tween(MiniScale, {Scale = 0}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
 		Tween(MiniButton, {GroupTransparency = 1}, 0.3).Completed:Wait()
 		
 		MiniButton.Visible = false
@@ -259,7 +259,7 @@ function EnvielUI:CreateWindow(Config)
 		local D = MainFrame:FindFirstChild("Dock")
 		if D and D:IsA("CanvasGroup") then D.GroupTransparency = 1 end
 		
-		Tween(MainScale, {Scale = 1}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		Tween(MainScale, {Scale = 1}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		Tween(ContentWindow, {GroupTransparency = 0}, 0.4)
 		if D and D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 0}, 0.4) end
 	end)
@@ -279,7 +279,7 @@ function EnvielUI:CreateWindow(Config)
 		MiniButton.GroupTransparency = 1
 		MiniScale.Scale = 0
 		Tween(MiniButton, {GroupTransparency = 0}, 0.3)
-		Tween(MiniScale, {Scale = 1}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		Tween(MiniScale, {Scale = 1}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 	end)
 	
 	local NotifHolder = Create("Frame", {
@@ -321,7 +321,7 @@ function EnvielUI:CreateWindow(Config)
 			if TargetSize < 20 then TargetSize = 60 end
 			
 			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, TargetSize)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-			Tween(F, {Position = UDim2.new(0, 0, 0, 0)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+			Tween(F, {Position = UDim2.new(0, 0, 0, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		end)
 		
 		task.delay(Cfg.Duration or 3, function()
@@ -457,7 +457,7 @@ function EnvielUI:CreateWindow(Config)
 
 			B.MouseButton1Click:Connect(function()
 				Tween(BScale, {Scale = 0.95}, 0.05).Completed:Wait()
-				Tween(BScale, {Scale = 1}, 0.1, Enum.EasingStyle.Back)
+				Tween(BScale, {Scale = 1}, 0.1, Enum.EasingStyle.Quint)
 				if Config.Callback then Config.Callback() end
 			end)
 		end
@@ -466,7 +466,6 @@ function EnvielUI:CreateWindow(Config)
 			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 42)})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
-			
 			Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 15, 0, 0), Size = UDim2.new(1, -70, 1, 0),
 				Text = Config.Name or "Toggle", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left
