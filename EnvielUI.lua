@@ -392,24 +392,42 @@ function EnvielUI:CreateWindow(Config)
 		
 		-- Header
 		local Header = Create("Frame", {
-			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 46)
+			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 80) -- Increased for Search
 		})
-		Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
-		Create("UIStroke", {Parent = Header, Color = Window.Theme.Stroke, Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border})
+		Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16), PaddingTop = UDim.new(0, 10)})
 		
 		Create("TextLabel", {
-			Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(1, -30, 1, 0),
+			Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(1, -30, 0, 20),
 			Text = Config.Name or "Select Option", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
 		})
 		
 		local CloseBtn = Create("ImageButton", {
-			Parent = Header, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(20, 20),
+			Parent = Header, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 0), Size = UDim2.fromOffset(20, 20),
 			BackgroundTransparency = 1, Image = GetIcon("x") or "rbxassetid://6031094678", ImageColor3 = Window.Theme.TextDark
 		})
 		
+		-- Search Bar
+		local SearchBg = Create("Frame", {
+			Parent = Header, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 32),
+			Position = UDim2.new(0, 0, 0, 30)
+		})
+		Create("UICorner", {Parent = SearchBg, CornerRadius = UDim.new(0, 8)})
+		Create("UIStroke", {Parent = SearchBg, Color = Window.Theme.Stroke, Thickness = 1})
+		
+		local SearchIcon = Create("ImageLabel", {
+			Parent = SearchBg, BackgroundTransparency = 1, Size = UDim2.fromOffset(16, 16), Position = UDim2.new(0, 10, 0.5, 0),
+			AnchorPoint = Vector2.new(0, 0.5), Image = GetIcon("search") or "rbxassetid://6031154871", ImageColor3 = Window.Theme.TextDark
+		})
+		
+		local SearchInput = Create("TextBox", {
+			Parent = SearchBg, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 34, 0, 0),
+			Text = "", PlaceholderText = "Search...", Font = Enum.Font.Gotham, TextSize = 13,
+			TextColor3 = Window.Theme.Text, PlaceholderColor3 = Window.Theme.TextDark, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false
+		})
+
 		-- Content List
 		local List = Create("ScrollingFrame", {
-			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -50), Position = UDim2.new(0, 0, 0, 50),
+			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -90), Position = UDim2.new(0, 0, 0, 90),
 			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0)
 		})
 		Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
@@ -428,10 +446,17 @@ function EnvielUI:CreateWindow(Config)
 		
 		local tempSelected = Multi and {unpack(Current)} or Current
 
-		local function Refresh()
+		local function Refresh(Query)
 			for _, v in pairs(List:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
 			
+			local filtered = {}
 			for _, opt in pairs(Options) do
+				if not Query or string.find(tostring(opt):lower(), Query:lower()) then
+					table.insert(filtered, opt)
+				end
+			end
+			
+			for _, opt in pairs(filtered) do
 				local isSelected = false
 				if Multi then
 					for _, s in pairs(tempSelected) do if s == opt then isSelected = true break end end
@@ -454,15 +479,28 @@ function EnvielUI:CreateWindow(Config)
 						local idx = table.find(tempSelected, opt)
 						if idx then table.remove(tempSelected, idx) else table.insert(tempSelected, opt) end
 						Callback(tempSelected)
-						Refresh()
+						Refresh(SearchInput.Text)
 					else
 						Callback(opt)
 						Close()
 					end
 				end)
 			end
-			List.CanvasSize = UDim2.new(0, 0, 0, #Options * 45 + 10)
+			
+			-- Dynamic Weight Calculation
+			local RowHeight = 45 -- 40 Item + 5 Padding
+			local ContentHeight = #filtered * RowHeight + 20 -- + PaddingBottom
+			local MinH = 150
+			local MaxH = IsMobile and 350 or 400
+			local TargetH = math.clamp(ContentHeight + 90, MinH, MaxH) -- + Header Height
+			
+			List.CanvasSize = UDim2.new(0, 0, 0, ContentHeight)
+			Tween(Container, {Size = UDim2.new(0.3, 0, 0, TargetH)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		end
+		
+		SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
+			Refresh(SearchInput.Text)
+		end)
 		
 		Refresh()
 		
