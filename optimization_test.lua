@@ -1,7 +1,7 @@
 -- EnvielUI Optimization Test Script
-local Enviel = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
 
-local Window = Enviel.new({
+local Window = Library.new():CreateWindow({
 	Name = "Optimization Test",
 	Theme = "Dark"
 })
