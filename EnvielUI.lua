@@ -23,13 +23,12 @@ end)
 local function GetIcon(Name)
 	if not Name then return nil end
 	if Name:find("rbxassetid") then return Name end
-	if not IconLib then return "" end -- Fallback if lib failed
+	if not IconLib then return "" end
 	
 	local s, i = pcall(function() return IconLib.GetIcon(Name) end)
 	return (s and i) or ""
 end
 
--- Helper: Validate Config
 local function Validate(Config, Defaults)
 	Config = Config or {}
 	for k, v in pairs(Defaults) do

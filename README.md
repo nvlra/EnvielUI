@@ -43,7 +43,6 @@ Tab:CreateToggle({
     Name = "Enable Safe Mode",
     Flag = "SafeMode",
     Callback = function(Value)
-        print("Safe Mode:", Value)
     end
 })
 
@@ -63,7 +62,6 @@ Tab:CreateDropdown({
     Multi = true,
     Default = {"Apple"},
     Callback = function(Value)
-        print("Selected:", unpack(Value))
     end
 })
 ```
