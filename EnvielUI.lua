@@ -225,7 +225,14 @@ function EnvielUI:CreateWindow(Config)
 	
 	local Minimized = false
 	local WindowWidth = Config.Width or 360
-	local OpenSize = UDim2.new(0, WindowWidth, 0, 480)
+	local OpenSize
+	
+	if UserInputService.TouchEnabled then
+		OpenSize = UDim2.new(0.55, 0, 0, 480)
+	else
+		-- [Enviel PC] Use Fixed Pixel used for precision
+		OpenSize = UDim2.new(0, WindowWidth, 0, 480)
+	end
 	
 	
 	local MainFrame = Create("Frame", {
@@ -385,46 +392,6 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end)
 
-	if UserInputService.TouchEnabled then
-		local MobileToggle = Create("TextButton", {
-			Name = "EnvielMobileToggle",
-			Parent = ScreenGui,
-			BackgroundColor3 = self.Theme.Element,
-			Position = UDim2.new(0.5, -25, 0, 10),
-			Size = UDim2.new(0, 50, 0, 50),
-			Text = "",
-			AutoButtonColor = false
-		})
-		Create("UICorner", {Parent = MobileToggle, CornerRadius = UDim.new(1, 0)})
-		Create("UIStroke", {Parent = MobileToggle, Color = self.Theme.Accent, Thickness = 2})
-		Create("ImageLabel", {
-			Parent = MobileToggle,
-			BackgroundTransparency = 1,
-			Position = UDim2.new(0.5, -16, 0.5, -16),
-			Size = UDim2.new(0, 32, 0, 32),
-			Image = "rbxassetid://86129438272762",
-			ImageColor3 = self.Theme.Accent
-		})
-		
-		local MobileOpen = true
-		MobileToggle.MouseButton1Click:Connect(function()
-			MobileOpen = not MobileOpen
-			ScreenGui.Enabled = true
-			if not MobileOpen then
-				if not Minimized then
-					Tween(MainFrame, {Size = UDim2.new(0,0,0,0)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.In).Completed:Wait()
-				end
-				MainFrame.Visible = false
-			else
-				MainFrame.Visible = true
-				if not Minimized then
-					MainFrame.Size = UDim2.new(0,0,0,0)
-					Tween(MainFrame, {Size = OpenSize}, 0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-				end
-			end
-		end)
-	end
-
 	local Header = Create("Frame", {
 		Name = "Header",
 		Parent = MainFrame,
@@ -534,17 +501,44 @@ function EnvielUI:CreateWindow(Config)
 	Create("UIStroke", {Parent = SearchBar, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 
 	local NoSidebar = Config.NoSidebar or false
-	local SidebarWidth = NoSidebar and 0 or 160
+	-- SidebarWidth is 0 because we are using Bottom Dock now
 	
-	local Sidebar = Create("ScrollingFrame", {
-		Name = "Sidebar",
+	local NavbarHeight = 70 
+	
+	-- Navbar Container (The Dock)
+	local Navbar = Create("Frame", {
+		Name = "Navbar",
 		Parent = ContentContainer,
+		BackgroundColor3 = self.Theme.Secondary, 
+		Position = UDim2.new(0, 0, 1, -NavbarHeight),
+		Size = UDim2.new(1, 0, 0, NavbarHeight),
+		BorderSizePixel = 0,
+		Visible = not NoSidebar,
+		ZIndex = 10
+	})
+	Create("UIStroke", {Parent = Navbar, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+	
+	-- Inner Container for centering or padding (Scrolling for overflow protection)
+	local NavbarInner = Create("ScrollingFrame", {
+		Name = "NavbarInner",
+		Parent = Navbar,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, 20, 0, 45),
-		Size = UDim2.new(0, SidebarWidth, 1, -55),
-		ScrollBarThickness = 0,
-		CanvasSize = UDim2.new(0,0,0,0),
-		Visible = not NoSidebar
+		Size = UDim2.new(1, -20, 1, 0),
+		Position = UDim2.new(0, 10, 0, 0),
+		CanvasSize = UDim2.new(0, 0, 0, 0),
+		AutomaticCanvasSize = Enum.AutomaticSize.X,
+		ScrollBarThickness = 0, -- Hidden scrollbar for cleaner look
+		ScrollingDirection = Enum.ScrollingDirection.X
+	})
+	
+	-- Horizontal Layout for Dock Items
+	Create("UIListLayout", {
+		Parent = NavbarInner,
+		FillDirection = Enum.FillDirection.Horizontal,
+		HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		VerticalAlignment = Enum.VerticalAlignment.Center,
+		Padding = UDim.new(0, 8),
+		SortOrder = Enum.SortOrder.LayoutOrder
 	})
 	
 	SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
@@ -564,14 +558,14 @@ function EnvielUI:CreateWindow(Config)
 			end
 		end
 	end)
-	Create("UIListLayout", {Parent = Sidebar, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder})
 	
 	local Pages = Create("Frame", {
 		Name = "Pages",
 		Parent = ContentContainer,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, NoSidebar and 20 or 200, 0, NoSidebar and 0 or 0),
-		Size = UDim2.new(1, NoSidebar and -40 or -220, 1, -20)
+		Position = UDim2.new(0, 20, 0, 0),
+		-- Adjust height to leave room for Navbar if visible
+		Size = UDim2.new(1, -40, 1, NoSidebar and -10 or -(NavbarHeight + 10)) 
 	})
 	
 	local Window = {
@@ -579,7 +573,7 @@ function EnvielUI:CreateWindow(Config)
 		Groups = {},
 		Instance = self,
 		MainFrame = MainFrame,
-		Sidebar = Sidebar,
+		Navbar = Navbar, -- Renamed from Sidebar to Navbar
 		Pages = Pages,
 		TitleLabel = Title,
 		Search = SearchBar,
@@ -610,11 +604,6 @@ function EnvielUI:CreateWindow(Config)
 			if OpenBtn:FindFirstChild("ImageLabel") then Tween(OpenBtn.ImageLabel, {ImageColor3 = T.Accent}, 0.3) end
 		end
 		
-		if MobileToggle then
-			Tween(MobileToggle, {BackgroundColor3 = T.Element}, 0.3)
-			if MobileToggle:FindFirstChild("UIStroke") then Tween(MobileToggle.UIStroke, {Color = T.Accent}, 0.3) end
-			if MobileToggle:FindFirstChild("ImageLabel") then Tween(MobileToggle.ImageLabel, {ImageColor3 = T.Accent}, 0.3) end
-		end
 		
 		local WM = MainFrame:FindFirstChild("Watermark")
 		if WM then
@@ -631,21 +620,25 @@ function EnvielUI:CreateWindow(Config)
 			if self.Search:FindFirstChild("UIStroke") then Tween(self.Search.UIStroke, {Color = T.Stroke}, 0.3) end
 		end
 		
+		-- Update Navbar Theme
+		Tween(Navbar, {BackgroundColor3 = T.Secondary}, 0.3)
+		if Navbar:FindFirstChild("UIStroke") then Tween(Navbar.UIStroke, {Color = T.Stroke}, 0.3) end
 		
-		for _, btn in pairs(Sidebar:GetChildren()) do
+		for _, btn in pairs(NavbarInner:GetChildren()) do
 			if btn:IsA("TextButton") then
 				local label = btn:FindFirstChild("Label")
 				local icon = btn:FindFirstChild("ImageLabel")
-				local stroke = btn:FindFirstChild("UIStroke")
 				
-				Tween(btn.UIStroke, {Color = T.Accent}, 0.3)
-				if label then Tween(label, {TextColor3 = T.Accent}, 0.3) end
-				if icon then Tween(icon, {ImageColor3 = T.Accent}, 0.3) end
-				
+				-- Normal State
 				if Window.ActiveTab and btn.Name == Window.ActiveTab.."Btn" then
-					Tween(btn, {BackgroundColor3 = T.TabActive}, 0.3)
-					if label then Tween(label, {TextColor3 = T.TextSelected}, 0.3) end
-					if icon then Tween(icon, {ImageColor3 = T.TextSelected}, 0.3) end
+					-- Active State styling is handled in SelectTab, but update colors here if needed
+					Tween(btn, {BackgroundColor3 = T.Accent}, 0.3)
+					if label then Tween(label, {TextColor3 = T.AccentText}, 0.3) end
+					if icon then Tween(icon, {ImageColor3 = T.AccentText}, 0.3) end
+				else
+					Tween(btn, {BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1}, 0.3) -- Transparent
+					if label then Tween(label, {TextColor3 = T.TextSec}, 0.3) end
+					if icon then Tween(icon, {ImageColor3 = T.TextSec}, 0.3) end
 				end
 			end
 		end
@@ -741,77 +734,92 @@ function EnvielUI:CreateWindow(Config)
 		for _, page in pairs(Pages:GetChildren()) do
 			if page:IsA("ScrollingFrame") then page.Visible = false end
 		end
-		for _, btn in pairs(Sidebar:GetChildren()) do
+		
+		-- Reset all tab buttons in Navbar
+		for _, btn in pairs(NavbarInner:GetChildren()) do
 			if btn:IsA("TextButton") and btn.Name ~= TabId.."Btn" then
-				Tween(btn, {BackgroundTransparency = 1, TextTransparency = 0.6, TextColor3 = self.Instance.Theme.TextSec}, 0.3)
-				btn.Font = FontRegular
-				if btn:FindFirstChild("UIStroke") then Tween(btn.UIStroke, {Transparency = 1}, 0.3) end
+				-- Inactive State (Transparent Background, Gray Text/Icon)
+				Tween(btn, {BackgroundTransparency = 1, BackgroundColor3 = self.Instance.Theme.Secondary}, 0.3)
 				
+				local label = btn:FindFirstChild("Label")
 				local icon = btn:FindFirstChild("ImageLabel")
+				
+				if label then Tween(label, {TextColor3 = self.Instance.Theme.TextSec}, 0.3) end
 				if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSec}, 0.3) end
 			end
 		end
 		
 		if Pages:FindFirstChild(TabId) then Pages[TabId].Visible = true end
-		if Sidebar:FindFirstChild(TabId.."Btn") then
-			local btn = Sidebar[TabId.."Btn"]
+		
+		if NavbarInner:FindFirstChild(TabId.."Btn") then
+			local btn = NavbarInner[TabId.."Btn"]
 			local label = btn:FindFirstChild("Label")
 			local icon = btn:FindFirstChild("ImageLabel")
 			
+			-- Active State (Pill Shape Accent Background, Contrast Text/Icon)
+			Tween(btn, {BackgroundTransparency = 0, BackgroundColor3 = self.Instance.Theme.Accent}, 0.3)
+			
 			if label then
-				Tween(label, {TextTransparency = 0, TextColor3 = self.Instance.Theme.TextSelected}, 0.3)
-				label.Font = Enum.Font.BuilderSans -- Bold handled by Weight property if needed, but Enum usually sets base.
+				Tween(label, {TextColor3 = self.Instance.Theme.AccentText}, 0.3)
 			end
 			
-			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSelected}, 0.3) end
-			
-			Tween(btn, {BackgroundTransparency = 0, BackgroundColor3 = self.Instance.Theme.TabActive}, 0.3)
-			if btn:FindFirstChild("UIStroke") then Tween(btn.UIStroke, {Transparency = 0}, 0.3) end
+			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.AccentText}, 0.3) end
 		end
 		Window.ActiveTab = TabId
 	end
 	
 	function Window:CreateTab(Config)
 		local Name = Config.Name or "Tab"
-		local IconName = Config.Icon or "" 
+		local IconName = Config.Icon or "layout-grid" -- Default icon if none provided
 		local TabId = "Tab"..tostring(#Window.Tabs + 1)
 		
 		local IconAsset = GetIcon(IconName)
 		
+		-- Dock Button (Square-ish ratio)
 		local TabBtn = Create("TextButton", {
 			Name = TabId.."Btn",
-			Parent = Sidebar,
+			Parent = NavbarInner,
 			BackgroundColor3 = self.Instance.Theme.Accent,
 			BackgroundTransparency = 1, 
-			Size = UDim2.new(1, 0, 0, 36),
+			Size = UDim2.new(0, 60, 0, 50), -- Fixed width for dock items
 			Text = "",
 			AutoButtonColor = false
 		})
 		
-		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 8)})
-		Create("UIStroke", {Parent = TabBtn, Color = self.Instance.Theme.Accent, Thickness = 1, Transparency = 1})
+		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 12)}) -- Pill/Rounded shape
+		
+		-- Icon (Top)
+		local IconLabel = Create("ImageLabel", {
+			Parent = TabBtn,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0.5, -12, 0.2, 0), -- Shifted up
+			Size = UDim2.new(0, 24, 0, 24),
+			Image = IconAsset,
+			ImageColor3 = self.Instance.Theme.TextSec
+		})
+		
+		-- Text (Bottom)
+		local TextLabel = Create("TextLabel", {
+			Name = "Label",
+			Parent = TabBtn,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0, 0, 0.65, 0), -- Bottom position
+			Size = UDim2.new(1, 0, 0.3, 0),
+			Text = Name,
+			Font = FontMedium,
+			TextSize = 10, -- Smaller text for dock
+			TextColor3 = self.Instance.Theme.TextSec
+		})
 		
 		TabBtn.MouseEnter:Connect(function()
 			if Window.ActiveTab ~= TabId then
-				Tween(TabBtn, {BackgroundTransparency = 0}, 0.2)
-				Tween(TabBtn, {BackgroundColor3 = self.Instance.Theme.TabHover}, 0.2)
+				Tween(TabBtn, {BackgroundTransparency = 0.8, BackgroundColor3 = self.Instance.Theme.TextSec}, 0.2)
 			end
 		end)
 		
 		TabBtn.MouseLeave:Connect(function()
 			if Window.ActiveTab ~= TabId then
 				Tween(TabBtn, {BackgroundTransparency = 1}, 0.2)
-				local icon = TabBtn:FindFirstChild("ImageLabel")
-				if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.Accent}, 0.2) end
-			else
-				
-				Tween(TabBtn, {BackgroundTransparency = 0, BackgroundColor3 = self.Instance.Theme.TabActive}, 0.2)
-			end
-		end)
-		
-		if IconAsset ~= "" then
-			Create("ImageLabel", {
-				Parent = TabBtn,
 				BackgroundTransparency = 1,
 				Position = UDim2.new(0, 12, 0.5, -9),
 				Size = UDim2.new(0, 18, 0, 18),
@@ -855,7 +863,6 @@ function EnvielUI:CreateWindow(Config)
 			if Window.ActiveTab == TabId and not Minimized then
 				local ContentH = Page.UIListLayout.AbsoluteContentSize.Y
 				local TargetH = math.max(ContentH + 85, 160)
-				-- Fix: Always use the configured WindowWidth, not the current one (which might be 0 during open anim)
 				Tween(MainFrame, {Size = UDim2.new(0, WindowWidth, 0, TargetH)}, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 			end
 		end)
