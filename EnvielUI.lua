@@ -380,7 +380,7 @@ function EnvielUI:CreateWindow(Config)
 		
 		local Container = Create("Frame", {
 			Name = "DropdownModal", Parent = Overlay, BackgroundColor3 = Window.Theme.Main,
-			Size = UDim2.new(0.9, 0, 0, IsMobile and 250 or 300), Position = UDim2.new(0.5, 0, 1.5, 0), -- Start below
+			Size = UDim2.new(0.5, 0, 0, IsMobile and 250 or 300), Position = UDim2.new(0.5, 0, 1.5, 0), -- Start below
 			AnchorPoint = Vector2.new(0.5, 1), ZIndex = 10, BorderSizePixel = 0
 		})
 		Create("UICorner", {Parent = Container, CornerRadius = UDim.new(0, 16)})
