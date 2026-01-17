@@ -165,7 +165,7 @@ function EnvielUI:CreateWindow(Config)
 	local HdrH = IsMobile and 38 or 50
 	
 	if IsMobile then 
-		MainFrame.Size = UDim2.fromScale(0.55, 0.58) 
+		MainFrame.Size = UDim2.fromScale(0.55, 0.60) 
 		MainFrame.Position = UDim2.fromScale(0.5, 0.50)
 	end
 	
