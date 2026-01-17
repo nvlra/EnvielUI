@@ -901,8 +901,8 @@ function EnvielUI:CreateWindow(Config)
 			-- Active State (Underline Style)
 			Tween(btn, {BackgroundTransparency = 1}, 0.3) -- No background fill
 			
-			if label then Tween(label, {TextColor3 = self.Instance.Theme.Accent}, 0.3) end
-			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.Accent}, 0.3) end
+			if label then Tween(label, {TextColor3 = self.Instance.Theme.TextSelected}, 0.3) end
+			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSelected}, 0.3) end
 			if bar then 
 				Tween(bar, {Size = UDim2.new(1, 0, 0, 3)}, 0.3) -- Expand bar full width
 				Tween(bar, {BackgroundColor3 = self.Instance.Theme.Accent}, 0.3)
@@ -920,8 +920,8 @@ function EnvielUI:CreateWindow(Config)
 			local bar = btn:FindFirstChild("ActiveBar")
 			
 			btn.BackgroundTransparency = 1
-			if label then label.TextColor3 = self.Instance.Theme.Accent end
-			if icon then icon.ImageColor3 = self.Instance.Theme.Accent end
+			if label then label.TextColor3 = self.Instance.Theme.TextSelected end
+			if icon then icon.ImageColor3 = self.Instance.Theme.TextSelected end
 			if bar then 
 				bar.Size = UDim2.new(1, 0, 0, 3) 
 				bar.BackgroundColor3 = self.Instance.Theme.Accent 
@@ -1011,8 +1011,8 @@ function EnvielUI:CreateWindow(Config)
 		-- Hover Effects
 		TabBtn.MouseEnter:Connect(function()
 			if Window.ActiveTab ~= TabId then
-				if TextLabel then Tween(TextLabel, {TextColor3 = self.Instance.Theme.Accent}, 0.2) end
-				if IconLabel then Tween(IconLabel, {ImageColor3 = self.Instance.Theme.Accent}, 0.2) end
+				if TextLabel then Tween(TextLabel, {TextColor3 = self.Instance.Theme.TextSelected}, 0.2) end
+				if IconLabel then Tween(IconLabel, {ImageColor3 = self.Instance.Theme.TextSelected}, 0.2) end
 			end
 		end)
 		
@@ -1063,8 +1063,8 @@ function EnvielUI:CreateWindow(Config)
 			Frame:SetAttribute("EnvielTheme", "Element")
 			Create("UICorner", {Parent = Frame, CornerRadius = UDim.new(0, 8)})
 			Create("UIStroke", {Parent = Frame, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
-
-			Create("TextLabel", {
+			
+			local Label = Create("TextLabel", {
 				Parent = Frame, BackgroundTransparency = 1, Position = UDim2.new(0,15,0,0), Size = UDim2.new(1,-120,1,0),
 				Font = FontBold,
 				Text = Name, TextColor3 = self.Instance.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left
@@ -1095,7 +1095,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			-- Registry
 			Window.ThemeRegistry:Register(Frame, { type = "Element", updateStroke = true })
-			Window.ThemeRegistry:Register(Create("TextLabel", {Parent=Frame}), { type = "Text" }) -- Placeholder fix
+			Window.ThemeRegistry:Register(Label, { type = "Text" }) 
 			Window.ThemeRegistry:Register(Btn, { 
 				properties = { 
 					BackgroundColor3 = function(t) return t.Accent end, 
