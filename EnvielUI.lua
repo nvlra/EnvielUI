@@ -831,12 +831,18 @@ function EnvielUI:CreateWindow(Config)
 				if Window.ActiveTab and btn.Name == Window.ActiveTab.."Btn" then
 					if label then Tween(label, {TextColor3 = T.AccentText}, 0.3) end
 					if icon then Tween(icon, {ImageColor3 = T.AccentText}, 0.3) end
-					if bar then Tween(bar, {BackgroundColor3 = T.AccentText}, 0.3) end
+					if bar then 
+						Tween(bar, {BackgroundColor3 = T.AccentText}, 0.3) 
+						Tween(bar, {Size = UDim2.new(0, 20, 0, 3)}, 0.3) -- Active Width
+					end
 				else
 					Tween(btn, {BackgroundTransparency = 1}, 0.3)
 					if label then Tween(label, {TextColor3 = T.TextSec}, 0.3) end
 					if icon then Tween(icon, {ImageColor3 = T.TextSec}, 0.3) end
-					if bar then Tween(bar, {BackgroundColor3 = T.Secondary}, 0.3) end
+					if bar then 
+						Tween(bar, {BackgroundColor3 = T.Secondary}, 0.3) 
+						Tween(bar, {Size = UDim2.new(0, 0, 0, 3)}, 0.3) -- Inactive Width
+					end
 				end
 			end
 		end
@@ -878,19 +884,20 @@ function EnvielUI:CreateWindow(Config)
 		
 		if Pages:FindFirstChild(TabId) then Pages[TabId].Visible = true end
 		
-		if NavbarInner:FindFirstChild(TabId.."Btn") then
 			local btn = NavbarInner[TabId.."Btn"]
 			local label = btn:FindFirstChild("Label")
 			local icon = btn:FindFirstChild("ImageLabel")
+			local bar = btn:FindFirstChild("ActiveBar")
 			
-			-- Active State (Pill Shape Accent Background, Contrast Text/Icon)
-			Tween(btn, {BackgroundTransparency = 0, BackgroundColor3 = self.Instance.Theme.Accent}, 0.3)
+			-- Active State (Underline Style)
+			Tween(btn, {BackgroundTransparency = 1}, 0.3) -- No background fill
 			
-			if label then
-				Tween(label, {TextColor3 = self.Instance.Theme.AccentText}, 0.3)
-			end
-			
+			if label then Tween(label, {TextColor3 = self.Instance.Theme.AccentText}, 0.3) end
 			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.AccentText}, 0.3) end
+			if bar then 
+				Tween(bar, {Size = UDim2.new(0, 20, 0, 3)}, 0.3) -- Expand bar
+				Tween(bar, {BackgroundColor3 = self.Instance.Theme.AccentText}, 0.3)
+			end
 		end
 		Window.ActiveTab = TabId
 	end
@@ -938,15 +945,31 @@ function EnvielUI:CreateWindow(Config)
 			TextColor3 = self.Instance.Theme.TextSec
 		})
 		
+		-- Active Bar (Underline)
+		local ActiveBar = Create("Frame", {
+			Name = "ActiveBar",
+			Parent = TabBtn,
+			BackgroundColor3 = self.Instance.Theme.AccentText,
+			Position = UDim2.new(0.5, 0, 1, -4), -- Bottom Center
+			Size = UDim2.new(0, 0, 0, 3), -- Start invisible
+			AnchorPoint = Vector2.new(0.5, 1),
+			BorderSizePixel = 0
+		})
+		Create("UICorner", {Parent = ActiveBar, CornerRadius = UDim.new(1, 0)})
+		
 		TabBtn.MouseEnter:Connect(function()
 			if Window.ActiveTab ~= TabId then
-				Tween(TabBtn, {BackgroundTransparency = 0.8, BackgroundColor3 = self.Instance.Theme.TextSec}, 0.2)
+				Tween(TabBtn, {BackgroundTransparency = 1}, 0.2) -- No bg change on hover
+				if TextLabel then Tween(TextLabel, {TextColor3 = self.Instance.Theme.Accent}, 0.2) end
+				if IconLabel then Tween(IconLabel, {ImageColor3 = self.Instance.Theme.Accent}, 0.2) end
 			end
 		end)
 		
 		TabBtn.MouseLeave:Connect(function()
 			if Window.ActiveTab ~= TabId then
 				Tween(TabBtn, {BackgroundTransparency = 1}, 0.2)
+				if TextLabel then Tween(TextLabel, {TextColor3 = self.Instance.Theme.TextSec}, 0.2) end
+				if IconLabel then Tween(IconLabel, {ImageColor3 = self.Instance.Theme.TextSec}, 0.2) end
 			end
 		end)
 		
@@ -998,7 +1021,7 @@ function EnvielUI:CreateWindow(Config)
 			})
 			
 			local Btn = Create("TextButton", {
-				Parent = Frame, BackgroundColor3 = self.Instance.Theme.Accent, Position = UDim2.new(1,-105,0.5,-13), Size = UDim2.new(0,90,0,26),
+				Parent = Frame, BackgroundColor3 = self.Instance.Theme.Accent, Position = UDim2.new(1,-95,0.5,-13), Size = UDim2.new(0,80,0,26), -- Adjusted sizing/pos
 				Font = FontBold,
 				Text = Config.ButtonText or "Interact", TextColor3 = self.Instance.Theme.AccentText, TextSize = 11, AutoButtonColor = false,
 				TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
