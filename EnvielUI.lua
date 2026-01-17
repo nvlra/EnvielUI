@@ -14,14 +14,30 @@ local Players = GetService("Players")
 local CoreGui = GetService("CoreGui")
 local HttpService = GetService("HttpService")
 
-local IconLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"))()
-IconLib.SetIconsType("lucide")
+local IconLib
+pcall(function()
+	IconLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"))()
+	IconLib.SetIconsType("lucide")
+end)
 
 local function GetIcon(Name)
 	if not Name then return nil end
 	if Name:find("rbxassetid") then return Name end
+	if not IconLib then return "" end -- Fallback if lib failed
+	
 	local s, i = pcall(function() return IconLib.GetIcon(Name) end)
-	return (s and i) or nil
+	return (s and i) or ""
+end
+
+-- Helper: Validate Config
+local function Validate(Config, Defaults)
+	Config = Config or {}
+	for k, v in pairs(Defaults) do
+		if Config[k] == nil then
+			Config[k] = v
+		end
+	end
+	return Config
 end
 
 local function Create(msg, prop)
@@ -38,6 +54,7 @@ local function Tween(instance, properties, duration, style, direction)
 end
 
 local function Dragify(Frame, Parent)
+	if not Frame then return end
 	Parent = Parent or Frame
 	local Dragging, DragInput, DragStart, StartPos
 
@@ -87,21 +104,36 @@ local function LoadFile(Name)
 	return nil
 end
 
+	return nil
+end
+
 function EnvielUI:CreateWindow(Config)
+	Config = Validate(Config, {
+		Name = "Enviel UI",
+		Theme = {
+			Main = Color3.fromRGB(15, 15, 15),
+			Secondary = Color3.fromRGB(25, 25, 25),
+			Stroke = Color3.fromRGB(0, 0, 0),
+			Accent = Color3.fromRGB(255, 255, 255),
+			Text = Color3.fromRGB(255, 255, 255),
+			TextDark = Color3.fromRGB(170, 170, 170),
+			ActiveText = Color3.fromRGB(0, 0, 0)
+		}
+	})
+
 	local Window = {
 		Flags = {}, 
-		Theme = Config.Theme or {
-			Main = Color3.fromRGB(15, 15, 15),       -- Deep Dark Background
-			Secondary = Color3.fromRGB(25, 25, 25),  -- Slightly Lighter Section
-			Stroke = Color3.fromRGB(0, 0, 0),        -- (Unused but kept for structure)
-			Accent = Color3.fromRGB(255, 255, 255),  -- Pure White Accents
-			Text = Color3.fromRGB(255, 255, 255),    -- White Text
-			TextDark = Color3.fromRGB(170, 170, 170),-- Grey Text
-			ActiveText = Color3.fromRGB(0, 0, 0)     -- Black Text on White Accent
-		}
+		Theme = Config.Theme,
+		Connections = {}
 	}
 	
-	local Name = Config.Name or "Enviel UI"
+	function Window:SafeConnect(Signal, Callback)
+		local Conn = Signal:Connect(Callback)
+		table.insert(Window.Connections, Conn)
+		return Conn
+	end
+	
+	local Name = Config.Name
 	
 	local Parent = game:GetService("CoreGui")
 	if not pcall(function() return Parent.Name end) then Parent = Players.LocalPlayer.PlayerGui end
@@ -129,8 +161,8 @@ function EnvielUI:CreateWindow(Config)
 
 	Tween(MainFrame, {GroupTransparency = 0, Position = UDim2.fromScale(0.5, 0.45)}, 0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 
-	local LOGO_WHITE = "rbxassetid://10709769508"
-	local LOGO_BLACK = "rbxassetid://10709769508"
+	local LOGO_WHITE = "rbxassetid://94854804824909"
+	local LOGO_BLACK = "rbxassetid://120261170817156"
 	
 	local Header = Create("Frame", {Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 50)})
 	Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 20), PaddingRight = UDim.new(0, 20)})
@@ -145,6 +177,12 @@ function EnvielUI:CreateWindow(Config)
 		Font = Enum.Font.GothamBold, Text = Name, TextColor3 = Window.Theme.Text, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left
 	})
 
+	Create("TextLabel", {
+		Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(0, 0, 1, 0), Position = UDim2.new(0, 32, 0, 0), AutomaticSize = Enum.AutomaticSize.X,
+		Font = Enum.Font.GothamBold, Text = Name, TextColor3 = Window.Theme.Text, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left
+	})
+
+	task.wait(0.05)
 	Dragify(Header, MainFrame)
 	
 	local Controls = Create("Frame", {
@@ -160,13 +198,19 @@ function EnvielUI:CreateWindow(Config)
 		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(20, 20),
 		BackgroundTransparency = 1, Image = GetIcon("x") or "", ImageColor3 = Window.Theme.TextDark
 	})
+	-- Cleanup on Close
 	CloseBtn.MouseButton1Click:Connect(function() 
 		Window:Prompt({
 			Title = "Close Interface?",
 			Content = "Are you sure you want to close Enviel UI?",
 			Actions = {
-				{Text = "Cancel", Callback = function() end}, -- Does nothing, just closes prompt
-				{Text = "Confirm", Callback = function() ScreenGui:Destroy() end}
+				{Text = "Cancel", Callback = function() end}, 
+				{Text = "Confirm", Callback = function() 
+					ScreenGui:Destroy() 
+					-- Cleanup Connections
+					for _, c in pairs(Window.Connections) do c:Disconnect() end
+					Window.Connections = {}
+				end}
 			}
 		})
 	end)
@@ -183,6 +227,9 @@ function EnvielUI:CreateWindow(Config)
 		Position = UDim2.new(0, SafeArea.X + 20, 0.5, 0),
 		AnchorPoint = Vector2.new(0, 0.5), Visible = false, GroupTransparency = 1
 	})
+	local MiniClick = Create("TextButton", {
+		Parent = MiniButton, Size = UDim2.fromScale(1,1), BackgroundTransparency = 1, Text = ""
+	})
 	Create("UICorner", {Parent = MiniButton, CornerRadius = UDim.new(0, 10)})
 	Create("UIStroke", {Parent = MiniButton, Color = Window.Theme.Stroke, Thickness = 1})
 	
@@ -195,7 +242,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	
 	-- Restore logic
-	MiniButton.MouseButton1Click:Connect(function()
+	MiniClick.MouseButton1Click:Connect(function()
 		Tween(MiniButton, {GroupTransparency = 1}, 0.3)
 		Tween(MainFrame, {GroupTransparency = 0, Position = UDim2.fromScale(0.5, 0.45)}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		MainFrame.Visible = true
@@ -246,11 +293,11 @@ function EnvielUI:CreateWindow(Config)
 		end)
 	end
 	
-	ContentHolder = Create("Frame", {
+	local ContentHolder = Create("Frame", {
 		Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, -100), Position = UDim2.new(0, 20, 0, 60), ClipsDescendants = true
 	})
 	
-	Dock = Create("Frame", {
+	local Dock = Create("Frame", {
 		Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(0, 0, 0, 46), Position = UDim2.new(0.5, 0, 1, 12),
 		AnchorPoint = Vector2.new(0.5, 0), AutomaticSize = Enum.AutomaticSize.X
 	})

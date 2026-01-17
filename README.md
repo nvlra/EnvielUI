@@ -1,227 +1,193 @@
-# EnvielUI Library
+# 🛠️ EnvielUI
 
-A modern, optimized, and aesthetic UI Library for Roblox.  
-Designed for **performance**, **clean aesthetics**, and **ease of use**.
+**EnvielUI** is a modern, lightweight, and responsive User Interface library for Roblox. Designed for ease of use, it features a sleek dark theme, mobile support, and a comprehensive set of interactive components.
 
-![EnvielUI Banner](https://via.placeholder.com/700x200?text=Enviel+UI+Library)
+## ✨ Features
 
-## Features
+- **Modern Aesthetic**: Clean, dark-themed UI with glassmorphism effects.
+- **Mobile Responsive**: Auto-scaling and touch-optimized controls for mobile devices.
+- **Robust System**: Built-in memory management and validation.
+- **Config System**: built-in Save/Load functionality for toggles and sliders.
+- **Notifications**: Clean toast notification system.
 
-- **Modern Design**: Clean interface with "Underline" tab animations and glass-morphism effects.
-- **Optimized Performance**: efficiently manages connections and memory.
-- **Theme System**: Built-in Dark and Light modes with active visual feedback.
-- **Floating Navbar**: Unique floating navigation bar for a premium feel.
-- **Rich Elements**: Full suite of interactive elements (Sliders, ColorPickers, Dropdowns, etc.).
+## 📦 Installation
+
+Load EnvielUI directly into your script using the following loadstring:
+
+```lua
+local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
+```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
-Load the library in your script:
+### 1. Create a Window
 
-```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
-```
-
-## 1. Create a Window
-
-Initialize the main UI window.
+The `CreateWindow` function initializes the UI.
 
 ```lua
-local Window = Library:CreateWindow({
-    Name = "Enviel Base",
-    Theme = "Dark", -- "Dark" or "Light"
-    Width = 650,    -- Recommended width for best layout
-    NoSidebar = false
+local Window = EnvielUI:CreateWindow({
+    Name = "My Hub",
+    Theme = { -- Optional Custom Theme
+        Main = Color3.fromRGB(20, 20, 20),
+        Accent = Color3.fromRGB(0, 120, 215)
+    }
 })
 ```
 
-## 2. Create Tabs
+### 2. Create a Tab
 
-Tabs are located in the floating navbar at the bottom.
+Tabs allow you to organize your features.
 
 ```lua
 local MainTab = Window:CreateTab({
-    Name = "Home",
-    Icon = "home", -- Lucide Icon Name
-})
-
-local SettingsTab = Window:CreateTab({
-    Name = "Settings",
-    Icon = "settings",
+    Name = "Main"
 })
 ```
 
-## 3. Add Elements
+---
 
-Elements are added to Tabs. You can organize them into **Sections**.
+## 🧩 Components
 
-### Section (Header)
+All components are created from a **Tab** object (e.g., `MainTab`).
+
+### Section & Paragraph
+
+Use sections to divide content and paragraphs for info.
 
 ```lua
-MainTab:CreateSection("Main Features")
+MainTab:CreateSection("Feature Section")
+
+MainTab:CreateParagraph({
+    Title = "Welcome",
+    Content = "This is a paragraph example."
+})
 ```
 
 ### Button
 
+A simple clickable button.
+
 ```lua
 MainTab:CreateButton({
-    Name = "Kill All Mobs",
-    ButtonText = "Execute", -- Optional right-side text
+    Name = "Click Me",
+    Text = "Execute", -- Button label
     Callback = function()
-        print("Killed all mobs!")
+        print("Button Clicked!")
     end
 })
 ```
 
 ### Toggle
 
+A switch for boolean states. Supports `Flag` for config saving.
+
 ```lua
 MainTab:CreateToggle({
     Name = "Auto Farm",
     Default = false,
+    Flag = "AutoFarm", -- Unique ID for Config
     Callback = function(Value)
-        print("Auto Farm is:", Value)
+        print("Auto Farm is now:", Value)
     end
 })
 ```
 
 ### Slider
 
+A numeric slider with Min/Max values.
+
 ```lua
 MainTab:CreateSlider({
     Name = "WalkSpeed",
     Min = 16,
-    Max = 300,
+    Max = 500,
     Default = 16,
-    Increment = 1,
+    Flag = "WalkSpeed",
     Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        print("Speed set to:", Value)
+    end
+})
+```
+
+### Input (TextBox)
+
+A text input field.
+
+```lua
+MainTab:CreateInput({
+    Name = "Target Player",
+    PlaceholderText = "Username",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        print("Target:", Text)
     end
 })
 ```
 
 ### Dropdown
 
+A selectable list of options.
+
 ```lua
 MainTab:CreateDropdown({
-    Name = "Select Weapon",
-    Options = {"Sword", "Bow", "Staff"},
-    Default = "Sword",
-    Multi = false, -- Set to true for multi-select
-    Search = true,  -- Enable search bar
-    Callback = function(Value)
-        print("Selected:", Value)
+    Name = "Teleport Method",
+    Options = {"CFrame", "Tween", "Instant"},
+    Default = "CFrame",
+    Flag = "Method",
+    Callback = function(Option)
+        print("Selected:", Option)
     end
 })
 ```
 
 ### Color Picker
 
+An RGB color selector.
+
 ```lua
 MainTab:CreateColorPicker({
-    Name = "Accent Color",
-    CurrentValue = Color3.fromRGB(0, 170, 255),
-    Callback = function(Value)
-        print("New Color:", Value)
+    Name = "ESP Color",
+    Default = Color3.fromRGB(255, 0, 0),
+    Flag = "ESPColor",
+    Callback = function(Color)
+        print("New Color:", Color)
     end
 })
 ```
 
-### Input Box
+---
 
-```lua
-MainTab:CreateInput({
-    Name = "Teleport Place ID",
-    PlaceholderText = "123456...",
-    RemoveTextAfterFocusLost = false,
-    Callback = function(Text)
-        print("Input:", Text)
-    end
-})
-```
+## 🔔 Notifications
 
-### Clickable List
-
-A scrollable list of buttons.
-
-```lua
-MainTab:CreateClickableList({
-    Title = "Player List",
-    Content = {"Player1", "Player2", "Player3"},
-    Height = UDim2.new(1, 0, 0, 150),
-    Callback = function(Item)
-        print("Clicked:", Item)
-    end
-})
-```
-
-### Paragraph
-
-Display text information.
-
-```lua
-MainTab:CreateParagraph({
-    Title = "Status",
-    Content = "Script is currently active and running safely."
-})
-```
-
-## 4. Advanced Features
-
-### Notifications
-
-Send a toast notification to the user.
+Send toast notifications to the user.
 
 ```lua
 Window:Notify({
     Title = "Success",
-    Content = "Config loaded successfully!",
-    Duration = 5, -- Optional duration in seconds
-    Image = "check" -- Optional Lucide Icon
+    Content = "Operation completed successfully!",
+    Duration = 3 -- Time in seconds
 })
 ```
 
-### Prompt (Alert)
+## ⚙️ Configuration System
 
-Show a modal dialog for user confirmation.
+EnvielUI has a built-in system to save and load `Flag` values.
 
 ```lua
-Window:Prompt({
-    Title = "Warning",
-    Content = "Are you sure you want to overwrite your config?",
-    Actions = {
-        {
-            Text = "Yes",
-            Callback = function() print("Overwriting...") end,
-        },
-        {
-            Text = "No",
-            Callback = function() print("Cancelled") end,
-        }
-    }
-})
+-- Save current settings to file
+Window:SaveConfig()
+
+-- Load settings from file
+Window:LoadConfig()
 ```
 
-### Watermark
+## ⚠️ Notes
 
-Display a subtle watermark on the screen.
-
-```lua
-Window:Watermark({
-    Title = "Enviel UI | FPS: 60 | Ping: 45ms",
-    Enabled = true
-})
-```
+- **Mobile Support**: The UI automatically scales down for screens smaller than 600px width.
+- **Keybind**: Press `RightControl` to toggle UI visibility.
 
 ---
 
-## 💡 Tips
-
-- **Destruction**: Call `Window:Destroy()` to cleanly remove the UI and disconnect all events.
-- **Theming**: You can switch themes dynamically (advanced usage).
-- **Icons**: Use any [Lucide Icon](https://lucide.dev/icons) name for your tabs.
-
----
-
-_Built by Enviel._
+**Made by Enviel**
