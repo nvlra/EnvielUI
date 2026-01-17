@@ -393,9 +393,10 @@ function EnvielUI:CreateWindow(Config)
 	local OpenSize
 	
 	if UserInputService.TouchEnabled then
-		OpenSize = UDim2.new(MOBILE_WIDTH_SCALE, 0, 0, DEFAULT_WINDOW_HEIGHT)
+		-- Mobile: Use relative scale for BOTH Width and Height to avoid overflow
+		OpenSize = UDim2.new(0.45, 0, 0.50, 0) 
 	else
-		-- [Enviel PC] Use Fixed Pixel used for precision
+		-- PC: Use Fixed Pixel Size
 		OpenSize = UDim2.new(0, WindowWidth, 0, DEFAULT_WINDOW_HEIGHT)
 	end
 	
