@@ -1,136 +1,139 @@
-# EnvielUI Library for Roblox
+# EnvielUI Library
 
-A modern, secure, and aesthetic UI Library for Roblox Scripting.  
-Designed to be **reliable**, **customizable**, and **undetected**.
+A modern, optimized, and aesthetic UI Library for Roblox.  
+Designed for **performance**, **clean aesthetics**, and **ease of use**.
 
-![EnvielUI Banner](https://via.placeholder.com/700x200?text=Enviel+UI+Library) _Placeholder for future banner_
+![EnvielUI Banner](https://via.placeholder.com/700x200?text=Enviel+UI+Library)
 
 ## Features
 
-- **Secure Protection**: Advanced concealment methods to ensure safety and reliability.
-- **Smart Overlay**: Intelligent priority management for optimal UI visibility.
-- **Elastic Animations**: Premium "Pop-up" entrance animation (Quint Easing).
-- **Auto-Layout Tabs**: Smart layout system preventing checks.
-- **Lucide Icons**: Integrated support for thousands of icons (e.g., "home", "settings", "user").
-- **Theme System**: Full support for **Dark** and **Light** modes.
-- **Modern UX**: Auto-transparency (Glass effect) and Click-Through blocking enabled by default.
+- **Modern Design**: Clean interface with "Underline" tab animations and glass-morphism effects.
+- **Optimized Performance**: efficiently manages connections and memory.
+- **Theme System**: Built-in Dark and Light modes with active visual feedback.
+- **Floating Navbar**: Unique floating navigation bar for a premium feel.
+- **Rich Elements**: Full suite of interactive elements (Sliders, ColorPickers, Dropdowns, etc.).
 
 ---
 
-## How to Use
+## 🚀 Quick Start
 
-Copy and paste this script into your Executor (Synapse X, Krnl, Fluxus, etc.):
+Load the library in your script:
 
 ```lua
--- 1. Load the Library
-local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
+```
 
--- 2. Create a Window
-local Window = EnvielUI:CreateWindow({
-    Name = "Enviel UI Script",
-    Theme = "Dark", -- Options: "Dark" or "Light"
-    Width = 360, -- Optional: Custom Window Width (Default: 360)
-    NoSidebar = false -- Optional: Hide sidebar for simple UIs (Default: false)
+## 1. Create a Window
+
+Initialize the main UI window.
+
+```lua
+local Window = Library:CreateWindow({
+    Name = "Enviel Base",
+    Theme = "Dark", -- "Dark" or "Light"
+    Width = 650,    -- Recommended width for best layout
+    NoSidebar = false
 })
+```
 
--- 3. Create a Tab
+## 2. Create Tabs
+
+Tabs are located in the floating navbar at the bottom.
+
+```lua
 local MainTab = Window:CreateTab({
-    Name = "Main",
-    Icon = "swords" -- Use any Lucide Icon name (lowercase)
+    Name = "Home",
+    Icon = "home", -- Lucide Icon Name
 })
 
--- 4. Add Elements
-local Section = MainTab:CreateSection("Farming")
-
-Section:CreateToggle({
-    Name = "Auto Farm",
-    Default = false,
-    Callback = function(Value)
-        print("Auto Farm is now:", Value)
-    end
+local SettingsTab = Window:CreateTab({
+    Name = "Settings",
+    Icon = "settings",
 })
+```
 
-Section:CreateSlider({
-    Name = "WalkSpeed",
-    Min = 16,
-    Max = 500,
-    Default = 16,
-    Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-    end
-})
+## 3. Add Elements
 
-Section:CreateDropdown({
-    Name = "Select Weapon",
-    Options = {"Sword", "Bow", "Magic"},
-    Default = "Sword",
-    Callback = function(Value)
-        print("Selected:", Value)
-    end
-})
+Elements are added to Tabs. You can organize them into **Sections**.
 
-Section:CreateColorPicker({
-    Name = "ESP Color",
-    CurrentValue = Color3.fromRGB(255, 0, 0),
-    Callback = function(Value)
-        print("Color changed:", Value)
+### Section (Header)
+
+```lua
+MainTab:CreateSection("Main Features")
+```
+
+### Button
+
+```lua
+MainTab:CreateButton({
+    Name = "Kill All Mobs",
+    ButtonText = "Execute", -- Optional right-side text
+    Callback = function()
+        print("Killed all mobs!")
     end
 })
 ```
 
----
-
-## Component Reference
-
-| Component             | Description                                              |
-| :-------------------- | :------------------------------------------------------- |
-| `CreateWindow`        | Creates the main draggable GUI window.                   |
-| `CreateTab`           | Adds a sidebar tab with an icon and text.                |
-| `CreateSection`       | Adds a header text to organize elements.                 |
-| `CreateButton`        | A clickable button that executes a function.             |
-| `CreateToggle`        | A switch button for boolean (true/false) states.         |
-| `CreateSlider`        | A draggable bar to select a number within a range.       |
-| `CreateDropdown`      | A collapsible menu to select options.                    |
-| `CreateInput`         | A text box for user input.                               |
-| `CreateColorPicker`   | A tool to visually select colors.                        |
-| `CreateParagraph`     | Displays a title and content text block.                 |
-| `CreateGroup`         | Creates a container to organize elements (WindUI Style). |
-| `Watermark`           | Shows the branded HUD overlay.                           |
-| `Prompt`              | Displays a rich alert popup with actions.                |
-| `Notify`              | Sends a temporary toast notification.                    |
-| `CreateClickableList` | Creates a scrollable list of buttons.                    |
-
----
-
-## Detailed Examples
-
-### Dropdown (Single & Multi)
+### Toggle
 
 ```lua
--- Single Select
-Section:CreateDropdown({
-    Name = "Teleport Method",
-    Options = {"CFrame", "MoveTo", "Instant"},
-    Default = "CFrame",
-    Callback = function(Value) end
+MainTab:CreateToggle({
+    Name = "Auto Farm",
+    Default = false,
+    Callback = function(Value)
+        print("Auto Farm is:", Value)
+    end
 })
+```
 
--- Multi Select (Pass Multi=true) (Beta)
-Section:CreateDropdown({
-    Name = "Target Parts",
-    Options = {"Head", "Torso", "Arms"},
-    Default = {"Head", "Torso"},
-    Multi = true,
-    Callback = function(Table) end
+### Slider
+
+```lua
+MainTab:CreateSlider({
+    Name = "WalkSpeed",
+    Min = 16,
+    Max = 300,
+    Default = 16,
+    Increment = 1,
+    Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+    end
+})
+```
+
+### Dropdown
+
+```lua
+MainTab:CreateDropdown({
+    Name = "Select Weapon",
+    Options = {"Sword", "Bow", "Staff"},
+    Default = "Sword",
+    Multi = false, -- Set to true for multi-select
+    Search = true,  -- Enable search bar
+    Callback = function(Value)
+        print("Selected:", Value)
+    end
+})
+```
+
+### Color Picker
+
+```lua
+MainTab:CreateColorPicker({
+    Name = "Accent Color",
+    CurrentValue = Color3.fromRGB(0, 170, 255),
+    Callback = function(Value)
+        print("New Color:", Value)
+    end
 })
 ```
 
 ### Input Box
 
 ```lua
-Section:CreateInput({
-    Name = "Target Player",
-    PlaceholderText = "Username...",
+MainTab:CreateInput({
+    Name = "Teleport Place ID",
+    PlaceholderText = "123456...",
     RemoveTextAfterFocusLost = false,
     Callback = function(Text)
         print("Input:", Text)
@@ -138,38 +141,40 @@ Section:CreateInput({
 })
 ```
 
-### Paragraph (Info)
+### Clickable List
+
+A scrollable list of buttons.
 
 ```lua
-Section:CreateParagraph({
+MainTab:CreateClickableList({
+    Title = "Player List",
+    Content = {"Player1", "Player2", "Player3"},
+    Height = UDim2.new(1, 0, 0, 150),
+    Callback = function(Item)
+        print("Clicked:", Item)
+    end
+})
+```
+
+### Paragraph
+
+Display text information.
+
+```lua
+MainTab:CreateParagraph({
     Title = "Status",
-    Content = "Waiting for game..."
+    Content = "Script is currently active and running safely."
 })
 ```
 
 ---
 
-## Advanced Features
+## 💡 Tips
 
-### 1. Watermark HUD
-
-Minimalist, theme-adaptive branding at the bottom-left.
-
-```lua
-Window:Watermark({
-    Title = "Enviel UI",
-})
-```
-
-### 2. Group System (iOS Style Layout)
-
-Organize your elements into clean, separated groups.
-
-```lua
-local SettingsGroup = MainTab:CreateGroup({ Title = "General Settings" })
-SettingsGroup:CreateToggle({ ... }) -- Automatically inside the group
-```
+- **Destruction**: Call `Window:Destroy()` to cleanly remove the UI and disconnect all events.
+- **Theming**: You can switch themes dynamically (advanced usage).
+- **Icons**: Use any [Lucide Icon](https://lucide.dev/icons) name for your tabs.
 
 ---
 
-_Created by nvlra. Open Source & Free to Use._
+_Built by Enviel._
