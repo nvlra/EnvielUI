@@ -3,6 +3,23 @@ EnvielUI.__index = EnvielUI
 EnvielUI.Version = "V1"
 EnvielUI.Flags = {}
 
+-- [Enviel Constants]
+local LOGO_WHITE = "94854804824909"
+local LOGO_BLACK = "120261170817156"
+local DEFAULT_WINDOW_WIDTH = 500
+local DEFAULT_WINDOW_HEIGHT = 350
+local MOBILE_WIDTH_SCALE = 0.55
+local NAVBAR_HEIGHT = 65
+local SEARCH_DEBOUNCE_TIME = 0.15
+
+local function SafeCallback(Callback, ...)
+	if not Callback then return end
+	local Success, Err = pcall(Callback, ...)
+	if not Success then
+		warn("[EnvielUI] Callback Error:", Err)
+	end
+end
+
 local cloneref = (cloneref or clonereference or function(instance) return instance end)
 local function GetService(Name)
 	return cloneref(game:GetService(Name))
@@ -69,8 +86,6 @@ end)
 if not SuccessIcon then
 	warn("[EnvielUI] Failed to load IconLib:", ErrIcon)
 	IconLib = { GetIcon = function(...) return "" end }
-else
-
 end
 
 local function GetIcon(Name)
@@ -89,27 +104,59 @@ local function Create(msg, prop)
 	return inst
 end
 
-local function Tween(instance, properties, duration, style, direction)
+local TweenManager = {
+	activeTweens = {}
+}
+
+function TweenManager:SmartTween(instance, properties, duration, style, direction)
 	if not instance then 
 		warn("EnvielUI: Tween called with nil instance")
 		return 
 	end
+	
+	local key = tostring(instance)
+	if self.activeTweens[key] then
+		self.activeTweens[key]:Cancel()
+	end
+	
 	local info = TweenInfo.new(
 		duration or 0.3, 
 		style or Enum.EasingStyle.Quart, 
 		direction or Enum.EasingDirection.Out
 	)
 	local tween = TweenService:Create(instance, info, properties)
+	
+	self.activeTweens[key] = tween
+	
+	tween.Completed:Connect(function()
+		if self.activeTweens[key] == tween then
+			self.activeTweens[key] = nil
+		end
+	end)
+	
 	tween:Play()
 	return tween
+end
+
+function TweenManager:CancelAll()
+	for _, tween in pairs(self.activeTweens) do
+		tween:Cancel()
+	end
+	self.activeTweens = {}
+end
+
+local function Tween(instance, properties, duration, style, direction)
+	return TweenManager:SmartTween(instance, properties, duration, style, direction)
 end
 
 local function Dragify(Frame, ClickCallback)
 	local Dragging, DragInput, DragStart, StartPos
 	local HasMoved = false
+	local dragConnection = nil
 	
 	local function Update(input)
 		local Delta = input.Position - DragStart
+		HasMoved = true
 		
 		local TargetPos = UDim2.new(
 			StartPos.X.Scale, 
@@ -121,6 +168,14 @@ local function Dragify(Frame, ClickCallback)
 		DragTween:Play()
 	end
 	
+	local function stopDragging()
+		Dragging = false
+		if dragConnection then
+			dragConnection:Disconnect()
+			dragConnection = nil
+		end
+	end
+	
 	Frame.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			Dragging = true
@@ -128,9 +183,18 @@ local function Dragify(Frame, ClickCallback)
 			DragStart = input.Position
 			StartPos = Frame.Position
 			
+			-- Only connect when actually dragging
+			dragConnection = UserInputService.InputChanged:Connect(function(changeInput)
+				if changeInput.UserInputType == Enum.UserInputType.MouseMovement or changeInput.UserInputType == Enum.UserInputType.Touch then
+					if Dragging then
+						Update(changeInput)
+					end
+				end
+			end)
+			
 			input.Changed:Connect(function()
 				if input.UserInputState == Enum.UserInputState.End then
-					Dragging = false
+					stopDragging()
 					if not HasMoved and ClickCallback then
 						ClickCallback()
 					end
@@ -142,12 +206,6 @@ local function Dragify(Frame, ClickCallback)
 	Frame.InputChanged:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 			DragInput = input
-		end
-	end)
-	
-	UserInputService.InputChanged:Connect(function(input)
-		if input == DragInput and Dragging then
-			Update(input)
 		end
 	end)
 end
@@ -162,6 +220,86 @@ end
 function EnvielUI:CreateWindow(Config)
 	local WindowName = Config.Name or "Enviel UI"
 	local Theme = Config.Theme or "Dark"
+	
+	-- Connection Manager (Memory Leak Fix)
+	local ConnectionManager = {
+		connections = {},
+		tweens = {},
+		timers = {}
+	}
+	
+	function ConnectionManager:Add(connection)
+		table.insert(self.connections, connection)
+		return connection
+	end
+	
+	function ConnectionManager:AddTween(tween)
+		table.insert(self.tweens, tween)
+		return tween
+	end
+	
+	function ConnectionManager:AddTimer(timer)
+		table.insert(self.timers, timer)
+		return timer
+	end
+	
+	function ConnectionManager:DisconnectAll()
+		for _, conn in ipairs(self.connections) do
+			if conn and conn.Connected then conn:Disconnect() end
+		end
+		for _, tween in ipairs(self.tweens) do
+			if tween then tween:Cancel() end
+		end
+		for _, timer in ipairs(self.timers) do
+			if timer then task.cancel(timer) end
+		end
+		self.connections = {}
+		self.tweens = {}
+		self.timers = {}
+	end
+	
+	-- Theme Registry (Optimization)
+	local ThemeRegistry = {
+		objects = {}
+	}
+	
+	function ThemeRegistry:Register(object, config)
+		self.objects[object] = config
+	end
+	
+	function ThemeRegistry:Unregister(object)
+		self.objects[object] = nil
+	end
+	
+	function ThemeRegistry:UpdateAll(theme)
+		for object, config in pairs(self.objects) do
+			if object and object.Parent then
+				if config.type == "Element" then
+					Tween(object, {BackgroundColor3 = theme.Element}, 0.3)
+				elseif config.type == "Text" then
+					Tween(object, {TextColor3 = theme.Text}, 0.3)
+				elseif config.type == "Secondary" then
+					Tween(object, {BackgroundColor3 = theme.Secondary}, 0.3)
+				elseif config.type == "Stroke" then
+					Tween(object, {Color = theme.Stroke}, 0.3)
+				end
+				
+				if config.properties then
+					local props = {}
+					for prop, getter in pairs(config.properties) do
+						props[prop] = getter(theme)
+					end
+					Tween(object, props, 0.3)
+				end
+				
+				if object:FindFirstChild("UIStroke") and config.updateStroke then
+					Tween(object.UIStroke, {Color = theme.Stroke}, 0.3)
+				end
+			else
+				self.objects[object] = nil
+			end
+		end
+	end
 	
 	if Themes[Theme] then 
 		self.Theme = Themes[Theme] 
@@ -224,14 +362,14 @@ function EnvielUI:CreateWindow(Config)
 	ScreenGui:SetAttribute("EnvielID", "MainInstance")
 	
 	local Minimized = false
-	local WindowWidth = Config.Width or 360
+	local WindowWidth = Config.Width or DEFAULT_WINDOW_WIDTH
 	local OpenSize
 	
 	if UserInputService.TouchEnabled then
-		OpenSize = UDim2.new(0.55, 0, 0, 480)
+		OpenSize = UDim2.new(MOBILE_WIDTH_SCALE, 0, 0, DEFAULT_WINDOW_HEIGHT)
 	else
 		-- [Enviel PC] Use Fixed Pixel used for precision
-		OpenSize = UDim2.new(0, WindowWidth, 0, 480)
+		OpenSize = UDim2.new(0, WindowWidth, 0, DEFAULT_WINDOW_HEIGHT)
 	end
 	
 	
@@ -285,7 +423,7 @@ function EnvielUI:CreateWindow(Config)
 		BackgroundTransparency = 1,
 		Position = UDim2.new(0.5, -16, 0.5, -16),
 		Size = UDim2.new(0, 32, 0, 32),
-		Image = "rbxthumb://type=Asset&id="..InitialLogo.."&w=150&h=150",
+		Image = "rbxthumb://type=Asset&id="..((self.Theme == Themes.Light) and LOGO_BLACK or LOGO_WHITE).."&w=150&h=150",
 		ScaleType = Enum.ScaleType.Fit
 	})
 	local function ToggleMinimize()
@@ -404,9 +542,8 @@ function EnvielUI:CreateWindow(Config)
 	})
 	Create("UIListLayout", {Parent = TitleContainer, FillDirection = Enum.FillDirection.Horizontal, SortOrder = Enum.SortOrder.LayoutOrder, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 8)})
 
-	local WhiteLogo = "94854804824909"
-	local BlackLogo = "120261170817156"
-	local CurrentLogo = (Theme == "Light") and BlackLogo or WhiteLogo
+	
+	local CurrentLogo = (Theme == "Light") and LOGO_BLACK or LOGO_WHITE
 
 	local Logo = Create("ImageLabel", {
 		Name = "Logo", Parent = TitleContainer, BackgroundTransparency = 1, Size = UDim2.new(0, 24, 0, 24),
@@ -501,7 +638,7 @@ function EnvielUI:CreateWindow(Config)
 
 	-- Fixed Layout: Always show Floating Navbar
 	
-	local NavbarHeight = 65
+	local NavbarHeight = NAVBAR_HEIGHT
 	
 	-- Navbar Container (Floating Dock Style)
 	local Navbar = Create("Frame", {
@@ -543,23 +680,36 @@ function EnvielUI:CreateWindow(Config)
 		SortOrder = Enum.SortOrder.LayoutOrder
 	})
 	
-	SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
-		local Input = SearchBar.Text:lower()
-		for _, page in pairs(ContentContainer:FindFirstChild("Pages"):GetChildren()) do
-			if page:IsA("ScrollingFrame") then
-				for _, frame in pairs(page:GetChildren()) do
-					if frame:IsA("Frame") and frame:FindFirstChild("TextLabel") then
-						local NameLabel = frame:FindFirstChild("TextLabel")
-						if NameLabel and NameLabel.Text:lower():find(Input) then
-							frame.Visible = true
-						else
-							frame.Visible = false
-						end
-					end
-				end
+	local searchCache = {}
+	local searchDebounce = nil
+	
+	local function performSearch(input)
+		local lowerInput = input:lower()
+		if lowerInput == "" then
+			for _, data in ipairs(searchCache) do
+				if data.frame then data.frame.Visible = true end
+			end
+			return
+		end
+		
+		for _, data in ipairs(searchCache) do
+			if data.frame then
+				data.frame.Visible = data.searchText:find(lowerInput, 1, true) ~= nil
 			end
 		end
+	end
+	
+	SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
+		if searchDebounce then task.cancel(searchDebounce) end
+		searchDebounce = task.delay(SEARCH_DEBOUNCE_TIME, function()
+			performSearch(SearchBar.Text)
+			searchDebounce = nil
+		end)
 	end)
+	
+	function Window:RegisterSearchable(frame, text)
+		table.insert(searchCache, { frame = frame, searchText = text:lower() })
+	end
 	
 	local Pages = Create("Frame", {
 		Name = "Pages",
@@ -582,7 +732,10 @@ function EnvielUI:CreateWindow(Config)
 		Logo = Logo,
 		Footer = Footer,
 		OpenIcon = OpenIcon,
-		ActiveTab = nil
+		ActiveTab = nil,
+		ActiveTab = nil,
+		ConnectionManager = ConnectionManager,
+		ThemeRegistry = ThemeRegistry
 	}
 	
 	function Window:SetTheme(ThemeName)
@@ -590,9 +743,7 @@ function EnvielUI:CreateWindow(Config)
 		self.Instance.Theme = Themes[ThemeName]
 		local T = self.Instance.Theme
 		
-		local WhiteLogo = "94854804824909"
-		local BlackLogo = "120261170817156"
-		local TargetLogo = (ThemeName == "Light") and BlackLogo or WhiteLogo
+		local TargetLogo = (ThemeName == "Light") and LOGO_BLACK or LOGO_WHITE
 		if self.Logo then self.Logo.Image = "rbxthumb://type=Asset&id="..TargetLogo.."&w=150&h=150" end
 		if self.OpenIcon then self.OpenIcon.Image = "rbxthumb://type=Asset&id="..TargetLogo.."&w=150&h=150" end
 		
@@ -633,14 +784,12 @@ function EnvielUI:CreateWindow(Config)
 				local icon = btn:FindFirstChild("ImageLabel")
 				local bar = btn:FindFirstChild("ActiveBar")
 				
-				-- Normal State
 				if Window.ActiveTab and btn.Name == Window.ActiveTab.."Btn" then
-					-- Active State styling is handled in SelectTab, but update colors here if needed
 					if label then Tween(label, {TextColor3 = T.AccentText}, 0.3) end
 					if icon then Tween(icon, {ImageColor3 = T.AccentText}, 0.3) end
 					if bar then Tween(bar, {BackgroundColor3 = T.AccentText}, 0.3) end
 				else
-					Tween(btn, {BackgroundTransparency = 1}, 0.3) -- Transparent
+					Tween(btn, {BackgroundTransparency = 1}, 0.3)
 					if label then Tween(label, {TextColor3 = T.TextSec}, 0.3) end
 					if icon then Tween(icon, {ImageColor3 = T.TextSec}, 0.3) end
 					if bar then Tween(bar, {BackgroundColor3 = T.Secondary}, 0.3) end
@@ -651,80 +800,10 @@ function EnvielUI:CreateWindow(Config)
 		for _, page in pairs(Pages:GetChildren()) do
 			if page:IsA("ScrollingFrame") then
 				page.ScrollBarImageColor3 = T.Stroke
-				
-				for _, obj in pairs(page:GetDescendants()) do
-					
-					local ThemeAttr = obj:GetAttribute("EnvielTheme")
-					if ThemeAttr then
-						if ThemeAttr == "Element" then
-							Tween(obj, {BackgroundColor3 = T.Element}, 0.3)
-						elseif ThemeAttr == "Secondary" then
-							Tween(obj, {BackgroundColor3 = T.Secondary}, 0.3)
-						end
-						
-						if obj:FindFirstChild("UIStroke") then
-							Tween(obj.UIStroke, {Color = T.Stroke}, 0.3)
-						end
-					end
-					
-					
-					if obj:IsA("TextLabel") then
-						
-						
-						
-						
-						
-						if obj.Text ~= "Interact" and obj.Name ~= "Icon" and obj.Name ~= "Label" then 
-							Tween(obj, {TextColor3 = T.Text}, 0.3)
-						end
-					end
-					
-					
-					if obj:IsA("TextButton") then
-						local Type = obj:GetAttribute("EnvielType")
-						if Type == "ActionButton" then
-							Tween(obj, {BackgroundColor3 = T.Accent, TextColor3 = T.AccentText}, 0.3)
-						elseif Type == "ToggleSwitch" then
-							local FlagName = obj:GetAttribute("EnvielFlag")
-							local IsOn = self.Instance.Flags[FlagName]
-							
-							if IsOn then
-								Tween(obj, {BackgroundColor3 = T.Accent}, 0.3)
-							else
-								Tween(obj, {BackgroundColor3 = T.Stroke}, 0.3)
-							end
-							
-							local Circle = obj:FindFirstChild("Frame")
-							if Circle then Tween(Circle, {BackgroundColor3 = T.Main}, 0.3) end
-						elseif Type == "DropdownOption" then
-							Tween(obj, {BackgroundColor3 = T.Element}, 0.3)
-							local IsSelected = obj:GetAttribute("EnvielSelected")
-							Tween(obj, {TextColor3 = IsSelected and T.Accent or T.TextSec}, 0.3)
-						elseif Type == "SliderTrack" then
-							Tween(obj, {BackgroundColor3 = T.Stroke}, 0.3)
-							local Fill = obj:FindFirstChild("Frame") 
-							
-						end
-					end
-					
-					
-					if obj:IsA("Frame") then
-						local Type = obj:GetAttribute("EnvielType")
-						if Type == "SliderFill" then
-							Tween(obj, {BackgroundColor3 = T.Accent}, 0.3)
-						elseif Type == "SliderThumb" then
-							Tween(obj, {BackgroundColor3 = T.AccentText}, 0.3)
-							if obj:FindFirstChild("UIStroke") then Tween(obj.UIStroke, {Color = T.Accent}, 0.3) end
-						end
-					end
-					
-					
-					if obj:IsA("TextBox") then
-						Tween(obj, {TextColor3 = T.Accent, PlaceholderColor3 = T.TextSec}, 0.3)
-					end
-				end
 			end
 		end
+		
+		ThemeRegistry:UpdateAll(T)
 
 		for _, page in pairs(Pages:GetChildren()) do
 			if page.Visible then
@@ -894,8 +973,19 @@ function EnvielUI:CreateWindow(Config)
 			Btn.MouseButton1Click:Connect(function()
 				Tween(Btn, {Size = UDim2.new(0,85,0,24)}, 0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.In).Completed:Wait()
 				Tween(Btn, {Size = UDim2.new(0,90,0,26)}, 0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-				Callback()
+				SafeCallback(Callback)
 			end)
+			
+			-- Registry
+			Window.ThemeRegistry:Register(Frame, { type = "Element", updateStroke = true })
+			Window.ThemeRegistry:Register(Create("TextLabel", {Parent=Frame}), { type = "Text" }) -- Placeholder fix
+			Window.ThemeRegistry:Register(Btn, { 
+				properties = { 
+					BackgroundColor3 = function(t) return t.Accent end, 
+					TextColor3 = function(t) return t.AccentText end 
+				} 
+			})
+			Window:RegisterSearchable(Frame, Name)
 			
 			return {
 				SetText = function(self, newText)
@@ -936,6 +1026,15 @@ function EnvielUI:CreateWindow(Config)
 				Position=UDim2.new(1,-55,0.5,-12), Size=UDim2.new(0,44,0,24), Text="", AutoButtonColor=false
 			})
 			Create("UICorner", {Parent=Switch, CornerRadius=UDim.new(0,12)})
+			
+			-- Registry
+			Window.ThemeRegistry:Register(Frame, { type = "Element", updateStroke = true })
+			Window.ThemeRegistry:Register(Switch, {
+				properties = {
+					BackgroundColor3 = function(t) return self.Instance.Flags[Flag] and t.Accent or t.Stroke end
+				}
+			})
+			Window:RegisterSearchable(Frame, Name)
 			Switch:SetAttribute("EnvielType", "ToggleSwitch")
 			Switch:SetAttribute("EnvielFlag", Flag)
 			
@@ -949,7 +1048,7 @@ function EnvielUI:CreateWindow(Config)
 			Switch.MouseButton1Click:Connect(function()
 				Value = not Value
 				self.Instance.Flags[Flag] = Value
-				Callback(Value)
+				SafeCallback(Callback, Value)
 				Tween(Switch, {BackgroundColor3=Value and self.Instance.Theme.Accent or self.Instance.Theme.Stroke}, 0.2)
 				Tween(Circle, {Position=Value and UDim2.new(1,-22,0.5,-9) or UDim2.new(0,2,0.5,-9)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 			end)
@@ -1049,7 +1148,7 @@ function EnvielUI:CreateWindow(Config)
 				Tween(Fill, {Size = UDim2.new(Percent, 0, 1, 0)}, 0.05)
 				Tween(Thumb, {Position = UDim2.new(Percent, -7, 0.5, -7)}, 0.05)
 				self.Instance.Flags[Flag] = Value
-				Callback(Value)
+				SafeCallback(Callback, Value)
 			end
 			
 			local Sliding = false
@@ -1167,7 +1266,15 @@ function EnvielUI:CreateWindow(Config)
 			})
 			Create("UIListLayout", {Parent=OptionContainer, SortOrder=Enum.SortOrder.LayoutOrder})
 			
+			local DropdownConnections = {} -- Store connections for cleanup
+
 			local function RefreshOptions()
+				-- Cleanup old connections
+				for _, conn in pairs(DropdownConnections) do
+					if conn and conn.Connected then conn:Disconnect() end
+				end
+				table.clear(DropdownConnections)
+				
 				for _, v in pairs(OptionContainer:GetChildren()) do
 					if v:IsA("TextButton") then v:Destroy() end
 				end
@@ -1200,14 +1307,15 @@ function EnvielUI:CreateWindow(Config)
 					Btn:SetAttribute("EnvielType", "DropdownOption")
 					Btn:SetAttribute("EnvielSelected", IsSelected)
 					
-					Btn.MouseEnter:Connect(function() 
+					table.insert(DropdownConnections, Btn.MouseEnter:Connect(function() 
 						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Hover}, 0.2)
-					end)
-					Btn.MouseLeave:Connect(function() 
-						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Element}, 0.2)
-					end)
+					end))
 					
-					Btn.MouseButton1Click:Connect(function()
+					table.insert(DropdownConnections, Btn.MouseLeave:Connect(function() 
+						Tween(Btn, {BackgroundColor3 = self.Instance.Theme.Element}, 0.2)
+					end))
+					
+					table.insert(DropdownConnections, Btn.MouseButton1Click:Connect(function()
 						if Multi then
 							if table.find(Default, opt) then
 								table.remove(Default, table.find(Default, opt))
@@ -1215,20 +1323,20 @@ function EnvielUI:CreateWindow(Config)
 								table.insert(Default, opt)
 							end
 							self.Instance.Flags[Flag] = Default
-							Callback(Default)
+							SafeCallback(Callback, Default)
 							ValueLabel.Text = GetValueText()
 							RefreshOptions()
 						else
 							Default = opt
 							self.Instance.Flags[Flag] = Default
-							Callback(Default)
+							SafeCallback(Callback, Default)
 							ValueLabel.Text = GetValueText()
 							Expanded = false
 							Tween(Frame, {Size=UDim2.new(1,0,0,DropHeight)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 							Tween(Arrow, {Rotation=0}, 0.3)
 							RefreshOptions()
 						end
-					end)
+					end))
 				end
 			end
 			
@@ -1324,7 +1432,7 @@ function EnvielUI:CreateWindow(Config)
 				local Text = InputBox.Text
 				if RemoveTextAfterFocusLost then InputBox.Text = "" end
 				self.Instance.Flags[Flag] = Text
-				Callback(Text)
+				SafeCallback(Callback, Text)
 			end)
 			
 			return {
@@ -1508,25 +1616,42 @@ function EnvielUI:CreateWindow(Config)
 				Create("UICorner", {Parent=Fill, CornerRadius=UDim.new(0,3)})
 				
 				local Sliding = false
+				local slideConnection = nil
 				
-				Track.InputBegan:Connect(function(i) 
-					if i.UserInputType==Enum.UserInputType.MouseButton1 then Sliding=true end 
-				end)
-				UserInputService.InputEnded:Connect(function(i) 
-					if i.UserInputType==Enum.UserInputType.MouseButton1 then Sliding=false end 
-				end)
-				
-				RunService.RenderStepped:Connect(function()
-					if Sliding then
+				local function startSliding()
+					if slideConnection then return end
+					
+					slideConnection = RunService.RenderStepped:Connect(function()
+						if not Sliding then
+							if slideConnection then
+								slideConnection:Disconnect()
+								slideConnection = nil
+							end
+							return
+						end
+						
 						local mouse = UserInputService:GetMouseLocation().X
 						local rel = math.clamp((mouse - Track.AbsolutePosition.X)/Track.AbsoluteSize.X, 0, 1)
-						Fill.Size = UDim2.new(rel,0,1,0)
+						Fill.Size = UDim2.new(rel, 0, 1, 0)
 						UpdateVal(math.floor(rel * 255))
 						UpdateColor()
-					end
+					end)
+				end
+				
+				Track.InputBegan:Connect(function(i) 
+					if i.UserInputType == Enum.UserInputType.MouseButton1 then 
+						Sliding = true
+						startSliding()
+					end 
 				end)
 				
-				return Fill 
+				UserInputService.InputEnded:Connect(function(i) 
+					if i.UserInputType == Enum.UserInputType.MouseButton1 then 
+						Sliding = false
+					end 
+				end)
+				
+				return Fill
 			end
 			
 			local fillR = makeSlider(25, "R", r, function(v) r = v end)
@@ -1534,11 +1659,20 @@ function EnvielUI:CreateWindow(Config)
 			local fillB = makeSlider(75, "B", b, function(v) b = v end)
 			
 			local HueSliding = false
-			HueBar.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 then HueSliding=true end end)
-			UserInputService.InputEnded:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 then HueSliding=false end end)
+			local hueConnection = nil
 			
-			RunService.RenderStepped:Connect(function()
-				if HueSliding then
+			local function startHueSliding()
+				if hueConnection then return end
+				
+				hueConnection = RunService.RenderStepped:Connect(function()
+					if not HueSliding then
+						if hueConnection then
+							hueConnection:Disconnect()
+							hueConnection = nil
+						end
+						return
+					end
+					
 					local mouse = UserInputService:GetMouseLocation().X
 					local rel = math.clamp((mouse - HueBar.AbsolutePosition.X)/HueBar.AbsoluteSize.X, 0, 1)
 					local HueColor = Color3.fromHSV(rel, 1, 1)
@@ -1549,7 +1683,20 @@ function EnvielUI:CreateWindow(Config)
 					fillB.Size = UDim2.new(b/255, 0, 1, 0)
 					
 					UpdateColor()
-				end
+				end)
+			end
+			
+			HueBar.InputBegan:Connect(function(i) 
+				if i.UserInputType == Enum.UserInputType.MouseButton1 then 
+					HueSliding = true
+					startHueSliding()
+				end 
+			end)
+			
+			UserInputService.InputEnded:Connect(function(i) 
+				if i.UserInputType == Enum.UserInputType.MouseButton1 then 
+					HueSliding = false
+				end 
 			end)
 			
 			ColorDisplay.MouseButton1Click:Connect(function()
