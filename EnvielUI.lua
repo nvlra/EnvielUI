@@ -210,7 +210,6 @@ function EnvielUI:CreateWindow(Config)
 				{Text = "Cancel", Callback = function() end}, 
 				{Text = "Confirm", Callback = function() 
 					ScreenGui:Destroy() 
-					-- Cleanup Connections
 					for _, c in pairs(Window.Connections) do c:Disconnect() end
 					Window.Connections = {}
 				end}
@@ -726,10 +725,12 @@ function EnvielUI:CreateWindow(Config)
 		local Content = Config.Content or "Are you sure?"
 		local Actions = Config.Actions or {{Text = "OK", Callback = function() end}}
 		
+		-- Changed Parent to MainFrame to keep it inside the window
 		local Blur = Create("Frame", {
-			Parent = ScreenGui, BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1, Size = UDim2.fromScale(1,1), Name = "AlertBlur", ZIndex = 100
+			Parent = MainFrame, BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1, Size = UDim2.fromScale(1,1), Name = "AlertBlur", ZIndex = 100
 		})
-		
+		Create("UICorner", {Parent = Blur, CornerRadius = UDim.new(0, 14)}) -- Match ContentWindow corner
+
 		local AlertFrame = Create("CanvasGroup", {
 			Parent = Blur, Size = UDim2.fromOffset(300, 160), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5),
 			BackgroundColor3 = Window.Theme.Secondary, GroupTransparency = 1
@@ -760,14 +761,14 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
 			Btn.MouseButton1Click:Connect(function()
 				if Action.Callback then Action.Callback() end
-				Tween(AlertFrame, {GroupTransparency = 1, Size = UDim2.fromOffset(280, 140)}, 0.2)
+				Tween(AlertFrame, {GroupTransparency = 1, Size = UDim2.fromOffset(280, 140)}, 0.2, Enum.EasingStyle.Quint)
 				Tween(Blur, {BackgroundTransparency = 1}, 0.2).Completed:Wait()
 				Blur:Destroy()
 			end)
 		end
 		
 		Tween(Blur, {BackgroundTransparency = 0.4}, 0.3)
-		Tween(AlertFrame, {GroupTransparency = 0, Size = UDim2.fromOffset(300, 160)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		Tween(AlertFrame, {GroupTransparency = 0, Size = UDim2.fromOffset(300, 160)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 	end
 	
 	local ConfigName = Name:gsub(" ", "").."_Config.json"
