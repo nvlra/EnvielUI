@@ -181,7 +181,7 @@ function EnvielUI:CreateWindow(Config)
 	local MiniButton = Create("CanvasGroup", {
 		Name = "MiniButton", Parent = ScreenGui, BackgroundColor3 = Window.Theme.Main, Size = UDim2.fromOffset(45, 45),
 		Position = UDim2.new(0, SafeArea.X + 20, 0.5, 0),
-		AnchorPoint = Vector2.new(0, 0.5), Visible = false, AutoButtonColor = false, GroupTransparency = 1
+		AnchorPoint = Vector2.new(0, 0.5), Visible = false, GroupTransparency = 1
 	})
 	Create("UICorner", {Parent = MiniButton, CornerRadius = UDim.new(0, 10)})
 	Create("UIStroke", {Parent = MiniButton, Color = Window.Theme.Stroke, Thickness = 1})
@@ -432,9 +432,22 @@ function EnvielUI:CreateWindow(Config)
 			end
 			
 			local Sliding = false
-			Track.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then Sliding = true Update(input) end end)
-			UserInputService.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then Sliding = false end end)
-			UserInputService.InputChanged:Connect(function(input) if Sliding and input.UserInputType == Enum.UserInputType.MouseMovement then Update(input) end end)
+			Track.InputBegan:Connect(function(input) 
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+					Sliding = true 
+					Update(input) 
+				end 
+			end)
+			UserInputService.InputEnded:Connect(function(input) 
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+					Sliding = false 
+				end 
+			end)
+			UserInputService.InputChanged:Connect(function(input) 
+				if Sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
+					Update(input) 
+				end 
+			end)
 			return {Set = function(self, v) 
 				Val = math.clamp(v, Min, Max) 
 				local Pct = (Val-Min)/(Max-Min)
@@ -551,9 +564,22 @@ function EnvielUI:CreateWindow(Config)
 				end
 				
 				local Sliding = false
-				Bar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then Sliding = true Update(i) end end)
-				UserInputService.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then Sliding = false end end)
-				UserInputService.InputChanged:Connect(function(i) if Sliding and i.UserInputType == Enum.UserInputType.MouseMovement then Update(i) end end)
+				Bar.InputBegan:Connect(function(i) 
+					if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then 
+						Sliding = true 
+						Update(i) 
+					end 
+				end)
+				UserInputService.InputEnded:Connect(function(i) 
+					if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then 
+						Sliding = false 
+					end 
+				end)
+				UserInputService.InputChanged:Connect(function(i) 
+					if Sliding and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then 
+						Update(i) 
+					end 
+				end)
 				
 				return {UpdateFill = function() Fill.Size = UDim2.new(Val[Prop], 0, 1, 0) end}
 			end
