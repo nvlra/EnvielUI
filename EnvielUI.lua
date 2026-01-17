@@ -641,8 +641,9 @@ function EnvielUI:CreateWindow(Config)
 	
 	local Footer = Create("TextLabel", {
 		Name = "Footer", Parent = MainFrame, BackgroundTransparency = 1,
-		Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 1, -8), AnchorPoint = Vector2.new(0, 1),
-		Text = "Made by Enviel", TextSize = 10, Font = FontBold, TextColor3 = self.Theme.TextSec, TextTransparency = 0
+		Size = UDim2.new(0, 100, 0, 20), Position = UDim2.new(1, -60, 0, 15), AnchorPoint = Vector2.new(1, 0), -- Top Right
+		Text = "Made by Enviel", TextSize = 10, Font = FontBold, TextColor3 = self.Theme.TextSec, TextTransparency = 0.5,
+		TextXAlignment = Enum.TextXAlignment.Right
 	})
 	
 	local SearchBar = Create("TextBox", {
