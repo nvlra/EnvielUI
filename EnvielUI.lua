@@ -92,13 +92,13 @@ function EnvielUI:CreateWindow(Config)
 	local Window = {
 		Flags = {}, 
 		Theme = Config.Theme or {
-			Main = Color3.fromRGB(18, 18, 18),
-			Secondary = Color3.fromRGB(25, 25, 25),
-			Stroke = Color3.fromRGB(45, 45, 45),
-			Accent = Color3.fromRGB(255, 255, 255),
-			Text = Color3.fromRGB(240, 240, 240),
-			TextDark = Color3.fromRGB(150, 150, 150),
-			ActiveText = Color3.fromRGB(10, 10, 10)
+			Main = Color3.fromRGB(15, 15, 15),       -- Deep Dark Background
+			Secondary = Color3.fromRGB(25, 25, 25),  -- Slightly Lighter Section
+			Stroke = Color3.fromRGB(0, 0, 0),        -- (Unused but kept for structure)
+			Accent = Color3.fromRGB(255, 255, 255),  -- Pure White Accents
+			Text = Color3.fromRGB(255, 255, 255),    -- White Text
+			TextDark = Color3.fromRGB(170, 170, 170),-- Grey Text
+			ActiveText = Color3.fromRGB(0, 0, 0)     -- Black Text on White Accent
 		}
 	}
 	
@@ -152,7 +152,7 @@ function EnvielUI:CreateWindow(Config)
 	-- "Made By Enviel"
 	Create("TextLabel", {
 		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -70, 0.5, 0), Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X,
-		Text = "Made By Enviel", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.TextDark, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right
+		Text = "Made By Enviel", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right, BackgroundTransparency = 1
 	})
 	
 	-- Close Button
@@ -222,7 +222,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	-- Floating Dock
 	Dock = Create("Frame", {
-		Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(0, 0, 0, 46), Position = UDim2.new(0.5, 0, 1, 25),
+		Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(0, 0, 0, 46), Position = UDim2.new(0.5, 0, 1, 12),
 		AnchorPoint = Vector2.new(0.5, 0), AutomaticSize = Enum.AutomaticSize.X
 	})
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
@@ -239,16 +239,35 @@ function EnvielUI:CreateWindow(Config)
 	Create("UICorner", {Parent = ActiveIndicator, CornerRadius = UDim.new(1, 0)})
 
 	function Window:SelectTab(TabId)
-		for _, p in pairs(ContentHolder:GetChildren()) do if p:IsA("ScrollingFrame") then p.Visible = false end end
+		-- Hide all pages
+		for _, p in pairs(ContentHolder:GetChildren()) do 
+			if p:IsA("ScrollingFrame") then p.Visible = false end 
+		end
+		
+		-- Show selected page
 		local Page = ContentHolder:FindFirstChild(TabId)
 		if Page then
 			Page.Visible = true
+			
 			local Btn = DockList:FindFirstChild(TabId.."Btn")
 			if Btn then
-				Tween(ActiveIndicator, {Size = UDim2.new(0, Btn.AbsoluteSize.X, 1, -8), Position = UDim2.new(0, Btn.Position.X.Offset, 0.5, 0)}, 0.3)
+				-- Calculate Target Position relative to Dock
+				-- We must wait a frame if the GUI isn't fully rendered, but usually it's fine.
+				-- Using task.defer to ensure AbsolutePosition is fresh if layout changed.
+				task.spawn(function()
+					local TargetX = Btn.AbsolutePosition.X - Dock.AbsolutePosition.X
+					
+					-- Smooth Tween (Quint for premium feel)
+					Tween(ActiveIndicator, {
+						Size = UDim2.new(0, Btn.AbsoluteSize.X, 1, -8), 
+						Position = UDim2.new(0, TargetX, 0.5, 0)
+					}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+				end)
+
+				-- Animate Text Colors
 				for _, b in pairs(DockList:GetChildren()) do
 					if b:IsA("TextButton") then
-						Tween(b, {TextColor3 = (b == Btn) and Window.Theme.ActiveText or Window.Theme.TextDark}, 0.2)
+						Tween(b, {TextColor3 = (b == Btn) and Window.Theme.ActiveText or Window.Theme.TextDark}, 0.3)
 					end
 				end
 			end
@@ -494,7 +513,6 @@ function EnvielUI:CreateWindow(Config)
 					if Config.Flag then Window.Flags[Config.Flag] = Val end
 					if Config.Callback then Config.Callback(Val) end
 					
-					-- Update Sibling Sliders Fills if needed (optional)
 				end
 				
 				local Sliding = false
@@ -512,7 +530,6 @@ function EnvielUI:CreateWindow(Config)
 			Top.MouseButton1Click:Connect(function()
 				Expanded = not Expanded
 				Tween(F, {Size = UDim2.new(1, 0, 0, Expanded and ExpandH or BaseH)}, 0.2)
-				-- Refresh slider positions on open just in case
 				RS.UpdateFill() GS.UpdateFill() BS.UpdateFill()
 			end)
 		end
