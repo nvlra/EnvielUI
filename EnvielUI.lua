@@ -898,7 +898,7 @@ function EnvielUI:CreateWindow(Config)
 				Tween(bar, {Size = UDim2.new(0, 20, 0, 3)}, 0.3) -- Expand bar
 				Tween(bar, {BackgroundColor3 = self.Instance.Theme.AccentText}, 0.3)
 			end
-		end
+
 		Window.ActiveTab = TabId
 	end
 	
