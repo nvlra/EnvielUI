@@ -1,6 +1,6 @@
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
-EnvielUI.Version = "2.1.1"
+EnvielUI.Version = "2.1.2"
 
 local function GetService(Name)
 	return cloneref and cloneref(game:GetService(Name)) or game:GetService(Name)
@@ -130,8 +130,6 @@ function EnvielUI:CreateWindow(Config)
 
 	Tween(MainFrame, {GroupTransparency = 0, Position = UDim2.fromScale(0.5, 0.45)}, 0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 
-
-	
 	local LOGO_WHITE = "rbxassetid://10709769508"
 	local LOGO_BLACK = "rbxassetid://10709769508"
 	
