@@ -171,7 +171,6 @@ function EnvielUI:CreateWindow(Config)
 	
 	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 14)})
 
-	-- Pop Animation
 	task.spawn(function()
 		ContentWindow.GroupTransparency = 1
 		Tween(MainScale, {Scale = 1}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
@@ -445,6 +444,18 @@ function EnvielUI:CreateWindow(Config)
 			Name = TabId, Parent = ContentHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), Visible = false,
 			ScrollBarThickness = 0, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0)
 		})
+
+		-- Auto Select First Tab
+		local TabCount = 0
+		for _, v in pairs(DockList:GetChildren()) do
+			if v:IsA("TextButton") then TabCount += 1 end
+		end
+		if TabCount == 1 then
+			task.spawn(function()
+				task.wait()
+				Window:SelectTab(TabId)
+			end)
+		end
 		Create("UIListLayout", {Parent = Page, Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder})
 		Create("UIPadding", {Parent = Page, PaddingBottom = UDim.new(0, 10)})
 		Page.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
