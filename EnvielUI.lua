@@ -961,7 +961,6 @@ function EnvielUI:CreateWindow(Config)
 		local IconAsset = GetIcon(IconName)
 		
 		local TabBtn = Create("TextButton", {
-		local TabBtn = Create("TextButton", {
 			Name = TabId.."Btn",
 			Parent = NavbarInner:WaitForChild("ButtonHolder"), -- Parent to Holder
 			BackgroundColor3 = self.Instance.Theme.Accent,
