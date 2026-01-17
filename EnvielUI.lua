@@ -999,6 +999,7 @@ function EnvielUI:CreateWindow(Config)
 		})
 		
 		-- 3. Active Bar (Underline - Bottom)
+		if TabBtn:FindFirstChild("ActiveBar") then TabBtn.ActiveBar:Destroy() end -- Prevent duplicates
 		local ActiveBar = Create("Frame", {
 			Name = "ActiveBar",
 			Parent = TabBtn,
@@ -1073,7 +1074,7 @@ function EnvielUI:CreateWindow(Config)
 			local Btn = Create("TextButton", {
 				Parent = Frame, BackgroundColor3 = self.Instance.Theme.Accent, Position = UDim2.new(1,-95,0.5,-13), Size = UDim2.new(0,80,0,26), -- Adjusted sizing/pos
 				Font = FontBold,
-				Text = Config.ButtonText or "Interact", TextColor3 = self.Instance.Theme.AccentText, TextSize = 11, AutoButtonColor = false,
+				Text = Config.ButtonText or "Interact", TextColor3 = self.Instance.Theme.TextSelected, TextSize = 11, AutoButtonColor = false,
 				TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
 			})
 			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
@@ -1099,7 +1100,7 @@ function EnvielUI:CreateWindow(Config)
 			Window.ThemeRegistry:Register(Btn, { 
 				properties = { 
 					BackgroundColor3 = function(t) return t.Accent end, 
-					TextColor3 = function(t) return t.AccentText end 
+					TextColor3 = function(t) return t.TextSelected end -- Force high contrast text
 				} 
 			})
 			Window:RegisterSearchable(Frame, Name)
