@@ -104,9 +104,6 @@ local function LoadFile(Name)
 	return nil
 end
 
-	return nil
-end
-
 function EnvielUI:CreateWindow(Config)
 	Config = Validate(Config, {
 		Name = "Enviel UI",
