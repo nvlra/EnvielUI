@@ -229,7 +229,7 @@ function EnvielUI:CreateWindow(Config)
 	end)
 
 	local MinBtn = Create("ImageButton", {
-		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -30, 0.5, 0), Size = UDim2.fromOffset(20, 20),
+		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -30, 0.5, 0), Size = UDim2.fromOffset(18, 18),
 		BackgroundTransparency = 1, Image = GetIcon("minimize") or "", ImageColor3 = Window.Theme.TextDark
 	})
 	
@@ -492,7 +492,7 @@ function EnvielUI:CreateWindow(Config)
 			local RowHeight = 48 -- 42 Item + 6 Padding
 			local ContentHeight = #filtered * RowHeight + 20 -- + PaddingBottom
 			local MinH = 180
-			local MaxH = math.floor(MainFrame.AbsoluteSize.Y * 0.35)
+			local MaxH = math.floor(MainFrame.AbsoluteSize.Y * 0.50)
 			
 			if MaxH < MinH then MaxH = MinH end -- Safety fallback
 			
