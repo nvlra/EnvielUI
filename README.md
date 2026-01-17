@@ -167,6 +167,53 @@ MainTab:CreateParagraph({
 })
 ```
 
+## 4. Advanced Features
+
+### Notifications
+
+Send a toast notification to the user.
+
+```lua
+Window:Notify({
+    Title = "Success",
+    Content = "Config loaded successfully!",
+    Duration = 5, -- Optional duration in seconds
+    Image = "check" -- Optional Lucide Icon
+})
+```
+
+### Prompt (Alert)
+
+Show a modal dialog for user confirmation.
+
+```lua
+Window:Prompt({
+    Title = "Warning",
+    Content = "Are you sure you want to overwrite your config?",
+    Actions = {
+        {
+            Text = "Yes",
+            Callback = function() print("Overwriting...") end,
+        },
+        {
+            Text = "No",
+            Callback = function() print("Cancelled") end,
+        }
+    }
+})
+```
+
+### Watermark
+
+Display a subtle watermark on the screen.
+
+```lua
+Window:Watermark({
+    Title = "Enviel UI | FPS: 60 | Ping: 45ms",
+    Enabled = true
+})
+```
+
 ---
 
 ## 💡 Tips
