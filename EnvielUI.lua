@@ -103,7 +103,6 @@ function EnvielUI:CreateWindow(Config)
 	}
 	
 	local Name = Config.Name or "Enviel UI"
-	local ConfigName = Config.ConfigurationSave or "EnvielConfig.json"
 	
 	-- Setup GUI
 	local Parent = game:GetService("CoreGui")
@@ -162,21 +161,38 @@ function EnvielUI:CreateWindow(Config)
 	})
 	CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 
-	-- Minimize Button
+	-- Minimize Button (Header)
 	local MinBtn = Create("ImageButton", {
 		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -30, 0.5, 0), Size = UDim2.fromOffset(20, 20),
 		BackgroundTransparency = 1, Image = GetIcon("minimize") or "", ImageColor3 = Window.Theme.TextDark
 	})
 	
-	local ContentHolder -- Forward decl
-	local Dock -- Forward decl
+	-- Minimize (Mini Button)
+	local MiniButton = Create("ImageButton", {
+		Name = "MiniButton", Parent = ScreenGui, BackgroundColor3 = Window.Theme.Main, Size = UDim2.fromOffset(50, 50),
+		Position = UDim2.new(0.5, 0, 0, 20), AnchorPoint = Vector2.new(0.5, 0), Visible = false, AutoButtonColor = false
+	})
+	Create("UICorner", {Parent = MiniButton, CornerRadius = UDim.new(0, 12)})
+	local MiniIcon = Create("ImageLabel", {
+		Parent = MiniButton, BackgroundTransparency = 1, Size = UDim2.new(0, 30, 0, 30), Position = UDim2.new(0.5, 0, 0.5, 0),
+		AnchorPoint = Vector2.new(0.5, 0.5), Image = LOGO_WHITE, ImageColor3 = Window.Theme.Accent
+	})
 	
-	local Minimized = false
+	Dragify(MiniButton)
+	
+	-- Restore logic
+	MiniButton.MouseButton1Click:Connect(function()
+		MiniButton.Visible = false
+		MainFrame.Visible = true
+		Tween(MainFrame, {Size = UDim2.fromOffset(620, 420)}, 0.3)
+	end)
+
+	-- Minimize Logic
 	MinBtn.MouseButton1Click:Connect(function()
-		Minimized = not Minimized
-		if ContentHolder then ContentHolder.Visible = not Minimized end
-		if Dock then Dock.Visible = not Minimized end
-		Tween(MainFrame, {Size = Minimized and UDim2.fromOffset(620, 50) or UDim2.fromOffset(620, 420)}, 0.3)
+		MainFrame.Visible = false
+		MiniButton.Visible = true
+		-- Sync position helper (Optional: Move MiniButton to near MainFrame)
+		MiniButton.Position = UDim2.new(0, MainFrame.AbsolutePosition.X + 310, 0, MainFrame.AbsolutePosition.Y)
 	end)
 	
 	-- Notifications
@@ -537,19 +553,27 @@ function EnvielUI:CreateWindow(Config)
 		return Elements
 	end
 	
-	-- Config System
-	function Window:SaveConfig(Name)
-		SaveFile(Name or ConfigName, Window.Flags)
-		Window:Notify({Title = "Configuration", Content = "Settings saved successfully!"})
+	-- Config System (Internalized)
+	local ConfigName = Name:gsub(" ", "").."_Config.json"
+	
+	function Window:SaveConfig()
+		SaveFile(ConfigName, Window.Flags)
+		Window:Notify({Title = "Configuration", Content = "Settings saved to "..ConfigName})
 	end
 	
-	function Window:LoadConfig(Name)
-		local Data = LoadFile(Name or ConfigName)
+	function Window:LoadConfig()
+		local Data = LoadFile(ConfigName)
 		if Data then
-			-- Logic to apply flags would go here
-			Window:Notify({Title = "Configuration", Content = "Settings loaded!"})
+			-- In a real implementation, you would apply these flags to the elements
+			-- For now, we just restore the table state
+			for Flag, Val in pairs(Data) do
+				Window.Flags[Flag] = Val
+				-- To fully restore, elements need a :Set() method linked to the Flag.
+				-- This version just ensures data persistence.
+			end
+			Window:Notify({Title = "Configuration", Content = "Settings loaded from "..ConfigName})
 		else
-			Window:Notify({Title = "Configuration", Content = "No config found found."})
+			Window:Notify({Title = "Configuration", Content = "No saved config found."})
 		end
 	end
 
