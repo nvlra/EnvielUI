@@ -138,7 +138,7 @@ function EnvielUI:CreateWindow(Config)
 	local ScreenGui = Create("ScreenGui", {
 		Name = "EnvielUI", Parent = Parent, 
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling, ResetOnSpawn = false,
-		IgnoreGuiInset = true
+		IgnoreGuiInset = true, DisplayOrder = 10000
 	})
 	
 	local MainFrame = Create("Frame", {
