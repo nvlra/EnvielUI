@@ -130,7 +130,7 @@ function EnvielUI:CreateWindow(Config)
 
 	Tween(MainFrame, {GroupTransparency = 0, Position = UDim2.fromScale(0.5, 0.45)}, 0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 
-	Dragify(Header, MainFrame)
+
 	
 	local LOGO_WHITE = "rbxassetid://10709769508"
 	local LOGO_BLACK = "rbxassetid://10709769508"
@@ -147,6 +147,8 @@ function EnvielUI:CreateWindow(Config)
 		Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(0, 0, 1, 0), Position = UDim2.new(0, 32, 0, 0), AutomaticSize = Enum.AutomaticSize.X,
 		Font = Enum.Font.GothamBold, Text = Name, TextColor3 = Window.Theme.Text, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left
 	})
+
+	Dragify(Header, MainFrame)
 	
 	local Controls = Create("Frame", {
 		Parent = Header, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.new(0, 200, 1, 0), BackgroundTransparency = 1
