@@ -361,6 +361,105 @@ function EnvielUI:CreateWindow(Config)
 		end)
 	end
 	
+	function Window:OpenDropdownModal(Config, Callback)
+		local Options = Config.Options or {}
+		local Multi = Config.Multi or false
+		local Current = Config.CurrentValue or (Multi and {} or Options[1])
+		
+		-- Overlay
+		local Overlay = Create("TextButton", {
+			Name = "ModalOverlay", Parent = ContentWindow, BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1,
+			Size = UDim2.fromScale(1, 1), AutoButtonColor = false, Text = ""
+		})
+		
+		-- Modal Container (Slide Up)
+		local Container = Create("Frame", {
+			Name = "DropdownModal", Parent = Overlay, BackgroundColor3 = Window.Theme.Main,
+			Size = UDim2.new(0.9, 0, 0, IsMobile and 250 or 300), Position = UDim2.new(0.5, 0, 1.5, 0), -- Start below
+			AnchorPoint = Vector2.new(0.5, 1), ZIndex = 10
+		})
+		Create("UICorner", {Parent = Container, CornerRadius = UDim.new(0, 12)})
+		Create("UIStroke", {Parent = Container, Color = Window.Theme.Stroke, Thickness = 1})
+		
+		-- Header
+		local Header = Create("Frame", {
+			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 40)
+		})
+		Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
+		Create("UIStroke", {Parent = Header, Color = Window.Theme.Stroke, Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border})
+		
+		Create("TextLabel", {
+			Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(1, -30, 1, 0),
+			Text = Config.Name or "Select Option", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
+		})
+		
+		local CloseBtn = Create("ImageButton", {
+			Parent = Header, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(20, 20),
+			BackgroundTransparency = 1, Image = GetIcon("x") or "rbxassetid://6031094678", ImageColor3 = Window.Theme.TextDark
+		})
+		
+		-- Content List
+		local List = Create("ScrollingFrame", {
+			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -50), Position = UDim2.new(0, 0, 0, 45),
+			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0)
+		})
+		Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
+		Create("UIPadding", {Parent = List, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12)})
+		
+		local function Close()
+			Tween(Container, {Position = UDim2.new(0.5, 0, 1.5, 0)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
+			Tween(Overlay, {BackgroundTransparency = 1}, 0.3).Completed:Wait()
+			Overlay:Destroy()
+		end
+		
+		CloseBtn.MouseButton1Click:Connect(Close)
+		Overlay.MouseButton1Click:Connect(Close) -- Click outside to close
+		
+		local tempSelected = Multi and {unpack(Current)} or Current
+
+		local function Refresh()
+			for _, v in pairs(List:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
+			
+			for _, opt in pairs(Options) do
+				local isSelected = false
+				if Multi then
+					for _, s in pairs(tempSelected) do if s == opt then isSelected = true break end end
+				else
+					isSelected = (tempSelected == opt)
+				end
+				
+				local Item = Create("TextButton", {
+					Parent = List, BackgroundColor3 = isSelected and Window.Theme.Secondary or Window.Theme.Main,
+					Size = UDim2.new(1, 0, 0, 36), Text = "  "..tostring(opt), Font = Enum.Font.Gotham,
+					TextColor3 = isSelected and Window.Theme.Accent or Window.Theme.TextDark, TextSize = 13,
+					TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false,
+					BorderSizePixel = 0
+				})
+				Create("UICorner", {Parent = Item, CornerRadius = UDim.new(0, 6)})
+				if isSelected then Create("UIStroke", {Parent = Item, Color = Window.Theme.Stroke, Thickness = 1}) end
+				
+				Item.MouseButton1Click:Connect(function()
+					if Multi then
+						local idx = table.find(tempSelected, opt)
+						if idx then table.remove(tempSelected, idx) else table.insert(tempSelected, opt) end
+						Callback(tempSelected)
+						Refresh()
+					else
+						Callback(opt)
+						Close()
+					end
+				end)
+			end
+			List.CanvasSize = UDim2.new(0, 0, 0, #Options * 41)
+		end
+		
+		Refresh()
+		
+		-- Animate In
+		Tween(Overlay, {BackgroundTransparency = 0.5}, 0.3)
+		Tween(Container, {Position = UDim2.new(0.5, 0, 1, -20)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+
+	
 	local ContentHolder = Create("CanvasGroup", {
 		Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, -(HdrH + 30)), Position = UDim2.new(0, 20, 0, HdrH + 10), 
 		GroupTransparency = 0, BorderSizePixel = 0
@@ -630,54 +729,34 @@ function EnvielUI:CreateWindow(Config)
 		function Elements:CreateDropdown(Config)
 			local Options = Config.Options or {}
 			local Default = Config.Default or Options[1]
-			local Dropped = false
+			local Multi = Config.Multi or false
 			
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), ClipsDescendants = true, ZIndex = 2})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH)})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 			
 			local Top = Create("TextButton", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, ItemH), Text = "", AutoButtonColor = false})
 			Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0,12,0,0), Size=UDim2.new(1,-40,0,ItemH), Text = Config.Name or "Dropdown", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Left})
 			
-			local DisplayText = Default
-			if type(Default) == "table" then
-				if #Default > 0 then
-					DisplayText = table.concat(Default, ", ")
-				else
-					DisplayText = "Select..."
-				end
-			end
-			local Current = Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0.5,0,0,0), Size=UDim2.new(0.5,-30,0,ItemH), Text = tostring(DisplayText).." >", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Right})
+			local Current = Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0.5,0,0,0), Size=UDim2.new(0.5,-30,0,ItemH), Text = "", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Right})
 			
-			local List = Create("ScrollingFrame", {
-				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, ItemH), Size = UDim2.new(1, 0, 1, -ItemH), 
-				ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0)
-			})
-			Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder})
-			
-			local function Refresh()
-				for _, v in pairs(List:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
-				for _, opt in pairs(Options) do
-					local b = Create("TextButton", {
-						Parent = List, BackgroundColor3 = Window.Theme.Main, Size = UDim2.new(1, 0, 0, 30),
-						Text = "   "..tostring(opt), Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false,
-						BorderSizePixel = 0
-					})
-					b.MouseButton1Click:Connect(function()
-						Default = opt
-						Current.Text = tostring(opt)
-						Dropped = false
-						Tween(F, {Size = UDim2.new(1, 0, 0, ItemH)}, 0.2)
-						if Config.Flag then Window.Flags[Config.Flag] = opt end
-						if Config.Callback then Config.Callback(opt) end
-					end)
+			local function UpdateText(Val)
+				local DisplayText = Val
+				if type(Val) == "table" then
+					if #Val > 0 then DisplayText = table.concat(Val, ", ") else DisplayText = "Select..." end
 				end
-				List.CanvasSize = UDim2.new(0, 0, 0, #Options * 30)
+				Current.Text = tostring(DisplayText).." >"
 			end
-			Refresh()
+			
+			UpdateText(Default)
 			
 			Top.MouseButton1Click:Connect(function()
-				Dropped = not Dropped
-				Tween(F, {Size = UDim2.new(1, 0, 0, Dropped and (ItemH + math.min(#Options, 5) * 30) or ItemH)}, 0.2)
+				Config.CurrentValue = Default -- Pass current state
+				Window:OpenDropdownModal(Config, function(NewVal)
+					Default = NewVal
+					UpdateText(NewVal)
+					if Config.Flag then Window.Flags[Config.Flag] = NewVal end
+					if Config.Callback then Config.Callback(NewVal) end
+				end)
 			end)
 		end
 		
