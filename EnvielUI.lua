@@ -1736,7 +1736,7 @@ function EnvielUI:CreateWindow(Config)
 		local WatermarkFrame = Create("Frame", {
 			Parent = MainFrame, Name = "Watermark", BackgroundColor3 = self.Instance.Theme.Stroke,
 			Size = UDim2.new(0, 0, 0, 22),
-			Position = UDim2.new(0, 15, 1, -35),
+			Position = UDim2.new(0, 15, 1, (not Config.NoSidebar) and -85 or -35), -- Move up if Dock is present
 			Visible = true,
 			ZIndex = 2
 		})
