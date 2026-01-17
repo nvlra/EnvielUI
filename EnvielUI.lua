@@ -494,42 +494,44 @@ function EnvielUI:CreateWindow(Config)
 		PlaceholderColor3 = self.Theme.TextSec,
 		TextSize = 13,
 		TextXAlignment = Enum.TextXAlignment.Left,
-		Visible = not (Config.NoSidebar or false)
 	})
 	Create("UICorner", {Parent = SearchBar, CornerRadius = UDim.new(0, 6)})
 	Create("UIPadding", {Parent = SearchBar, PaddingLeft = UDim.new(0, 10)})
 	Create("UIStroke", {Parent = SearchBar, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 
-	local NoSidebar = Config.NoSidebar or false
-	-- SidebarWidth is 0 because we are using Bottom Dock now
+	-- Fixed Layout: Always show Floating Navbar
 	
-	local NavbarHeight = 70 
+	local NavbarHeight = 65
 	
-	-- Navbar Container (The Dock)
+	-- Navbar Container (Floating Dock Style)
 	local Navbar = Create("Frame", {
 		Name = "Navbar",
 		Parent = ContentContainer,
-		BackgroundColor3 = self.Theme.Secondary, 
-		Position = UDim2.new(0, 0, 1, -NavbarHeight),
-		Size = UDim2.new(1, 0, 0, NavbarHeight),
+		BackgroundColor3 = self.Instance.Theme.Secondary, 
+		Position = UDim2.new(0.5, 0, 1, -15), -- Floats 15px from bottom
+		Size = UDim2.new(1, -30, 0, NavbarHeight), -- Width with margin
+		AnchorPoint = Vector2.new(0.5, 1),
 		BorderSizePixel = 0,
-		Visible = not NoSidebar,
-		ZIndex = 10
+		Visible = true, -- Always Visible
+		ZIndex = 20
 	})
-	Create("UIStroke", {Parent = Navbar, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+	Create("UICorner", {Parent = Navbar, CornerRadius = UDim.new(0, 16)}) -- Rounded Dock
+	Create("UIStroke", {Parent = Navbar, Color = self.Instance.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 	
-	-- Inner Container for centering or padding (Scrolling for overflow protection)
+	-- Inner Container (Scrolling)
 	local NavbarInner = Create("ScrollingFrame", {
 		Name = "NavbarInner",
 		Parent = Navbar,
 		BackgroundTransparency = 1,
-		Size = UDim2.new(1, -20, 1, 0),
-		Position = UDim2.new(0, 10, 0, 0),
+		Size = UDim2.new(1, 0, 1, 0),
+		Position = UDim2.new(0, 0, 0, 0),
 		CanvasSize = UDim2.new(0, 0, 0, 0),
 		AutomaticCanvasSize = Enum.AutomaticSize.X,
-		ScrollBarThickness = 0, -- Hidden scrollbar for cleaner look
+		ScrollBarThickness = 0,
 		ScrollingDirection = Enum.ScrollingDirection.X
 	})
+	-- Add padding to keep buttons away from edges
+	Create("UIPadding", {Parent = NavbarInner, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10)})
 	
 	-- Horizontal Layout for Dock Items
 	Create("UIListLayout", {
@@ -537,7 +539,7 @@ function EnvielUI:CreateWindow(Config)
 		FillDirection = Enum.FillDirection.Horizontal,
 		HorizontalAlignment = Enum.HorizontalAlignment.Center,
 		VerticalAlignment = Enum.VerticalAlignment.Center,
-		Padding = UDim.new(0, 8),
+		Padding = UDim.new(0, 5),
 		SortOrder = Enum.SortOrder.LayoutOrder
 	})
 	
@@ -564,8 +566,8 @@ function EnvielUI:CreateWindow(Config)
 		Parent = ContentContainer,
 		BackgroundTransparency = 1,
 		Position = UDim2.new(0, 20, 0, 0),
-		-- Adjust height to leave room for Navbar if visible
-		Size = UDim2.new(1, -40, 1, NoSidebar and -10 or -(NavbarHeight + 10)) 
+		-- Content ends BEFORE the dock starts (Dock Height + Margin)
+		Size = UDim2.new(1, -40, 1, -(NavbarHeight + 25)) -- Always leave room for Floating Dock
 	})
 	
 	local Window = {
@@ -579,7 +581,8 @@ function EnvielUI:CreateWindow(Config)
 		Search = SearchBar,
 		Logo = Logo,
 		Footer = Footer,
-		OpenIcon = OpenIcon
+		OpenIcon = OpenIcon,
+		ActiveTab = nil
 	}
 	
 	function Window:SetTheme(ThemeName)
@@ -595,7 +598,7 @@ function EnvielUI:CreateWindow(Config)
 		
 		Tween(MainFrame, {BackgroundColor3 = T.Main}, 0.3)
 		Tween(MainFrame.UIStroke, {Color = T.Stroke}, 0.3)
-		Tween(Title, {TextColor3 = T.TextSec}, 0.3)
+		Tween(Title, {TextColor3 = T.Text}, 0.3)
 		if self.Footer then Tween(self.Footer, {TextColor3 = T.TextSec}, 0.3) end
 		
 		if OpenBtn then
@@ -614,7 +617,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 		
 		if self.Search then
-			Tween(self.Search, {BackgroundColor3 = T.Stroke}, 0.3)
+			Tween(self.Search, {BackgroundColor3 = T.Element}, 0.3)
 			Tween(self.Search, {TextColor3 = T.Text}, 0.3)
 			Tween(self.Search, {PlaceholderColor3 = T.TextSec}, 0.3)
 			if self.Search:FindFirstChild("UIStroke") then Tween(self.Search.UIStroke, {Color = T.Stroke}, 0.3) end
@@ -628,22 +631,23 @@ function EnvielUI:CreateWindow(Config)
 			if btn:IsA("TextButton") then
 				local label = btn:FindFirstChild("Label")
 				local icon = btn:FindFirstChild("ImageLabel")
+				local bar = btn:FindFirstChild("ActiveBar")
 				
 				-- Normal State
 				if Window.ActiveTab and btn.Name == Window.ActiveTab.."Btn" then
 					-- Active State styling is handled in SelectTab, but update colors here if needed
-					Tween(btn, {BackgroundColor3 = T.Accent}, 0.3)
 					if label then Tween(label, {TextColor3 = T.AccentText}, 0.3) end
 					if icon then Tween(icon, {ImageColor3 = T.AccentText}, 0.3) end
+					if bar then Tween(bar, {BackgroundColor3 = T.AccentText}, 0.3) end
 				else
-					Tween(btn, {BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1}, 0.3) -- Transparent
+					Tween(btn, {BackgroundTransparency = 1}, 0.3) -- Transparent
 					if label then Tween(label, {TextColor3 = T.TextSec}, 0.3) end
 					if icon then Tween(icon, {ImageColor3 = T.TextSec}, 0.3) end
+					if bar then Tween(bar, {BackgroundColor3 = T.Secondary}, 0.3) end
 				end
 			end
 		end
 		
-
 		for _, page in pairs(Pages:GetChildren()) do
 			if page:IsA("ScrollingFrame") then
 				page.ScrollBarImageColor3 = T.Stroke
@@ -1736,7 +1740,7 @@ function EnvielUI:CreateWindow(Config)
 		local WatermarkFrame = Create("Frame", {
 			Parent = MainFrame, Name = "Watermark", BackgroundColor3 = self.Instance.Theme.Stroke,
 			Size = UDim2.new(0, 0, 0, 22),
-			Position = UDim2.new(0, 15, 1, (not Config.NoSidebar) and -85 or -35), -- Move up if Dock is present
+			Position = UDim2.new(0, 15, 1, -85), -- Fixed position above Floating Dock
 			Visible = true,
 			ZIndex = 2
 		})
