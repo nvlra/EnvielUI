@@ -82,7 +82,7 @@ local Themes = {
 	Light = {
 		Main = Color3.fromHex("F5F5F5"),
 		Secondary = Color3.fromHex("EBEBEB"),
-		Stroke = Color3.fromHex("D0D0D0"),
+		Stroke = Color3.fromHex("F5F5F5"), -- Transparent/Matching Main to hide borders
 		Text = Color3.fromHex("101010"),
 		TextSec = Color3.fromHex("606060"),
 		Accent = Color3.fromHex("151515"),
@@ -879,7 +879,14 @@ function EnvielUI:CreateWindow(Config)
 				local icon = content and content:FindFirstChild("ImageLabel")
 				
 				if label then Tween(label, {TextColor3 = self.Instance.Theme.TextSec}, 0.3) end
+				if label then Tween(label, {TextColor3 = self.Instance.Theme.TextSec}, 0.3) end
 				if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSec}, 0.3) end
+				
+				local bar = btn:FindFirstChild("ActiveBar")
+				if bar then
+					Tween(bar, {Size = UDim2.new(0, 0, 0, 3)}, 0.3) -- Shrink inactive bar
+					Tween(bar, {BackgroundColor3 = self.Instance.Theme.Secondary}, 0.3)
+				end
 			end
 		end
 		
