@@ -666,14 +666,14 @@ function EnvielUI:CreateWindow(Config)
 
 	-- Fixed Layout: Always show Floating Navbar
 	
-	local NavbarHeight = NAVBAR_HEIGHT
+	local NavbarHeight = 55 -- Reduced height
 	
 	-- Navbar Container (Floating Dock Style)
 	local Navbar = Create("Frame", {
 		Name = "Navbar",
 		Parent = ContentContainer,
 		BackgroundColor3 = self.Theme.Secondary, 
-		Position = UDim2.new(0.5, 0, 1, -15), -- Floats 15px from bottom
+		Position = UDim2.new(0.5, 0, 1, -25), -- Floats higher
 		Size = UDim2.new(1, -30, 0, NavbarHeight), -- Width with margin
 		AnchorPoint = Vector2.new(0.5, 1),
 		BorderSizePixel = 0,
@@ -1223,6 +1223,7 @@ function EnvielUI:CreateWindow(Config)
 			end
 			
 			local Sliding = false
+			
 			Track.InputBegan:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 					Sliding = true
@@ -1695,50 +1696,49 @@ function EnvielUI:CreateWindow(Config)
 				Create("UICorner", {Parent=Fill, CornerRadius=UDim.new(0,3)})
 				
 				local Sliding = false
-				local slideConnection = nil
 				
-				local function startSliding()
-					if slideConnection then return end
-					
-					slideConnection = RunService.RenderStepped:Connect(function()
-						if not Sliding then
-							if slideConnection then
-								slideConnection:Disconnect()
-								slideConnection = nil
-							end
-							return
-						end
-						
-						local mouse = UserInputService:GetMouseLocation().X
-						local rel = math.clamp((mouse - Track.AbsolutePosition.X)/Track.AbsoluteSize.X, 0, 1)
-						Fill.Size = UDim2.new(rel, 0, 1, 0)
-						UpdateVal(math.floor(rel * 255))
-						UpdateColor()
-					end)
+				local function update(input)
+					local SizeX = Track.AbsoluteSize.X
+					local PosX = input.Position.X - Track.AbsolutePosition.X
+					local Percent = math.clamp(PosX / SizeX, 0, 1)
+					Tween(Fill, {Size=UDim2.new(Percent,0,1,0)}, 0.05)
+					UpdateVal(math.floor(Percent*255))
+					UpdateColor()
 				end
 				
-				Track.InputBegan:Connect(function(i) 
-					if i.UserInputType == Enum.UserInputType.MouseButton1 then 
+				Track.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 						Sliding = true
-						startSliding()
-					end 
+						update(input)
+					end
 				end)
 				
-				UserInputService.InputEnded:Connect(function(i) 
-					if i.UserInputType == Enum.UserInputType.MouseButton1 then 
+				UserInputService.InputEnded:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 						Sliding = false
-					end 
+					end
 				end)
 				
-				return Fill
+				UserInputService.InputChanged:Connect(function(input)
+					if Sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+						update(input)
+					end
+				end)
 			end
 			
-			local fillR = makeSlider(25, "R", r, function(v) r = v end)
-			local fillG = makeSlider(50, "G", g, function(v) g = v end)
-			local fillB = makeSlider(75, "B", b, function(v) b = v end)
+			makeSlider(20, "R", r, function(v) r = v end)
+			makeSlider(50, "G", g, function(v) g = v end)
+			makeSlider(80, "B", b, function(v) b = v end)
 			
-			local HueSliding = false
-			local hueConnection = nil
+			-- Toggle Picker
+			ColorDisplay.MouseButton1Click:Connect(function()
+				Expanded = not Expanded
+				if Expanded then
+					Tween(Frame, {Size=UDim2.new(1,0,0,165)}, 0.3)
+				else
+					Tween(Frame, {Size=UDim2.new(1,0,0,46)}, 0.3)
+				end
+			end)
 			
 			local function startHueSliding()
 				if hueConnection then return end
