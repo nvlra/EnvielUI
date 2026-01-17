@@ -432,10 +432,10 @@ function EnvielUI:CreateWindow(Config)
 		local TabId = "Tab_"..TabName:gsub(" ", "")
 		
 		local Btn = Create("TextButton", {
-			Name = TabId.."Btn", Parent = DockList, BackgroundTransparency = 1, Text = "  "..TabName.."  ", Font = Enum.Font.GothamBold,
-			TextColor3 = Window.Theme.TextDark, TextSize = 14, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, ZIndex = 2
+			Name = TabId.."Btn", Parent = DockList, BackgroundTransparency = 1, Text = TabName, Font = Enum.Font.GothamBold,
+			TextColor3 = Window.Theme.TextDark, TextSize = TextS + 1, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, ZIndex = 2
 		})
-		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
+		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
 		
 		local Page = Create("ScrollingFrame", {
