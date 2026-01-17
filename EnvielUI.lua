@@ -490,7 +490,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	local ActiveIndicator = Create("Frame", {
 		Parent = Dock, BackgroundColor3 = Window.Theme.Accent, Size = UDim2.new(0, 0, 1, -8), Position = UDim2.new(0, 0, 0.5, 0),
-		AnchorPoint = Vector2.new(0, 0.5), ZIndex = 0
+		AnchorPoint = Vector2.new(0.5, 0.5), ZIndex = 0
 	})
 	Create("UICorner", {Parent = ActiveIndicator, CornerRadius = UDim.new(1, 0)})
 
@@ -509,11 +509,11 @@ function EnvielUI:CreateWindow(Config)
 			local Btn = DockList:FindFirstChild(TabId.."Btn")
 			if Btn then
 				task.spawn(function()
-					local TargetX = Btn.AbsolutePosition.X - Dock.AbsolutePosition.X
+					local CenterX = (Btn.AbsolutePosition.X - Dock.AbsolutePosition.X) + (Btn.AbsoluteSize.X / 2)
 					
 					Tween(ActiveIndicator, {
 						Size = UDim2.new(0, Btn.AbsoluteSize.X, 1, -8), 
-						Position = UDim2.new(0, TargetX, 0.5, 0)
+						Position = UDim2.new(0, CenterX, 0.5, 0)
 					}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 				end)
 
@@ -535,7 +535,8 @@ function EnvielUI:CreateWindow(Config)
 		
 		local Btn = Create("TextButton", {
 			Name = TabId.."Btn", Parent = DockList, BackgroundTransparency = 1, Text = TabName, Font = Enum.Font.GothamBold,
-			TextColor3 = Window.Theme.TextDark, TextSize = TextS + 1, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, ZIndex = 2
+			TextColor3 = Window.Theme.TextDark, TextSize = TextS + 1, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, ZIndex = 2,
+			TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
 		})
 		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
