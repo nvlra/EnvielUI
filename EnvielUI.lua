@@ -613,7 +613,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local B = Create("TextButton", {
 				Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -10, 0.5, 0), Size = UDim2.new(0, 80, 0, 28),
-				BackgroundColor3 = Window.Theme.Stroke, Text = Config.Text or "Interact", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 11, AutoButtonColor=false
+				BackgroundColor3 = Window.Theme.Text, Text = Config.Text or "Interact", Font = Enum.Font.GothamBold, TextColor3 = Color3.new(0,0,0), TextSize = 11, AutoButtonColor=false
 			})
 			Create("UICorner", {Parent = B, CornerRadius = UDim.new(0, 6)})
 			

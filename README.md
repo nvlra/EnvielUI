@@ -1,193 +1,77 @@
-# 🛠️ EnvielUI
+# EnvielUI
 
-**EnvielUI** is a modern, lightweight, and responsive User Interface library for Roblox. Designed for ease of use, it features a sleek dark theme, mobile support, and a comprehensive set of interactive components.
+A clean, modern, and mobile-responsive UI Library for Roblox, featuring smooth animations, modal dropdowns, and a sleek dark theme.
 
-## ✨ Features
+## Features
 
-- **Modern Aesthetic**: Clean, dark-themed UI with glassmorphism effects.
-- **Mobile Responsive**: Auto-scaling and touch-optimized controls for mobile devices.
-- **Robust System**: Built-in memory management and validation.
-- **Config System**: built-in Save/Load functionality for toggles and sliders.
-- **Notifications**: Clean toast notification system.
+- **Mobile Optimizations**:
+  - **Dynamic Scaling**: UI elements (Text, Buttons, Header) automatically resize based on screen width (`< 800px`).
+  - **Compact Layout**: Optimized Dock height (36px) and padding for smaller screens.
+  - **Taller Window**: Main frame height increased to 80% on mobile for better content visibility.
+- **Modern Components**:
+  - **Modal Dropdown**: New "Bottom Sheet" style dropdown that slides up from the bottom, fully supporting **Multi-Select**.
+  - **Floating Dock**: Bottom navigation bar with smooth sliding active indicator (pill).
+  - **Notifications**: Slide-in notifications with accent bars and auto-dismiss.
+  - **Blur Effect**: Background blurring when Modals are active.
+- **Animations**:
+  - **Smooth Quint Easing**: All animations use `Enum.EasingStyle.Quint` for a premium feel.
+  - **Pop Animations**: Buttons and Windows pop in/out smoothly.
+- **Customization**:
+  - **Themes**: Built-in Dark Theme with customizable accents.
+  - **Icons**: Support for custom icons via `rbxassetid`.
 
-## 📦 Installation
-
-Load EnvielUI directly into your script using the following loadstring:
+## Installation
 
 ```lua
-local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
 ```
 
----
-
-## 🚀 Getting Started
-
-### 1. Create a Window
-
-The `CreateWindow` function initializes the UI.
+## Usage Example
 
 ```lua
-local Window = EnvielUI:CreateWindow({
-    Name = "My Hub",
-    Theme = { -- Optional Custom Theme
-        Main = Color3.fromRGB(20, 20, 20),
-        Accent = Color3.fromRGB(0, 120, 215)
-    }
+local Window = Library:CreateWindow({
+    Name = "Enviel Showcase",
+    Theme = "Dark" -- Optional, defaults to Dark
 })
-```
 
-### 2. Create a Tab
+local Tab = Window:CreateTab("Main")
 
-Tabs allow you to organize your features.
+local Section = Tab:CreateSection("Features")
 
-```lua
-local MainTab = Window:CreateTab({
-    Name = "Main"
+-- Toggle
+Tab:CreateToggle({
+    Name = "Enable Safe Mode",
+    Flag = "SafeMode",
+    Callback = function(Value)
+        print("Safe Mode:", Value)
+    end
 })
-```
 
----
-
-## 🧩 Components
-
-All components are created from a **Tab** object (e.g., `MainTab`).
-
-### Section & Paragraph
-
-Use sections to divide content and paragraphs for info.
-
-```lua
-MainTab:CreateSection("Feature Section")
-
-MainTab:CreateParagraph({
-    Title = "Welcome",
-    Content = "This is a paragraph example."
-})
-```
-
-### Button
-
-A simple clickable button.
-
-```lua
-MainTab:CreateButton({
-    Name = "Click Me",
-    Text = "Execute", -- Button label
+-- Button
+Tab:CreateButton({
+    Name = "Click Me!",
+    Text = "Press",
     Callback = function()
-        print("Button Clicked!")
+        Window:Notify({Title = "Success", Content = "Button Pressed!"})
     end
 })
-```
 
-### Toggle
-
-A switch for boolean states. Supports `Flag` for config saving.
-
-```lua
-MainTab:CreateToggle({
-    Name = "Auto Farm",
-    Default = false,
-    Flag = "AutoFarm", -- Unique ID for Config
+-- Multi-Select Dropdown
+Tab:CreateDropdown({
+    Name = "Select Items",
+    Options = {"Apple", "Banana", "Cherry"},
+    Multi = true,
+    Default = {"Apple"},
     Callback = function(Value)
-        print("Auto Farm is now:", Value)
+        print("Selected:", unpack(Value))
     end
 })
 ```
 
-### Slider
+## Roadmap
 
-A numeric slider with Min/Max values.
-
-```lua
-MainTab:CreateSlider({
-    Name = "WalkSpeed",
-    Min = 16,
-    Max = 500,
-    Default = 16,
-    Flag = "WalkSpeed",
-    Callback = function(Value)
-        print("Speed set to:", Value)
-    end
-})
-```
-
-### Input (TextBox)
-
-A text input field.
-
-```lua
-MainTab:CreateInput({
-    Name = "Target Player",
-    PlaceholderText = "Username",
-    RemoveTextAfterFocusLost = false,
-    Callback = function(Text)
-        print("Target:", Text)
-    end
-})
-```
-
-### Dropdown
-
-A selectable list of options.
-
-```lua
-MainTab:CreateDropdown({
-    Name = "Teleport Method",
-    Options = {"CFrame", "Tween", "Instant"},
-    Default = "CFrame",
-    Flag = "Method",
-    Callback = function(Option)
-        print("Selected:", Option)
-    end
-})
-```
-
-### Color Picker
-
-An RGB color selector.
-
-```lua
-MainTab:CreateColorPicker({
-    Name = "ESP Color",
-    Default = Color3.fromRGB(255, 0, 0),
-    Flag = "ESPColor",
-    Callback = function(Color)
-        print("New Color:", Color)
-    end
-})
-```
-
----
-
-## 🔔 Notifications
-
-Send toast notifications to the user.
-
-```lua
-Window:Notify({
-    Title = "Success",
-    Content = "Operation completed successfully!",
-    Duration = 3 -- Time in seconds
-})
-```
-
-## ⚙️ Configuration System
-
-EnvielUI has a built-in system to save and load `Flag` values.
-
-```lua
--- Save current settings to file
-Window:SaveConfig()
-
--- Load settings from file
-Window:LoadConfig()
-```
-
-## ⚠️ Notes
-
-- **Mobile Support**: The UI automatically scales down for screens smaller than 600px width.
-- **Keybind**: Press `RightControl` to toggle UI visibility.
-
----
-
-**Made by Enviel**
+- [x] Auto-Center Floating Dock
+- [x] Mobile Responsive Layouts
+- [x] Modal Bottom Sheet Logic
+- [ ] Color Picker Component
+- [ ] Keybind System
