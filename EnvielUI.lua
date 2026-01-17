@@ -20,6 +20,32 @@ local function SafeCallback(Callback, ...)
 	end
 end
 
+local Validator = {}
+function Validator.IsTable(value, name)
+	if type(value) ~= "table" then
+		warn(string.format("[EnvielUI] %s must be a table, got %s", name or "Parameter", type(value)))
+		return false
+	end
+	return true
+end
+function Validator.IsFunction(value, name)
+	if value and type(value) ~= "function" then
+		warn(string.format("[EnvielUI] %s must be a function, got %s", name or "Callback", type(value)))
+		return false
+	end
+	return true
+end
+function Validator.IsNumber(value, name, min, max)
+	local num = tonumber(value)
+	if not num then
+		warn(string.format("[EnvielUI] %s must be a number, got %s", name or "Parameter", type(value)))
+		return false, nil
+	end
+	if min and num < min then return false, nil end
+	if max and num > max then return false, nil end
+	return true, num
+end
+
 local cloneref = (cloneref or clonereference or function(instance) return instance end)
 local function GetService(Name)
 	return cloneref(game:GetService(Name))
@@ -256,6 +282,14 @@ function EnvielUI:CreateWindow(Config)
 		self.connections = {}
 		self.tweens = {}
 		self.timers = {}
+	end
+	
+	function Window:Destroy()
+		self.ConnectionManager:DisconnectAll()
+		TweenManager:CancelAll()
+		if ScreenGui then ScreenGui:Destroy() end
+		setmetatable(self, nil)
+		print("[EnvielUI] Window Destroyed")
 	end
 	
 	-- Theme Registry (Optimization)
@@ -1067,12 +1101,12 @@ function EnvielUI:CreateWindow(Config)
 		end
 		
 		function Elements:CreateSlider(Config)
+			if not Validator.IsTable(Config, "CreateSlider Config") then Config = {} end
 			local Name = Config.Name or "Slider"
 			local Flag = Config.Flag or Name
-			local Min = 0
-			local Max = 100
+			local Min, Max = 0, 100
 			
-			if Config.Range then
+			if Config.Range and type(Config.Range) == "table" then
 				Min = Config.Range[1] or 0
 				Max = Config.Range[2] or 100
 			elseif Config.Min and Config.Max then
@@ -1084,10 +1118,7 @@ function EnvielUI:CreateWindow(Config)
 			local Increment = Config.Increment or 1
 			local Callback = Config.Callback or function() end
 			
-			if self.Instance.Flags[Flag] ~= nil then
-				Default = self.Instance.Flags[Flag]
-			end
-			
+			if self.Instance.Flags[Flag] ~= nil then Default = self.Instance.Flags[Flag] end
 			local Value = math.clamp(Default, Min, Max)
 			self.Instance.Flags[Flag] = Value
 			
@@ -1113,30 +1144,33 @@ function EnvielUI:CreateWindow(Config)
 				Parent = Frame, BackgroundColor3 = self.Instance.Theme.Stroke, Position=UDim2.new(0,15,0,38), Size=UDim2.new(1,-30,0,6), Text="", AutoButtonColor=false
 			})
 			Create("UICorner", {Parent=Track, CornerRadius=UDim.new(0,3)})
-			Track:SetAttribute("EnvielType", "SliderTrack")
 			
 			local Fill = Create("Frame", {
 				Parent = Track, BackgroundColor3 = self.Instance.Theme.Accent, Size = UDim2.new((Value - Min)/(Max - Min), 0, 1, 0)
 			})
 			Create("UICorner", {Parent=Fill, CornerRadius=UDim.new(0,3)})
-			Fill:SetAttribute("EnvielType", "SliderFill")
 			
 			local Thumb = Create("Frame", {
 				Parent = Track, BackgroundColor3 = self.Instance.Theme.AccentText, Position = UDim2.new((Value - Min)/(Max - Min), -7, 0.5, -7), Size = UDim2.new(0,14,0,14)
 			})
 			Create("UICorner", {Parent=Thumb, CornerRadius=UDim.new(1,0)})
 			Create("UIStroke", {Parent=Thumb, Color=self.Instance.Theme.Accent, Thickness=2})
-			Thumb:SetAttribute("EnvielType", "SliderThumb")
 			
+			-- Registry
+			Window.ThemeRegistry:Register(Frame, { type = "Element", updateStroke = true })
+			Window.ThemeRegistry:Register(Label, { type = "Text" })
+			Window.ThemeRegistry:Register(ValueLabel, { type = "Text" }) 
+			Window.ThemeRegistry:Register(Fill, { properties = { BackgroundColor3 = function(t) return t.Accent end } })
+			Window.ThemeRegistry:Register(Thumb, { properties = { BackgroundColor3 = function(t) return t.AccentText end, Color = function(t) return t.Accent end }, updateStroke = true })
+			Window:RegisterSearchable(Frame, Name)
+
 			local function UpdateSlider(Input)
 				local SizeX = Track.AbsoluteSize.X
 				local PosX = Input.Position.X - Track.AbsolutePosition.X
 				local Percent = math.clamp(PosX / SizeX, 0, 1)
-				
 				local RawValue = Min + ((Max - Min) * Percent)
 				local SteppedValue = math.floor(RawValue / Increment + 0.5) * Increment
 				Value = math.clamp(SteppedValue, Min, Max)
-				
 				
 				local Decimals = 0
 				if Increment < 1 then
@@ -1356,11 +1390,9 @@ function EnvielUI:CreateWindow(Config)
 				if Expanded then
 					CloseDropdown()
 				else
-					-- Close other active dropdown if exists
 					if self.Instance.ActiveDropdown and type(self.Instance.ActiveDropdown) == "function" then
 						self.Instance.ActiveDropdown()
 					end
-					
 					Expanded = true
 					self.Instance.ActiveDropdown = CloseDropdown
 					Tween(Frame, {Size = UDim2.new(1,0,0,ExpandedHeight)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
@@ -1368,20 +1400,22 @@ function EnvielUI:CreateWindow(Config)
 				end
 			end)
 			
+			-- Registry
+			Window.ThemeRegistry:Register(Frame, { type = "Element", updateStroke = true })
+			Window.ThemeRegistry:Register(TitleLabel, { type = "Text" })
+			Window.ThemeRegistry:Register(ValueLabel, { type = "Text", properties = { TextColor3 = function(t) return t.TextSec end } })
+			Window:RegisterSearchable(Frame, Name)
+			
 			return {
 				Refresh = function(self, NewOptions)
 					Options = NewOptions
 					TotalOptionsHeight = math.min(#Options, 6) * OptionHeight
-                    OptionContainer.Size = UDim2.new(1,0,0,TotalOptionsHeight) -- FIX: Resize Container
+                    OptionContainer.Size = UDim2.new(1,0,0,TotalOptionsHeight)
 					ExpandedHeight = DropHeight + TotalOptionsHeight + (Search and 35 or 0)
 					RefreshOptions()
 				end,
 				Set = function(self, NewVal)
-					if Multi then
-						Default = NewVal
-					else
-						Default = NewVal
-					end
+					if Multi then Default = NewVal else Default = NewVal end
 					self.Instance.Flags[Flag] = Default
 					Callback(Default)
 					ValueLabel.Text = GetValueText()
@@ -1398,10 +1432,12 @@ function EnvielUI:CreateWindow(Config)
 				Parent = SectionFrame, BackgroundTransparency=1, Position=UDim2.new(0,5,0,0), Size=UDim2.new(1,-10,1,0),
 				Font=Enum.Font.GothamBold, Text=Name, TextColor3=self.Instance.Theme.TextSec, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left
 			})
+			Window.ThemeRegistry:Register(Label, { type = "Text", properties = { TextColor3 = function(t) return t.TextSec end } })
 			return Label
 		end
 
 		function Elements:CreateInput(Config)
+			if not Validator.IsTable(Config, "CreateInput Config") then Config = {} end
 			local Name = Config.Name or "Input"
 			local Flag = Config.Flag or Name
 			local Placeholder = Config.PlaceholderText or Config.Placeholder or "Type here..."
@@ -1434,6 +1470,12 @@ function EnvielUI:CreateWindow(Config)
 				self.Instance.Flags[Flag] = Text
 				SafeCallback(Callback, Text)
 			end)
+			
+			-- Registry
+			Window.ThemeRegistry:Register(Frame, { type = "Element", updateStroke = true })
+			Window.ThemeRegistry:Register(Label, { type = "Text" })
+			Window.ThemeRegistry:Register(InputBox, { properties = { TextColor3 = function(t) return t.Accent end, PlaceholderColor3 = function(t) return t.TextSec end } })
+			Window:RegisterSearchable(Frame, Name)
 			
 			return {
 				Set = function(self, NewVal)
@@ -1594,7 +1636,7 @@ function EnvielUI:CreateWindow(Config)
 			local function UpdateColor()
 				Value = Color3.fromRGB(r, g, b)
 				ColorDisplay.BackgroundColor3 = Value
-				Callback(Value)
+				SafeCallback(Callback, Value)
 			end
 			
 			local function makeSlider(yPos, Text, InitialVal, UpdateVal)
@@ -1703,6 +1745,10 @@ function EnvielUI:CreateWindow(Config)
 				Expanded = not Expanded
 				Tween(Frame, {Size = Expanded and UDim2.new(1,0,0,170) or UDim2.new(1,0,0,46)}, 0.3)
 			end)
+			
+			-- Registry
+			Window.ThemeRegistry:Register(Frame, { type = "Secondary", updateStroke = true })
+			Window:RegisterSearchable(Frame, Name)
 		end
 		
 		function Elements:CreateGroup(Config)
