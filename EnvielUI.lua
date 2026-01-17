@@ -1762,11 +1762,13 @@ function EnvielUI:CreateWindow(Config)
 						update(input)
 					end
 				end)
+				
+				return Fill
 			end
 			
-			makeSlider(20, "R", r, function(v) r = v end)
-			makeSlider(50, "G", g, function(v) g = v end)
-			makeSlider(80, "B", b, function(v) b = v end)
+			local fillR = makeSlider(20, "R", r, function(v) r = v end)
+			local fillG = makeSlider(50, "G", g, function(v) g = v end)
+			local fillB = makeSlider(80, "B", b, function(v) b = v end)
 			
 			ColorDisplay.MouseButton1Click:Connect(function()
 				Expanded = not Expanded
