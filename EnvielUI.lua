@@ -3,7 +3,6 @@ EnvielUI.__index = EnvielUI
 EnvielUI.Version = "V1"
 EnvielUI.Flags = {}
 
--- [Enviel Constants]
 local LOGO_WHITE = "94854804824909"
 local LOGO_BLACK = "120261170817156"
 local DEFAULT_WINDOW_WIDTH = 600
@@ -102,7 +101,6 @@ local Themes = {
 local FontRegular = Enum.Font.Gotham
 local FontMedium = Enum.Font.GothamMedium
 local FontBold = Enum.Font.GothamBold
-
 local IconLib
 local SuccessIcon, ErrIcon = pcall(function()
 	IconLib = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"))()
@@ -179,8 +177,7 @@ local function Dragify(Frame, ClickCallback, MoveTarget)
 	local Dragging, DragInput, DragStart, StartPos
 	local HasMoved = false
 	local dragConnection = nil
-	local TargetFrame = MoveTarget or Frame -- Default to self if no target
-	
+	local TargetFrame = MoveTarget or Frame
 	local function Update(input)
 		local Delta = input.Position - DragStart
 		HasMoved = true
@@ -247,8 +244,6 @@ end
 function EnvielUI:CreateWindow(Config)
 	local WindowName = Config.Name or "Enviel UI"
 	local Theme = Config.Theme or "Dark"
-	
-	-- Connection Manager (Memory Leak Fix)
 	local ConnectionManager = {
 		connections = {},
 		tweens = {},
@@ -285,8 +280,6 @@ function EnvielUI:CreateWindow(Config)
 		self.timers = {}
 	end
 	
-
-	-- Theme Registry (Optimization)
 	local ThemeRegistry = {
 		objects = {}
 	}
@@ -394,15 +387,11 @@ function EnvielUI:CreateWindow(Config)
 	local OpenSize
 	
 	if UserInputService.TouchEnabled then
-		-- Mobile: Use relative scale for BOTH Width and Height to avoid overflow
 		OpenSize = UDim2.new(0.45, 0, 0.50, 0) 
 	else
-		-- PC: Use Fixed Pixel Size
 		OpenSize = UDim2.new(0, WindowWidth, 0, DEFAULT_WINDOW_HEIGHT)
 	end
 	
-	
-	-- [Refactor] MainFrame is now an Invisible Wrapper for layout
 	local MainFrame = Create("Frame", {
 		Name = "MainFrame",
 		Parent = ScreenGui,
@@ -411,54 +400,44 @@ function EnvielUI:CreateWindow(Config)
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.new(0.5, 0, 0.5, 0),
 		Size = UDim2.new(0, 0, 0, 0),
-		BackgroundTransparency = 1, -- Invisible Wrapper
+		BackgroundTransparency = 1,
 		ClipsDescendants = false,
 		Active = true
 	})
 	
-	-- Enable Dragging on all parts to move MainFrame
 	Dragify(MainFrame, nil, MainFrame)
-	-- Fix: Dragify ContentWindow and FloatingDock too because they might block input
-	-- We will add this call below after they are created
-
-	
-	-- Layout: Stack Content on Top, Dock on Bottom
 	Create("UIListLayout", {
 		Parent = MainFrame,
 		SortOrder = Enum.SortOrder.LayoutOrder,
 		HorizontalAlignment = Enum.HorizontalAlignment.Center,
-		Padding = UDim.new(0, 15) -- Gap
+		Padding = UDim.new(0, 15)
 	})
 	
-	-- 1. Content Window (Top)
 	local ContentWindow = Create("Frame", {
 		Name = "ContentWindow",
 		Parent = MainFrame,
 		BackgroundColor3 = self.Theme.Main,
-		Size = UDim2.new(1, 0, 1, -75), -- Leave space for Dock (60px) + Gap (15px)
+		Size = UDim2.new(1, 0, 1, -75),
 		LayoutOrder = 1,
 		ClipsDescendants = true
 	})
 	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 16)})
 	Create("UIStroke", {Parent = ContentWindow, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 	
-	-- 2. Floating Dock (Bottom)
 	local FloatingDock = Create("Frame", {
 		Name = "FloatingDock",
 		Parent = MainFrame,
 		BackgroundColor3 = self.Theme.Secondary,
-		Size = UDim2.new(1, -40, 0, 60), -- Pill width
+		Size = UDim2.new(1, -40, 0, 60),
 		LayoutOrder = 2
 	})
-	Create("UICorner", {Parent = FloatingDock, CornerRadius = UDim.new(0, 30)}) -- Round Effect
+	Create("UICorner", {Parent = FloatingDock, CornerRadius = UDim.new(0, 30)})
 	Create("UIStroke", {Parent = FloatingDock, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 
-	-- Animate Opening (Wrapper Size)
 	Tween(MainFrame, {
 		Size = OpenSize
 	}, 0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 	
-	-- Apply Drag Logic to Children
 	Dragify(ContentWindow, nil, MainFrame)
 	Dragify(FloatingDock, nil, MainFrame)
 	
@@ -592,7 +571,7 @@ function EnvielUI:CreateWindow(Config)
 
 	local Header = Create("Frame", {
 		Name = "Header",
-		Parent = ContentWindow, -- [Refactor] Parent to Top Window
+		Parent = ContentWindow,
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 0, 50)
 	})
@@ -666,15 +645,15 @@ function EnvielUI:CreateWindow(Config)
 
 	local ContentContainer = Create("Frame", {
 		Name = "ContentContainer",
-		Parent = ContentWindow, -- [Refactor] Parent to Top Window
+		Parent = ContentWindow,
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 1, -50),
 		Position = UDim2.new(0, 0, 0, 50)
 	})
 	
 	local Footer = Create("TextLabel", {
-		Name = "Footer", Parent = ContentWindow, BackgroundTransparency = 1, -- [Refactor] Parent to Top Window
-		Size = UDim2.new(0, 100, 0, 20), Position = UDim2.new(1, -75, 0, 15), AnchorPoint = Vector2.new(1, 0), -- Moved left
+		Name = "Footer", Parent = ContentWindow, BackgroundTransparency = 1,
+		Size = UDim2.new(0, 100, 0, 20), Position = UDim2.new(1, -75, 0, 15), AnchorPoint = Vector2.new(1, 0),
 		Text = "Made by Enviel", TextSize = 10, Font = FontBold, TextColor3 = self.Theme.TextSec, TextTransparency = 0.5,
 		TextXAlignment = Enum.TextXAlignment.Right
 	})
@@ -697,15 +676,8 @@ function EnvielUI:CreateWindow(Config)
 	Create("UIPadding", {Parent = SearchBar, PaddingLeft = UDim.new(0, 10)})
 	Create("UIStroke", {Parent = SearchBar, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 
-	-- Fixed Layout: Always show Floating Navbar
-	
-	local NavbarHeight = 55 -- Reduced height
-	
-	-- Navbar Container (Floating Dock Style)
-	-- [Refactor] Use usage of pre-created FloatingDock
+	local NavbarHeight = 55
 	local Navbar = FloatingDock
-	
-	-- Inner Container (Scrolling) specifically for Tabs
 	local NavbarInner = Create("ScrollingFrame", {
 		Name = "NavbarInner",
 		Parent = Navbar,
@@ -718,7 +690,6 @@ function EnvielUI:CreateWindow(Config)
 		ScrollingDirection = Enum.ScrollingDirection.X
 	})
 	
-	-- Keep buttons centered but allow scroll if overflow
 	Create("UIListLayout", {
 		Parent = NavbarInner,
 		FillDirection = Enum.FillDirection.Horizontal,
@@ -761,9 +732,8 @@ function EnvielUI:CreateWindow(Config)
 		Name = "Pages",
 		Parent = ContentContainer,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, 20, 0, 45), -- Start below Header
-		-- Content ends BEFORE the dock starts
-		Size = UDim2.new(1, -40, 1, -(NavbarHeight + 55)) -- Leave room for Dock + Header
+		Position = UDim2.new(0, 20, 0, 45),
+		Size = UDim2.new(1, -40, 1, -(NavbarHeight + 55))
 	})
 	
 	local Window = {
@@ -832,26 +802,22 @@ function EnvielUI:CreateWindow(Config)
 			if self.Search:FindFirstChild("UIStroke") then Tween(self.Search.UIStroke, {Color = T.Stroke}, 0.3) end
 		end
 		
-		-- Update Navbar Theme
 		Tween(Navbar, {BackgroundColor3 = T.Secondary}, 0.3)
 		if Navbar:FindFirstChild("UIStroke") then Tween(Navbar.UIStroke, {Color = T.Stroke}, 0.3) end
 		
-		-- [Refactor] SetTheme for Pill Style
 		for _, btn in pairs(NavbarInner:GetChildren()) do
 			if btn:IsA("TextButton") then
-				local label = btn:FindFirstChild("Label") -- Inside Content?
+				local label = btn:FindFirstChild("Label")
 				local content = btn:FindFirstChild("Content")
 				if content then label = content:FindFirstChild("Label") end
 				
 				local icon = content and content:FindFirstChild("ImageLabel")
 				
 				if Window.ActiveTab and btn.Name == Window.ActiveTab.."Btn" then
-					-- Active State logic
 					Tween(btn, {BackgroundColor3 = T.Accent}, 0.3)
 					if label then Tween(label, {TextColor3 = T.AccentText}, 0.3) end
 					if icon then Tween(icon, {ImageColor3 = T.AccentText}, 0.3) end
 				else
-					-- Inactive State
 					Tween(btn, {BackgroundTransparency = 1}, 0.3)
 					if label then Tween(label, {TextColor3 = T.TextSec}, 0.3) end
 					if icon then Tween(icon, {ImageColor3 = T.TextSec}, 0.3) end
@@ -880,10 +846,8 @@ function EnvielUI:CreateWindow(Config)
 			if page:IsA("ScrollingFrame") then page.Visible = false end
 		end
 		
-		-- Reset all tab buttons in Navbar
 		for _, btn in pairs(NavbarInner:GetChildren()) do
 			if btn:IsA("TextButton") and btn.Name ~= TabId.."Btn" then
-				-- Inactive State (Transparent Background)
 				Tween(btn, {BackgroundTransparency = 1}, 0.3)
 				
 				local content = btn:FindFirstChild("Content")
@@ -902,11 +866,8 @@ function EnvielUI:CreateWindow(Config)
 			local content = btn:FindFirstChild("Content")
 			local label = content and content:FindFirstChild("Label")
 			local icon = content and content:FindFirstChild("ImageLabel")
-			
-			-- Active State (Pill Style)
-			-- Ensure proper color (SetTheme logic will handle later updates, but force here)
 			btn.BackgroundColor3 = self.Instance.Theme.Accent
-			Tween(btn, {BackgroundTransparency = 0.15}, 0.3) -- Slight transparency for glass feel? Or 0.
+			Tween(btn, {BackgroundTransparency = 0.15}, 0.3)
 			
 			if label then Tween(label, {TextColor3 = self.Instance.Theme.AccentText}, 0.3) end
 			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.AccentText}, 0.3) end
@@ -919,37 +880,32 @@ function EnvielUI:CreateWindow(Config)
 		local Name = Config.Name or "Tab"
 		local IconName = Config.Icon or "layout-grid" 
 		local TabId = "Tab"..tostring(#Window.Tabs + 1)
-		
 		local IconAsset = GetIcon(IconName)
 		
-		-- 1. Button Container (Pill Style)
 		local TabBtn = Create("TextButton", {
 			Name = TabId.."Btn",
 			Parent = NavbarInner,
 			BackgroundColor3 = self.Instance.Theme.Accent,
-			BackgroundTransparency = 1, -- Invisible initially
-			Size = UDim2.new(0, 0, 1, 0), -- Auto width
+			BackgroundTransparency = 1,
+			Size = UDim2.new(0, 0, 1, 0),
 			AutomaticSize = Enum.AutomaticSize.X,
 			Text = "",
 			AutoButtonColor = false
 		})
-		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 12)}) -- Round Pill
-		
-		-- Padding for comfortable click area
+		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 12)})
 		Create("UIPadding", {
 			Parent = TabBtn, 
-			PaddingLeft = UDim.new(0, 16), -- Wider padding for Pill look
+			PaddingLeft = UDim.new(0, 16),
 			PaddingRight = UDim.new(0, 16),
 			PaddingTop = UDim.new(0, 6),
 			PaddingBottom = UDim.new(0, 6)
 		})
 		
-		-- 2. Content Wrapper (Centers Icon + Text)
 		local Content = Create("Frame", {
 			Name = "Content",
 			Parent = TabBtn,
 			BackgroundTransparency = 1,
-			Size = UDim2.new(0, 0, 1, 0), -- Full height
+			Size = UDim2.new(0, 0, 1, 0),
 			AutomaticSize = Enum.AutomaticSize.X,
 			Position = UDim2.new(0,0,0,0)
 		})
@@ -958,11 +914,10 @@ function EnvielUI:CreateWindow(Config)
 			Parent = Content,
 			FillDirection = Enum.FillDirection.Horizontal,
 			VerticalAlignment = Enum.VerticalAlignment.Center,
-			Padding = UDim.new(0, 8), -- Space between Icon and Text
+			Padding = UDim.new(0, 8),
 			SortOrder = Enum.SortOrder.LayoutOrder
 		})
 		
-		-- Icon (Left)
 		local IconLabel = Create("ImageLabel", {
 			Parent = Content,
 			BackgroundTransparency = 1,
@@ -972,7 +927,6 @@ function EnvielUI:CreateWindow(Config)
 			LayoutOrder = 1
 		})
 		
-		-- Text (Right)
 		local TextLabel = Create("TextLabel", {
 			Name = "Label",
 			Parent = Content,
@@ -986,10 +940,9 @@ function EnvielUI:CreateWindow(Config)
 			LayoutOrder = 2
 		})
 		
-		-- Hover Effects (Pill Hover)
 		TabBtn.MouseEnter:Connect(function()
 			if Window.ActiveTab ~= TabId then
-				Tween(TabBtn, {BackgroundTransparency = 0.8}, 0.2) -- Subtle hover bg
+				Tween(TabBtn, {BackgroundTransparency = 0.8}, 0.2)
 				if TextLabel then Tween(TextLabel, {TextColor3 = self.Instance.Theme.TextSelected}, 0.2) end
 				if IconLabel then Tween(IconLabel, {ImageColor3 = self.Instance.Theme.TextSelected}, 0.2) end
 			end
@@ -1051,7 +1004,7 @@ function EnvielUI:CreateWindow(Config)
 			})
 			
 			local Btn = Create("TextButton", {
-				Parent = Frame, BackgroundColor3 = self.Instance.Theme.Accent, Position = UDim2.new(1,-95,0.5,-13), Size = UDim2.new(0,80,0,26), -- Adjusted sizing/pos
+				Parent = Frame, BackgroundColor3 = self.Instance.Theme.Accent, Position = UDim2.new(1,-95,0.5,-13), Size = UDim2.new(0,80,0,26),
 				Font = FontBold,
 				Text = Config.ButtonText or "Interact", TextColor3 = self.Instance.Theme.AccentText, TextSize = 11, AutoButtonColor = false,
 				TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
@@ -1068,9 +1021,7 @@ function EnvielUI:CreateWindow(Config)
 			end)
 			
 			Btn.MouseButton1Click:Connect(function()
-				-- Press effect: Shrink slightly
 				Tween(Btn, {Size = UDim2.new(0,76,0,24)}, 0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.Out).Completed:Wait()
-				-- Release effect: Return to original size
 				Tween(Btn, {Size = UDim2.new(0,80,0,26)}, 0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 				SafeCallback(Callback)
 			end)
@@ -1081,7 +1032,7 @@ function EnvielUI:CreateWindow(Config)
 			Window.ThemeRegistry:Register(Btn, { 
 				properties = { 
 					BackgroundColor3 = function(t) return t.Accent end, 
-					TextColor3 = function(t) return t.AccentText end -- Contrast text (Black on White, White on Black)
+					TextColor3 = function(t) return t.AccentText end
 				} 
 			})
 			Window:RegisterSearchable(Frame, Name)
@@ -1126,7 +1077,6 @@ function EnvielUI:CreateWindow(Config)
 			})
 			Create("UICorner", {Parent=Switch, CornerRadius=UDim.new(0,12)})
 			
-			-- Registry
 			Window.ThemeRegistry:Register(Frame, { type = "Element", updateStroke = true })
 			Window.ThemeRegistry:Register(Switch, {
 				properties = {
@@ -1221,13 +1171,10 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent=Thumb, CornerRadius=UDim.new(1,0)})
 			Create("UIStroke", {Parent=Thumb, Color=self.Instance.Theme.Accent, Thickness=2})
 			
-			-- Registry
 			Window.ThemeRegistry:Register(Frame, { type = "Element", updateStroke = true })
 			Window.ThemeRegistry:Register(Label, { type = "Text" })
 			Window.ThemeRegistry:Register(ValueLabel, { type = "Text" }) 
 			Window.ThemeRegistry:Register(Fill, { properties = { BackgroundColor3 = function(t) return t.Accent end } })
-			
-			-- Fix: Register Thumb and Stroke Separately
 			Window.ThemeRegistry:Register(Thumb, { properties = { BackgroundColor3 = function(t) return t.AccentText end } })
 			Window.ThemeRegistry:Register(Thumb:FindFirstChild("UIStroke"), { type = "Stroke", properties = { Color = function(t) return t.Accent end } })
 			
@@ -1300,7 +1247,7 @@ function EnvielUI:CreateWindow(Config)
 			local Search = Config.Search or false
 			
 			local Expanded = false
-			local DropHeight = 60 -- Increased height for 2-line display
+			local DropHeight = 60
 			local OptionHeight = 32
 			local TotalOptionsHeight = math.min(#Options, 6) * OptionHeight
 			local ExpandedHeight = DropHeight + TotalOptionsHeight + (Search and 35 or 0)
@@ -1370,10 +1317,9 @@ function EnvielUI:CreateWindow(Config)
 			})
 			Create("UIListLayout", {Parent=OptionContainer, SortOrder=Enum.SortOrder.LayoutOrder})
 			
-			local DropdownConnections = {} -- Store connections for cleanup
+			local DropdownConnections = {}
 
 			local function RefreshOptions()
-				-- Cleanup old connections
 				for _, conn in pairs(DropdownConnections) do
 					if conn and conn.Connected then conn:Disconnect() end
 				end
@@ -1470,7 +1416,6 @@ function EnvielUI:CreateWindow(Config)
 				end
 			end)
 			
-			-- Registry
 			Window.ThemeRegistry:Register(Frame, { type = "Element", updateStroke = true })
 			Window.ThemeRegistry:Register(TitleLabel, { type = "Text" })
 			Window.ThemeRegistry:Register(ValueLabel, { type = "Text", properties = { TextColor3 = function(t) return t.TextSec end } })
@@ -1541,7 +1486,6 @@ function EnvielUI:CreateWindow(Config)
 				SafeCallback(Callback, Text)
 			end)
 			
-			-- Registry
 			Window.ThemeRegistry:Register(Frame, { type = "Element", updateStroke = true })
 			Window.ThemeRegistry:Register(Label, { type = "Text" })
 			Window.ThemeRegistry:Register(InputBox, { properties = { TextColor3 = function(t) return t.Accent end, PlaceholderColor3 = function(t) return t.TextSec end } })
@@ -1653,8 +1597,6 @@ function EnvielUI:CreateWindow(Config)
 				end
 			}
 		end
-
-
 		
 		function Elements:CreateColorPicker(Config)
 			local Name = Config.Name or "Color Picker"
@@ -1762,7 +1704,6 @@ function EnvielUI:CreateWindow(Config)
 			makeSlider(50, "G", g, function(v) g = v end)
 			makeSlider(80, "B", b, function(v) b = v end)
 			
-			-- Toggle Picker
 			ColorDisplay.MouseButton1Click:Connect(function()
 				Expanded = not Expanded
 				if Expanded then
@@ -1815,7 +1756,6 @@ function EnvielUI:CreateWindow(Config)
 				Tween(Frame, {Size = Expanded and UDim2.new(1,0,0,170) or UDim2.new(1,0,0,46)}, 0.3)
 			end)
 			
-			-- Registry
 			Window.ThemeRegistry:Register(Frame, { type = "Secondary", updateStroke = true })
 			Window:RegisterSearchable(Frame, Name)
 		end
@@ -1850,7 +1790,7 @@ function EnvielUI:CreateWindow(Config)
 					Parent = HeaderBtn, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0.5, -7), Size = UDim2.new(0, 14, 0, 14),
 					Image = IconAsset, ImageColor3 = self.Instance.Theme.Accent
 				})
-				TitleX = 35 -- Adjusted Title Position
+				TitleX = 35
 				TitleW = -60
 			end
 			
