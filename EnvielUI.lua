@@ -408,7 +408,7 @@ function EnvielUI:CreateWindow(Config)
 		
 		-- Search Bar
 		local SearchBg = Create("Frame", {
-			Parent = Header, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, -32, 0, 36), -- -32 for padding
+			Parent = Header, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 36), -- Fixed width gap
 			Position = UDim2.new(0, 0, 0, 36) -- Moved down for spacing
 		})
 		Create("UICorner", {Parent = SearchBg, CornerRadius = UDim.new(0, 10)})
