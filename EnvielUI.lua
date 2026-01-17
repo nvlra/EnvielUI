@@ -157,7 +157,7 @@ function EnvielUI:CreateWindow(Config)
 	-- Mobile Responsive Logic
 	local Camera = Workspace.CurrentCamera
 	if Camera.ViewportSize.X < 800 then -- Increased threshold for tablets/large phones
-		MainFrame.Size = UDim2.fromScale(0.7, 0.5) -- Smaller size
+		MainFrame.Size = UDim2.fromScale(0.55, 0.45) -- Much simpler/smaller for mobile
 	end
 	
 	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 14)})
