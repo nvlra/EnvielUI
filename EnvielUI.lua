@@ -252,8 +252,8 @@ function EnvielUI:CreateWindow(Config)
 		MiniButton.Visible = false
 		MainFrame.Visible = true
 		
-		-- Pop Main Window
-		MainScale.Scale = 0.9
+		-- Pop Main Window (0 -> 1)
+		MainScale.Scale = 0
 		ContentWindow.GroupTransparency = 1
 		local D = MainFrame:FindFirstChild("Dock")
 		if D and D:IsA("CanvasGroup") then D.GroupTransparency = 1 end
@@ -262,11 +262,12 @@ function EnvielUI:CreateWindow(Config)
 		Tween(ContentWindow, {GroupTransparency = 0}, 0.4)
 		if D and D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 0}, 0.4) end
 	end)
-
-	-- Minimize Logic
+	
+	-- Minimize logic
 	MinBtn.MouseButton1Click:Connect(function()
-		Tween(MainScale, {Scale = 0.9}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-		Tween(ContentWindow, {GroupTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+		-- Shrink Main Window (1 -> 0)
+		Tween(MainScale, {Scale = 0}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+		Tween(ContentWindow, {GroupTransparency = 1}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		
 		local D = MainFrame:FindFirstChild("Dock")
 		if D and D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 1}, 0.4) end
