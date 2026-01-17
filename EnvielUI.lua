@@ -3,13 +3,6 @@ EnvielUI.__index = EnvielUI
 EnvielUI.Version = "2.1.1"
 
 local function GetService(Name)
-	local Service = game:GetService(Name)
-	if cloneref then
-		return cloneref(Service)
-	end
-	return Service
-
-local function GetService(Name)
 	return cloneref and cloneref(game:GetService(Name)) or game:GetService(Name)
 end
 
