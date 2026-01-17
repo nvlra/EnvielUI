@@ -291,43 +291,64 @@ function EnvielUI:CreateWindow(Config)
 	function Window:Notify(Cfg)
 		local Title = Cfg.Title or "Notification"
 		local Content = Cfg.Content or ""
+		local Duration = Cfg.Duration or 3
 		
+		-- Wrapper for layout spacing
 		local Wrapper = Create("Frame", {
 			Parent = NotifHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), ClipsDescendants = true
 		})
 		
+		-- Actual Notification Card
 		local F = Create("Frame", {
-			Parent = Wrapper, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
-			BackgroundTransparency = 0.1, Position = UDim2.new(1.2, 0, 0, 0) -- Start off-screen right
+			Parent = Wrapper, BackgroundColor3 = Window.Theme.Secondary, 
+			Size = UDim2.new(1, -4, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
+			Position = UDim2.new(1.5, 0, 0, 0) -- Start off-screen right
 		})
 		
-		Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
-		Create("UIListLayout", {Parent = F, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
-		Create("UIPadding", {Parent = F, PaddingTop = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12), PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
+		Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 6)})
+		Create("UIStroke", {Parent = F, Color = Window.Theme.Stroke, Thickness = 1})
 		
+		-- Accent Bar (Left Side)
+		local Accent = Create("Frame", {
+			Parent = F, BackgroundColor3 = Window.Theme.Accent,
+			Size = UDim2.new(0, 3, 1, -12), Position = UDim2.new(0, 6, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)
+		})
+		Create("UICorner", {Parent = Accent, CornerRadius = UDim.new(1, 0)})
+		
+		-- Layout inside card
+		local ContentPad = Create("Frame", {
+			Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -20, 1, 0), Position = UDim2.new(0, 16, 0, 0)
+		})
+		Create("UIListLayout", {Parent = ContentPad, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2)})
+		Create("UIPadding", {Parent = ContentPad, PaddingTop = UDim.new(0, 10), PaddingBottom = UDim.new(0, 10), PaddingRight = UDim.new(0, 10)})
+
 		Create("TextLabel", {
-			Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 18), Text = Title,
-			Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
+			Parent = ContentPad, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 16), Text = Title,
+			Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left
 		})
 		Create("TextLabel", {
-			Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
+			Parent = ContentPad, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
 			Text = Content, Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true
 		})
 		
-		-- Animate In (Slide Left + Expand Height)
+		-- Animation Logic
 		task.spawn(function()
+			-- 1. Expand Wrapper Height
 			local TargetSize = F.AbsoluteSize.Y
-			-- Pre-calculate height if 0 (sometimes happens if not rendered yet, minimal fallback)
-			if TargetSize < 20 then TargetSize = 60 end
+			if TargetSize < 40 then TargetSize = 60 end -- Fallback
+			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, TargetSize + 6)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 			
-			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, TargetSize)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-			Tween(F, {Position = UDim2.new(0, 0, 0, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+			-- 2. Slide In (from Right)
+			Tween(F, {Position = UDim2.new(0, 2, 0, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		end)
 		
-		task.delay(Cfg.Duration or 3, function()
-			-- Animate Out (Slide Right + Collapse)
-			Tween(F, {Position = UDim2.new(1.2, 0, 0, 0)}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, 0)}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut).Completed:Wait()
+		task.delay(Duration, function()
+			-- 3. Slide Out (to Right)
+			Tween(F, {Position = UDim2.new(1.5, 0, 0, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
+			
+			-- 4. Collapse Wrapper
+			task.wait(0.2)
+			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, 0)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out).Completed:Wait()
 			Wrapper:Destroy()
 		end)
 	end
