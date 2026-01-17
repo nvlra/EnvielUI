@@ -324,11 +324,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end
 	
-	function EnvielUI:CreateWindow(Config)
-		Config = Config or {}
-		local Theme = Config.Theme or "Dark"
-	
-		if Themes[Theme] then 
+	if Themes[Theme] then 
 		self.Theme = Themes[Theme] 
 	else
 		self.Theme = Themes.Dark
@@ -1669,6 +1665,8 @@ function EnvielUI:CreateWindow(Config)
 			
 			local Value = Default
 			local Expanded = false
+			local HueSliding = false
+			local hueConnection = nil
 			
 			local Frame = Create("Frame", {
 				Parent = Config.Parent or Page, BackgroundColor3 = self.Instance.Theme.Secondary, Size = UDim2.new(1,0,0,46), BackgroundTransparency = 0, ClipsDescendants = true
