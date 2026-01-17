@@ -167,6 +167,9 @@ function EnvielUI:CreateWindow(Config)
 	if IsMobile then 
 		MainFrame.Size = UDim2.fromScale(0.60, 0.70)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.50)
+	else
+		MainFrame.Size = UDim2.fromScale(0.50, 0.65) -- Larger Desktop Size
+		MainFrame.Position = UDim2.fromScale(0.5, 0.5)
 	end
 	
 	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 14)})
@@ -630,7 +633,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 		
 		function Elements:CreateParagraph(Cfg)
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("UIPadding", {Parent = F, PaddingTop = UDim.new(0,10), PaddingBottom = UDim.new(0,10), PaddingLeft = UDim.new(0,12), PaddingRight = UDim.new(0,12)})
@@ -639,7 +642,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateButton(Config)
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH)})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 			Create("UIPadding", {Parent = F, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 
@@ -668,7 +671,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateToggle(Config)
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH)})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
@@ -702,7 +705,7 @@ function EnvielUI:CreateWindow(Config)
 		function Elements:CreateSlider(Config)
 			local Min, Max = Config.Min or 0, Config.Max or 100
 			local Val = Config.Default or Min
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 8)})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 8), BackgroundTransparency = 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
@@ -763,7 +766,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateInput(Config)
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 4)})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 4), BackgroundTransparency = 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
@@ -787,7 +790,7 @@ function EnvielUI:CreateWindow(Config)
 			local Default = Config.Default or Options[1]
 			local Multi = Config.Multi or false
 			
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH)})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 			
 			local Top = Create("TextButton", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, ItemH), Text = "", AutoButtonColor = false})
