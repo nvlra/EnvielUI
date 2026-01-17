@@ -638,7 +638,15 @@ function EnvielUI:CreateWindow(Config)
 			local Top = Create("TextButton", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, ItemH), Text = "", AutoButtonColor = false})
 			Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0,12,0,0), Size=UDim2.new(1,-40,0,ItemH), Text = Config.Name or "Dropdown", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Left})
 			
-			local Current = Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0.5,0,0,0), Size=UDim2.new(0.5,-30,0,ItemH), Text = tostring(Default).." >", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Right})
+			local DisplayText = Default
+			if type(Default) == "table" then
+				if #Default > 0 then
+					DisplayText = table.concat(Default, ", ")
+				else
+					DisplayText = "Select..."
+				end
+			end
+			local Current = Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0.5,0,0,0), Size=UDim2.new(0.5,-30,0,ItemH), Text = tostring(DisplayText).." >", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Right})
 			
 			local List = Create("ScrollingFrame", {
 				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, ItemH), Size = UDim2.new(1, 0, 1, -ItemH), 
