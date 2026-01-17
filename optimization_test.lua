@@ -1,5 +1,5 @@
 -- EnvielUI Optimization Test Script
-local Enviel = loadstring(readfile("EnvielUI/EnvielUI.lua"))()
+local Enviel = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua"))()
 
 local Window = Enviel.new({
 	Name = "Optimization Test",
