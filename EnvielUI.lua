@@ -1,23 +1,20 @@
--- EnvielUI v2.1.1 (Security Patch)
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
 EnvielUI.Version = "2.1.1"
 
--- Security / Utility
 local function GetService(Name)
 	local Service = game:GetService(Name)
 	if cloneref then
 		return cloneref(Service)
 	end
 	return Service
--- Security / Utility
+
 local function GetService(Name)
 	return cloneref and cloneref(game:GetService(Name)) or game:GetService(Name)
 end
 
 local GuiService = GetService("GuiService")
 
--- Services
 local TweenService = GetService("TweenService")
 local UserInputService = GetService("UserInputService")
 local RunService = GetService("RunService")
@@ -25,11 +22,9 @@ local Players = GetService("Players")
 local CoreGui = GetService("CoreGui")
 local HttpService = GetService("HttpService")
 
--- Icon System (Lucide)
 local IconLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"))()
 IconLib.SetIconsType("lucide")
 
--- Utility Functions
 local function GetIcon(Name)
 	if not Name then return nil end
 	if Name:find("rbxassetid") then return Name end
@@ -100,7 +95,6 @@ local function LoadFile(Name)
 	return nil
 end
 
--- Main Library
 function EnvielUI:CreateWindow(Config)
 	local Window = {
 		Flags = {}, 
@@ -117,42 +111,43 @@ function EnvielUI:CreateWindow(Config)
 	
 	local Name = Config.Name or "Enviel UI"
 	
-	-- Setup GUI
 	local Parent = game:GetService("CoreGui")
 	if not pcall(function() return Parent.Name end) then Parent = Players.LocalPlayer.PlayerGui end
 	
 	local ScreenGui = Create("ScreenGui", {
 		Name = "EnvielUI", Parent = Parent, 
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling, ResetOnSpawn = false,
-		IgnoreGuiInset = true -- Better fullscreen handling
+		IgnoreGuiInset = true
 	})
 	
-	local MainFrame = Create("Frame", {
+	local MainFrame = Create("CanvasGroup", {
 		Name = "MainFrame", Parent = ScreenGui, BackgroundColor3 = Window.Theme.Main,
-		Size = UDim2.fromOffset(620, 420), Position = UDim2.fromScale(0.5, 0.45), 
+		Size = UDim2.fromOffset(580, 380), Position = UDim2.fromScale(0.5, 0.55), -- Smaller default size for Mobile compatibility
 		AnchorPoint = Vector2.new(0.5, 0.5), BorderSizePixel = 0,
-		Active = true -- Blocks Click Through
+		Active = true, GroupTransparency = 1
 	})
+	
+	-- Mobile Responsive Logic
+	local Camera = Workspace.CurrentCamera
+	if Camera.ViewportSize.X < 600 then
+		MainFrame.Size = UDim2.fromScale(0.9, 0.6) -- Auto-scale on small screens
+	end
+	
 	Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 14)})
 
-	-- Intro Animation
-	MainFrame.Size = UDim2.fromScale(0, 0)
-	Tween(MainFrame, {Size = UDim2.fromOffset(620, 420)}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+	Tween(MainFrame, {GroupTransparency = 0, Position = UDim2.fromScale(0.5, 0.45)}, 0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 
-	Dragify(Header, MainFrame) -- Drag via Header only
+	Dragify(Header, MainFrame)
 	
-	-- Assets
-	local LOGO_WHITE = "rbxassetid://10709769508" -- Generic Dashboard Icon (White)
+	local LOGO_WHITE = "rbxassetid://10709769508"
 	local LOGO_BLACK = "rbxassetid://10709769508"
 	
-	-- Header
 	local Header = Create("Frame", {Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 50)})
 	Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 20), PaddingRight = UDim.new(0, 20)})
 	
-	-- Logo & Title
 	local LogoIcon = Create("ImageLabel", {
 		Parent = Header, BackgroundTransparency = 1, Size = UDim2.fromOffset(24, 24), Position = UDim2.new(0, 0, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5),
-		Image = LOGO_WHITE, ImageColor3 = Window.Theme.Accent -- Tintable
+		Image = LOGO_WHITE, ImageColor3 = Window.Theme.Accent
 	})
 	
 	Create("TextLabel", {
@@ -160,36 +155,41 @@ function EnvielUI:CreateWindow(Config)
 		Font = Enum.Font.GothamBold, Text = Name, TextColor3 = Window.Theme.Text, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left
 	})
 	
-	-- Controls Container
 	local Controls = Create("Frame", {
 		Parent = Header, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.new(0, 200, 1, 0), BackgroundTransparency = 1
 	})
 	
-	-- "Made By Enviel"
 	Create("TextLabel", {
 		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -70, 0.5, 0), Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X,
 		Text = "Made By Enviel", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right, BackgroundTransparency = 1
 	})
 	
-	-- Close Button
 	local CloseBtn = Create("ImageButton", {
 		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(20, 20),
 		BackgroundTransparency = 1, Image = GetIcon("x") or "", ImageColor3 = Window.Theme.TextDark
 	})
-	CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+	CloseBtn.MouseButton1Click:Connect(function() 
+		Window:Prompt({
+			Title = "Close Interface?",
+			Content = "Are you sure you want to close Enviel UI?",
+			Actions = {
+				{Text = "Cancel", Callback = function() end}, -- Does nothing, just closes prompt
+				{Text = "Confirm", Callback = function() ScreenGui:Destroy() end}
+			}
+		})
+	end)
 
-	-- Minimize Button (Header)
 	local MinBtn = Create("ImageButton", {
 		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -30, 0.5, 0), Size = UDim2.fromOffset(20, 20),
 		BackgroundTransparency = 1, Image = GetIcon("minimize") or "", ImageColor3 = Window.Theme.TextDark
 	})
 	
-	-- Minimize (Mini Button)
+	
 	local SafeArea = GuiService:GetGuiInset()
-	local MiniButton = Create("ImageButton", {
+	local MiniButton = Create("CanvasGroup", {
 		Name = "MiniButton", Parent = ScreenGui, BackgroundColor3 = Window.Theme.Main, Size = UDim2.fromOffset(45, 45),
-		Position = UDim2.new(0, SafeArea.X + 10, 0.5, 0), -- Left side, centered vertically
-		AnchorPoint = Vector2.new(0, 0.5), Visible = false, AutoButtonColor = false
+		Position = UDim2.new(0, SafeArea.X + 20, 0.5, 0),
+		AnchorPoint = Vector2.new(0, 0.5), Visible = false, AutoButtonColor = false, GroupTransparency = 1
 	})
 	Create("UICorner", {Parent = MiniButton, CornerRadius = UDim.new(0, 10)})
 	Create("UIStroke", {Parent = MiniButton, Color = Window.Theme.Stroke, Thickness = 1})
@@ -201,26 +201,24 @@ function EnvielUI:CreateWindow(Config)
 	
 	Dragify(MiniButton)
 	
+	
 	-- Restore logic
 	MiniButton.MouseButton1Click:Connect(function()
-		Tween(MiniButton, {Size = UDim2.fromOffset(0, 0)}, 0.2).Completed:Wait()
-		MiniButton.Visible = false
-		MiniButton.Size = UDim2.fromOffset(45, 45) -- Reset size
+		Tween(MiniButton, {GroupTransparency = 1}, 0.3)
+		Tween(MainFrame, {GroupTransparency = 0, Position = UDim2.fromScale(0.5, 0.45)}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		MainFrame.Visible = true
-		MainFrame.Size = UDim2.fromScale(0, 0)
-		Tween(MainFrame, {Size = UDim2.fromOffset(620, 420)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		MiniButton.Visible = false
 	end)
 
 	-- Minimize Logic
 	MinBtn.MouseButton1Click:Connect(function()
-		Tween(MainFrame, {Size = UDim2.fromScale(0, 0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In).Completed:Wait()
+		Tween(MainFrame, {GroupTransparency = 1, Position = UDim2.fromScale(0.5, 0.55)}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out).Completed:Wait()
 		MainFrame.Visible = false
 		MiniButton.Visible = true
-		MiniButton.Size = UDim2.fromOffset(0, 0)
-		Tween(MiniButton, {Size = UDim2.fromOffset(45, 45)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		MiniButton.GroupTransparency = 1
+		Tween(MiniButton, {GroupTransparency = 0}, 0.3)
 	end)
 	
-	-- Notifications
 	local NotifHolder = Create("Frame", {
 		Parent = ScreenGui, BackgroundTransparency = 1, Size = UDim2.new(0, 300, 1, -20), 
 		Position = UDim2.new(1, -320, 0, 20), AnchorPoint = Vector2.new(0, 0)
@@ -256,12 +254,10 @@ function EnvielUI:CreateWindow(Config)
 		end)
 	end
 	
-	-- Content & Pages
 	ContentHolder = Create("Frame", {
 		Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, -100), Position = UDim2.new(0, 20, 0, 60), ClipsDescendants = true
 	})
 	
-	-- Floating Dock
 	Dock = Create("Frame", {
 		Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(0, 0, 0, 46), Position = UDim2.new(0.5, 0, 1, 12),
 		AnchorPoint = Vector2.new(0.5, 0), AutomaticSize = Enum.AutomaticSize.X
@@ -527,7 +523,7 @@ function EnvielUI:CreateWindow(Config)
 			local Expanded = false
 			
 			local BaseH = 42
-			local ExpandH = 42 + 60 -- Base + 3 Sliders (20px each)
+			local ExpandH = 42 + 60
 			
 			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, BaseH), ClipsDescendants = true})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
@@ -539,8 +535,6 @@ function EnvielUI:CreateWindow(Config)
 			local Preview = Create("Frame", {Parent = Top, Position=UDim2.new(1,-45,0,10), Size=UDim2.new(0,30,0,22), BackgroundColor3 = Val})
 			Create("UICorner", {Parent = Preview, CornerRadius = UDim.new(0, 6)})
 
-
-			-- Sliders Container
 			local SliderCont = Create("Frame", {Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 10, 0, 42), Size = UDim2.new(1, -20, 0, 60)})
 			
 			local function MakeSlider(Prop, YVal, Color)
@@ -586,7 +580,56 @@ function EnvielUI:CreateWindow(Config)
 		return Elements
 	end
 	
-	-- Config System (Internalized)
+	-- Alert / Prompt System
+	function Window:Prompt(Config)
+		local Title = Config.Title or "Alert"
+		local Content = Config.Content or "Are you sure?"
+		local Actions = Config.Actions or {{Text = "OK", Callback = function() end}}
+		
+		local Blur = Create("Frame", {
+			Parent = ScreenGui, BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1, Size = UDim2.fromScale(1,1), Name = "AlertBlur", ZIndex = 100
+		})
+		
+		local AlertFrame = Create("CanvasGroup", {
+			Parent = Blur, Size = UDim2.fromOffset(300, 160), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5),
+			BackgroundColor3 = Window.Theme.Secondary, GroupTransparency = 1
+		})
+		Create("UICorner", {Parent = AlertFrame, CornerRadius = UDim.new(0, 12)})
+		Create("UIStroke", {Parent = AlertFrame, Color = Window.Theme.Stroke, Thickness = 1})
+		
+		Create("TextLabel", {
+			Parent = AlertFrame, Size = UDim2.new(1, 0, 0, 40), Position = UDim2.new(0, 0, 0, 10), BackgroundTransparency = 1,
+			Text = Title, Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 16
+		})
+		
+		Create("TextLabel", {
+			Parent = AlertFrame, Size = UDim2.new(1, -40, 0, 40), Position = UDim2.new(0, 20, 0, 45), BackgroundTransparency = 1,
+			Text = Content, Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 13, TextWrapped = true
+		})
+		
+		local BtnContainer = Create("Frame", {
+			Parent = AlertFrame, Size = UDim2.new(1, -40, 0, 35), Position = UDim2.new(0, 20, 1, -50), BackgroundTransparency = 1
+		})
+		Create("UIListLayout", {Parent = BtnContainer, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), HorizontalAlignment = Enum.HorizontalAlignment.Center})
+		
+		for _, Action in pairs(Actions) do
+			local Btn = Create("TextButton", {
+				Parent = BtnContainer, Size = UDim2.new(0.5, -5, 1, 0), BackgroundColor3 = Window.Theme.Stroke,
+				Text = Action.Text, Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 12, AutoButtonColor = false
+			})
+			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
+			Btn.MouseButton1Click:Connect(function()
+				if Action.Callback then Action.Callback() end
+				Tween(AlertFrame, {GroupTransparency = 1, Size = UDim2.fromOffset(280, 140)}, 0.2)
+				Tween(Blur, {BackgroundTransparency = 1}, 0.2).Completed:Wait()
+				Blur:Destroy()
+			end)
+		end
+		
+		Tween(Blur, {BackgroundTransparency = 0.4}, 0.3)
+		Tween(AlertFrame, {GroupTransparency = 0, Size = UDim2.fromOffset(300, 160)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+	end
+	
 	local ConfigName = Name:gsub(" ", "").."_Config.json"
 	
 	function Window:SaveConfig()
@@ -597,12 +640,8 @@ function EnvielUI:CreateWindow(Config)
 	function Window:LoadConfig()
 		local Data = LoadFile(ConfigName)
 		if Data then
-			-- In a real implementation, you would apply these flags to the elements
-			-- For now, we just restore the table state
 			for Flag, Val in pairs(Data) do
 				Window.Flags[Flag] = Val
-				-- To fully restore, elements need a :Set() method linked to the Flag.
-				-- This version just ensures data persistence.
 			end
 			Window:Notify({Title = "Configuration", Content = "Settings loaded from "..ConfigName})
 		else
@@ -610,7 +649,6 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end
 
-	-- Keybind Toggle
 	local Toggled = true
 	function Window:Toggle()
 		Toggled = not Toggled
