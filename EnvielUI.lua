@@ -8,7 +8,7 @@ local LOGO_BLACK = "120261170817156"
 local DEFAULT_WINDOW_WIDTH = 600
 local DEFAULT_WINDOW_HEIGHT = 425
 local MOBILE_WIDTH_SCALE = 0.50
-local NAVBAR_HEIGHT = 65
+local NAVBAR_HEIGHT = 40
 local SEARCH_DEBOUNCE_TIME = 0.15
 
 local function SafeCallback(Callback, ...)
@@ -387,7 +387,8 @@ function EnvielUI:CreateWindow(Config)
 	local OpenSize
 	
 	if UserInputService.TouchEnabled then
-		OpenSize = UDim2.new(0.45, 0, 0.50, 0) 
+		-- Mobile: Increase Height to 85%, Width to 55% (Wider)
+		OpenSize = UDim2.new(0.55, 0, 0.85, 0)  
 	else
 		OpenSize = UDim2.new(0, WindowWidth, 0, DEFAULT_WINDOW_HEIGHT)
 	end
@@ -410,14 +411,14 @@ function EnvielUI:CreateWindow(Config)
 		Parent = MainFrame,
 		SortOrder = Enum.SortOrder.LayoutOrder,
 		HorizontalAlignment = Enum.HorizontalAlignment.Center,
-		Padding = UDim.new(0, 15)
+		Padding = UDim.new(0, 10) -- Gap Reduced to 10
 	})
 	
 	local ContentWindow = Create("Frame", {
 		Name = "ContentWindow",
 		Parent = MainFrame,
 		BackgroundColor3 = self.Theme.Main,
-		Size = UDim2.new(1, 0, 1, -75),
+		Size = UDim2.new(1, 0, 1, -55), -- Space for Dock (40) + Gap (10) + Buffer (5)
 		LayoutOrder = 1,
 		ClipsDescendants = true
 	})
@@ -428,10 +429,10 @@ function EnvielUI:CreateWindow(Config)
 		Name = "FloatingDock",
 		Parent = MainFrame,
 		BackgroundColor3 = self.Theme.Secondary,
-		Size = UDim2.new(1, -40, 0, 60),
+		Size = UDim2.new(1, 0, 0, 40), -- Height 40 (Sleek)
 		LayoutOrder = 2
 	})
-	Create("UICorner", {Parent = FloatingDock, CornerRadius = UDim.new(0, 30)})
+	Create("UICorner", {Parent = FloatingDock, CornerRadius = UDim.new(1, 0)}) -- Full Pill
 	Create("UIStroke", {Parent = FloatingDock, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 
 	Tween(MainFrame, {
@@ -676,7 +677,7 @@ function EnvielUI:CreateWindow(Config)
 	Create("UIPadding", {Parent = SearchBar, PaddingLeft = UDim.new(0, 10)})
 	Create("UIStroke", {Parent = SearchBar, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 
-	local NavbarHeight = 55
+	local NavbarHeight = 40
 	local Navbar = FloatingDock
 	local NavbarInner = Create("ScrollingFrame", {
 		Name = "NavbarInner",
@@ -814,7 +815,7 @@ function EnvielUI:CreateWindow(Config)
 				local icon = content and content:FindFirstChild("ImageLabel")
 				
 				if Window.ActiveTab and btn.Name == Window.ActiveTab.."Btn" then
-					Tween(btn, {BackgroundColor3 = T.Accent}, 0.3)
+					Tween(btn, {BackgroundColor3 = T.Accent, BackgroundTransparency = 0}, 0.3) -- Active = Solid
 					if label then Tween(label, {TextColor3 = T.AccentText}, 0.3) end
 					if icon then Tween(icon, {ImageColor3 = T.AccentText}, 0.3) end
 				else
@@ -867,7 +868,7 @@ function EnvielUI:CreateWindow(Config)
 			local label = content and content:FindFirstChild("Label")
 			local icon = content and content:FindFirstChild("ImageLabel")
 			btn.BackgroundColor3 = self.Instance.Theme.Accent
-			Tween(btn, {BackgroundTransparency = 0.15}, 0.3)
+			Tween(btn, {BackgroundTransparency = 0}, 0.3) -- Active = Solid
 			
 			if label then Tween(label, {TextColor3 = self.Instance.Theme.AccentText}, 0.3) end
 			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.AccentText}, 0.3) end
@@ -892,7 +893,7 @@ function EnvielUI:CreateWindow(Config)
 			Text = "",
 			AutoButtonColor = false
 		})
-		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 12)})
+		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(1, 0)}) -- Full Pill Radius
 		Create("UIPadding", {
 			Parent = TabBtn, 
 			PaddingLeft = UDim.new(0, 16),
