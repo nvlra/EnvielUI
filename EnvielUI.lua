@@ -156,8 +156,16 @@ function EnvielUI:CreateWindow(Config)
 	
 	-- Mobile Responsive Logic
 	local Camera = Workspace.CurrentCamera
-	if Camera.ViewportSize.X < 800 then -- Increased threshold for tablets/large phones
-		MainFrame.Size = UDim2.fromScale(0.55, 0.45) -- Much simpler/smaller for mobile
+	local IsMobile = Camera.ViewportSize.X < 800
+	
+	-- Dynamic Sizing Constants
+	local ItemH = IsMobile and 36 or 42
+	local TextS = IsMobile and 11 or 13
+	local TitleS = IsMobile and 14 or 18
+	local HdrH = IsMobile and 38 or 50
+	
+	if IsMobile then 
+		MainFrame.Size = UDim2.fromScale(0.55, 0.45) 
 	end
 	
 	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 14)})
@@ -172,7 +180,7 @@ function EnvielUI:CreateWindow(Config)
 	local LOGO_WHITE = "94854804824909"
 	local LOGO_BLACK = "120261170817156"
 	
-	local Header = Create("Frame", {Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 50)})
+	local Header = Create("Frame", {Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, HdrH)})
 	Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 20), PaddingRight = UDim.new(0, 20)})
 	
 	local LogoIcon = Create("ImageLabel", {
@@ -182,7 +190,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	Create("TextLabel", {
 		Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(0, 0, 1, 0), Position = UDim2.new(0, 32, 0, 0), AutomaticSize = Enum.AutomaticSize.X,
-		Font = Enum.Font.GothamBold, Text = Name, TextColor3 = Window.Theme.Text, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left
+		Font = Enum.Font.GothamBold, Text = Name, TextColor3 = Window.Theme.Text, TextSize = TitleS, TextXAlignment = Enum.TextXAlignment.Left
 	})
 
 	task.wait(0.05)
@@ -354,7 +362,7 @@ function EnvielUI:CreateWindow(Config)
 	end
 	
 	local ContentHolder = Create("CanvasGroup", {
-		Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, -80), Position = UDim2.new(0, 20, 0, 60), 
+		Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, -(HdrH + 30)), Position = UDim2.new(0, 20, 0, HdrH + 10), 
 		GroupTransparency = 0, BorderSizePixel = 0
 	})
 	
@@ -445,7 +453,7 @@ function EnvielUI:CreateWindow(Config)
 		function Elements:CreateSection(Text)
 			Create("TextLabel", {
 				Parent = Page, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 24), Text = Text,
-				Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
+				Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = TextS + 1, TextXAlignment = Enum.TextXAlignment.Left
 			})
 		end
 
@@ -465,13 +473,14 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateButton(Config)
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 42)})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH)})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			
-			Create("TextLabel", {
-				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 15, 0, 0), Size = UDim2.new(1, -95, 1, 0),
-				Text = Config.Name or "Button", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left
+			local B = Create("TextButton", {
+				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
+				Font = Enum.Font.GothamBold, Text = Config.Name or "Button", TextColor3 = Window.Theme.Text, TextSize = TextS,
+				TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false
 			})
 			
 			local B = Create("TextButton", {
@@ -490,12 +499,12 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateToggle(Config)
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 42)})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH)})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
-				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 15, 0, 0), Size = UDim2.new(1, -70, 1, 0),
-				Text = Config.Name or "Toggle", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left
+				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 12, 0, 0),
+				Text = Config.Name or "Toggle", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			
 			local Val = Config.CurrentValue or Config.Default or false
@@ -524,13 +533,12 @@ function EnvielUI:CreateWindow(Config)
 		function Elements:CreateSlider(Config)
 			local Min, Max = Config.Min or 0, Config.Max or 100
 			local Val = Config.Default or Min
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 50)})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 8)})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
-			
 			Create("TextLabel", {
-				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 15, 0, 5), Size = UDim2.new(1, -50, 0, 20),
-				Text = Config.Name or "Slider", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left
+				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 0, 24), Position = UDim2.new(0, 12, 0, 4),
+				Text = Config.Name or "Slider", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			local ValLbl = Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(1, -50, 0, 5), Size = UDim2.new(0, 40, 0, 20),
@@ -560,20 +568,20 @@ function EnvielUI:CreateWindow(Config)
 			end
 			
 			local Sliding = false
-			Track.InputBegan:Connect(function(input) 
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+			Track.InputBegan:Connect(function(i) 
+				if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then 
 					Sliding = true 
-					Update(input) 
+					Update(i) 
 				end 
 			end)
-			UserInputService.InputEnded:Connect(function(input) 
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+			UserInputService.InputEnded:Connect(function(i) 
+				if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then 
 					Sliding = false 
 				end 
 			end)
-			UserInputService.InputChanged:Connect(function(input) 
-				if Sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then 
-					Update(input) 
+			UserInputService.InputChanged:Connect(function(i) 
+				if Sliding and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then 
+					Update(i) 
 				end 
 			end)
 			return {Set = function(self, v) 
@@ -586,17 +594,17 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateInput(Config)
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 46)})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 4)})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
-				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 15, 0, 0), Size = UDim2.new(1, -15, 0, 24),
-				Text = Config.Name or "Input", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left
+				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0, 0), Size = UDim2.new(1, -24, 0, ItemH - 18),
+				Text = Config.Name or "Input", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			local Box = Create("TextBox", {
-				Parent = F, BackgroundColor3 = Window.Theme.Main, Position = UDim2.new(0, 15, 0, 24), Size = UDim2.new(1, -30, 0, 16),
+				Parent = F, BackgroundColor3 = Window.Theme.Main, Position = UDim2.new(0, 12, 0, ItemH - 18), Size = UDim2.new(1, -24, 0, 16),
 				Text = "", PlaceholderText = Config.PlaceholderText or "...", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, 
-				PlaceholderColor3 = Color3.fromRGB(80, 80, 80), TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 1, ClearTextOnFocus = false
+				PlaceholderColor3 = Color3.fromRGB(80, 80, 80), TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 1, ClearTextOnFocus = false
 			})
 			Box.FocusLost:Connect(function()
 				if Config.Flag then Window.Flags[Config.Flag] = Box.Text end
@@ -610,16 +618,16 @@ function EnvielUI:CreateWindow(Config)
 			local Default = Config.Default or Options[1]
 			local Dropped = false
 			
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 42), ClipsDescendants = true})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), ClipsDescendants = true, ZIndex = 2})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
-
 			
-			local Top = Create("TextButton", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 42), Text = ""})
-			Create("TextLabel", {Parent = Top, BackgroundTransparency = 1, Position = UDim2.new(0, 15, 0, 0), Size = UDim2.new(1, -40, 1, 0), Text = Config.Name, Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left})
-			local Current = Create("TextLabel", {Parent = Top, BackgroundTransparency = 1, Position = UDim2.new(1, -120, 0, 0), Size = UDim2.new(0, 100, 1, 0), Text = tostring(Default), Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right})
+			local Top = Create("TextButton", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, ItemH), Text = "", AutoButtonColor = false})
+			Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0,12,0,0), Size=UDim2.new(1,-40,0,ItemH), Text = Config.Name or "Dropdown", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Left})
+			
+			local Current = Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0.5,0,0,0), Size=UDim2.new(0.5,-30,0,ItemH), Text = tostring(Default).." >", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Right})
 			
 			local List = Create("ScrollingFrame", {
-				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 42), Size = UDim2.new(1, 0, 1, -42), 
+				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, ItemH), Size = UDim2.new(1, 0, 1, -ItemH), 
 				ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0)
 			})
 			Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder})
