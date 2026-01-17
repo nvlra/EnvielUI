@@ -489,7 +489,10 @@ function EnvielUI:CreateWindow(Config)
 			local RowHeight = 48 -- 42 Item + 6 Padding
 			local ContentHeight = #filtered * RowHeight + 20 -- + PaddingBottom
 			local MinH = 180
-			local MaxH = IsMobile and 350 or 400
+			local MaxH = math.floor(MainFrame.AbsoluteSize.Y * 0.35)
+			
+			if MaxH < MinH then MaxH = MinH end -- Safety fallback
+			
 			local TargetH = math.clamp(ContentHeight + 100, MinH, MaxH) -- + Header/Search Height
 			
 			List.CanvasSize = UDim2.new(0, 0, 0, ContentHeight)
@@ -600,7 +603,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 		if TabCount == 1 then
 			task.spawn(function()
-				task.wait()
+				task.wait(0.2) -- Wait for layout
 				Window:SelectTab(TabId)
 			end)
 		end
