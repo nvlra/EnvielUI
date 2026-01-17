@@ -165,7 +165,8 @@ function EnvielUI:CreateWindow(Config)
 	local HdrH = IsMobile and 38 or 50
 	
 	if IsMobile then 
-		MainFrame.Size = UDim2.fromScale(0.55, 0.45) 
+		MainFrame.Size = UDim2.fromScale(0.55, 0.58) 
+		MainFrame.Position = UDim2.fromScale(0.5, 0.50)
 	end
 	
 	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 14)})
@@ -366,8 +367,8 @@ function EnvielUI:CreateWindow(Config)
 		GroupTransparency = 0, BorderSizePixel = 0
 	})
 	
-	local NavH = IsMobile and 36 or 40
-	local NavP = IsMobile and 6 or 12
+	local NavH = IsMobile and 30 or 40
+	local NavP = IsMobile and 4 or 12
 	local Dock = Create("CanvasGroup", {
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
 		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, NavP),
