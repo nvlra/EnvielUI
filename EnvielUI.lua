@@ -321,7 +321,7 @@ function EnvielUI:CreateWindow(Config)
 			if TargetSize < 20 then TargetSize = 60 end
 			
 			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, TargetSize)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-			Tween(F, {Position = UDim2.new(0, 0, 0, 0)}, 0.4, Enum.EasingStyle.Spring, Enum.EasingDirection.Out)
+			Tween(F, {Position = UDim2.new(0, 0, 0, 0)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 		end)
 		
 		task.delay(Cfg.Duration or 3, function()
@@ -457,7 +457,7 @@ function EnvielUI:CreateWindow(Config)
 
 			B.MouseButton1Click:Connect(function()
 				Tween(BScale, {Scale = 0.95}, 0.05).Completed:Wait()
-				Tween(BScale, {Scale = 1}, 0.1, Enum.EasingStyle.Spring)
+				Tween(BScale, {Scale = 1}, 0.1, Enum.EasingStyle.Back)
 				if Config.Callback then Config.Callback() end
 			end)
 		end
