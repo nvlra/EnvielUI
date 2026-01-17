@@ -641,6 +641,7 @@ function EnvielUI:CreateWindow(Config)
 		function Elements:CreateButton(Config)
 			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH)})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
+			Create("UIPadding", {Parent = F, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 
 			
 			local B = Create("TextButton", {
@@ -650,7 +651,7 @@ function EnvielUI:CreateWindow(Config)
 			})
 			
 			local B = Create("TextButton", {
-				Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -10, 0.5, 0), Size = UDim2.new(0, 0, 0, IsMobile and 24 or 28),
+				Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.new(0, 0, 0, IsMobile and 24 or 28),
 				BackgroundColor3 = Window.Theme.Text, Text = Config.Text or "Interact", Font = Enum.Font.GothamBold, TextColor3 = Color3.new(0,0,0), TextSize = 11, AutoButtonColor=false,
 				AutomaticSize = Enum.AutomaticSize.X, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
 			})
