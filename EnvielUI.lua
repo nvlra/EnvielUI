@@ -855,8 +855,12 @@ function EnvielUI:CreateWindow(Config)
 				local label = content and content:FindFirstChild("Label")
 				local icon = content and content:FindFirstChild("ImageLabel")
 				
-				if label then Tween(label, {TextColor3 = self.Instance.Theme.TextSec}, 0.3) end
-				if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSec}, 0.3) end
+				if label then 
+					Tween(label, {TextColor3 = self.Instance.Theme.TextSec}, 0.3) 
+				end
+				if icon then 
+					Tween(icon, {ImageColor3 = self.Instance.Theme.TextSec}, 0.3) 
+				end
 			end
 		end
 		
@@ -870,8 +874,14 @@ function EnvielUI:CreateWindow(Config)
 			btn.BackgroundColor3 = self.Instance.Theme.Accent
 			Tween(btn, {BackgroundTransparency = 0}, 0.3) -- Active = Solid
 			
-			if label then Tween(label, {TextColor3 = self.Instance.Theme.AccentText}, 0.3) end
-			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.AccentText}, 0.3) end
+			if label then 
+				label.TextColor3 = self.Instance.Theme.AccentText -- Force Update
+				Tween(label, {TextColor3 = self.Instance.Theme.AccentText}, 0.3) 
+			end
+			if icon then 
+				icon.ImageColor3 = self.Instance.Theme.AccentText -- Force Update
+				Tween(icon, {ImageColor3 = self.Instance.Theme.AccentText}, 0.3) 
+			end
 		end
 
 		Window.ActiveTab = TabId
@@ -888,7 +898,9 @@ function EnvielUI:CreateWindow(Config)
 			Parent = NavbarInner,
 			BackgroundColor3 = self.Instance.Theme.Accent,
 			BackgroundTransparency = 1,
-			Size = UDim2.new(0, 0, 1, 0),
+			AnchorPoint = Vector2.new(0, 0.5), -- Center Vertically
+			Position = UDim2.new(0, 0, 0.5, 0), -- Center Vertically in Dock
+			Size = UDim2.new(0, 0, 0.70, 0), -- 70% Height for "Floating Pill" look
 			AutomaticSize = Enum.AutomaticSize.X,
 			Text = "",
 			AutoButtonColor = false
