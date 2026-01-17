@@ -113,7 +113,7 @@ function EnvielUI:CreateWindow(Config)
 			Stroke = Color3.fromRGB(0, 0, 0),
 			Accent = Color3.fromRGB(255, 255, 255),
 			Text = Color3.fromRGB(255, 255, 255),
-			TextDark = Color3.fromRGB(170, 170, 170),
+			TextDark = Color3.fromRGB(200, 200, 200),
 			ActiveText = Color3.fromRGB(0, 0, 0)
 		}
 	})
@@ -635,7 +635,7 @@ function EnvielUI:CreateWindow(Config)
 
 			Create("UIPadding", {Parent = F, PaddingTop = UDim.new(0,10), PaddingBottom = UDim.new(0,10), PaddingLeft = UDim.new(0,12), PaddingRight = UDim.new(0,12)})
 			Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,18), Text = Cfg.Title or "Header", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left})
-			Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Position=UDim2.new(0,0,0,20), Size=UDim2.new(1,0,0,0), AutomaticSize=Enum.AutomaticSize.Y, Text = Cfg.Content or "", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, TextWrapped=true})
+			Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Position=UDim2.new(0,0,0,20), Size=UDim2.new(1,0,0,0), AutomaticSize=Enum.AutomaticSize.Y, Text = Cfg.Content or "", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.TextDark, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, TextWrapped=true})
 		end
 
 		function Elements:CreateButton(Config)
