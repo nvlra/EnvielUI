@@ -892,11 +892,11 @@ function EnvielUI:CreateWindow(Config)
 			-- Active State (Underline Style)
 			Tween(btn, {BackgroundTransparency = 1}, 0.3) -- No background fill
 			
-			if label then Tween(label, {TextColor3 = self.Instance.Theme.AccentText}, 0.3) end
-			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.AccentText}, 0.3) end
+			if label then Tween(label, {TextColor3 = self.Instance.Theme.Accent}, 0.3) end
+			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.Accent}, 0.3) end
 			if bar then 
 				Tween(bar, {Size = UDim2.new(0, 20, 0, 3)}, 0.3) -- Expand bar
-				Tween(bar, {BackgroundColor3 = self.Instance.Theme.AccentText}, 0.3)
+				Tween(bar, {BackgroundColor3 = self.Instance.Theme.Accent}, 0.3)
 			end
 
 		Window.ActiveTab = TabId
@@ -949,7 +949,7 @@ function EnvielUI:CreateWindow(Config)
 		local ActiveBar = Create("Frame", {
 			Name = "ActiveBar",
 			Parent = TabBtn,
-			BackgroundColor3 = self.Instance.Theme.AccentText,
+			BackgroundColor3 = self.Instance.Theme.Accent,
 			Position = UDim2.new(0.5, 0, 1, -4), -- Bottom Center
 			Size = UDim2.new(0, 0, 0, 3), -- Start invisible
 			AnchorPoint = Vector2.new(0.5, 1),
@@ -1216,8 +1216,8 @@ function EnvielUI:CreateWindow(Config)
 				end
 				ValueLabel.Text = string.format("%."..Decimals.."f", Value)
 				
-				Tween(Fill, {Size = UDim2.new(Percent, 0, 1, 0)}, 0.05)
-				Tween(Thumb, {Position = UDim2.new(Percent, -7, 0.5, -7)}, 0.05)
+				Fill.Size = UDim2.new(Percent, 0, 1, 0)
+				Thumb.Position = UDim2.new(Percent, -7, 0.5, -7)
 				self.Instance.Flags[Flag] = Value
 				SafeCallback(Callback, Value)
 			end
