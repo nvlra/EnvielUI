@@ -646,7 +646,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local B = Create("TextButton", {
 				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
-				Font = Enum.Font.GothamBold, Text = Config.Name or "Button", TextColor3 = Window.Theme.Text, TextSize = TextS,
+				Font = Enum.Font.GothamMedium, Text = Config.Name or "Button", TextColor3 = Window.Theme.Text, TextSize = TextS,
 				TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, AutoButtonColor = false
 			})
 			
@@ -673,7 +673,7 @@ function EnvielUI:CreateWindow(Config)
 
 			Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 12, 0, 0),
-				Text = Config.Name or "Toggle", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
+				Text = Config.Name or "Toggle", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			
 			local Val = Config.CurrentValue or Config.Default or false
@@ -707,7 +707,7 @@ function EnvielUI:CreateWindow(Config)
 
 			Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 0, 24), Position = UDim2.new(0, 12, 0, 4),
-				Text = Config.Name or "Slider", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
+				Text = Config.Name or "Slider", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			local ValLbl = Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(1, -50, 0, 5), Size = UDim2.new(0, 40, 0, 20),
@@ -768,7 +768,7 @@ function EnvielUI:CreateWindow(Config)
 
 			Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0, 0), Size = UDim2.new(1, -24, 0, ItemH - 18),
-				Text = Config.Name or "Input", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
+				Text = Config.Name or "Input", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			local Box = Create("TextBox", {
 				Parent = F, BackgroundColor3 = Window.Theme.Main, Position = UDim2.new(0, 12, 0, ItemH - 18), Size = UDim2.new(1, -24, 0, 16),
@@ -791,7 +791,7 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 			
 			local Top = Create("TextButton", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, ItemH), Text = "", AutoButtonColor = false})
-			Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0,12,0,0), Size=UDim2.new(1,-40,0,ItemH), Text = Config.Name or "Dropdown", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Left})
+			Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0,12,0,0), Size=UDim2.new(1,-40,0,ItemH), Text = Config.Name or "Dropdown", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Left})
 			
 			local Current = Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0.5,0,0,0), Size=UDim2.new(0.5,-30,0,ItemH), Text = "", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Right})
 			
