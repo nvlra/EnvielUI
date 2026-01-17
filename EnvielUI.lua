@@ -27,6 +27,7 @@ function Validator.IsTable(value, name)
 	end
 	return true
 end
+
 function Validator.IsFunction(value, name)
 	if value and type(value) ~= "function" then
 		warn(string.format("[EnvielUI] %s must be a function, got %s", name or "Callback", type(value)))
@@ -34,6 +35,7 @@ function Validator.IsFunction(value, name)
 	end
 	return true
 end
+
 function Validator.IsNumber(value, name, min, max)
 	local num = tonumber(value)
 	if not num then
@@ -322,7 +324,11 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end
 	
-	if Themes[Theme] then 
+	function EnvielUI:CreateWindow(Config)
+		Config = Config or {}
+		local Theme = Config.Theme or "Dark"
+	
+		if Themes[Theme] then 
 		self.Theme = Themes[Theme] 
 	else
 		self.Theme = Themes.Dark
@@ -372,8 +378,7 @@ function EnvielUI:CreateWindow(Config)
 			child:Destroy()
 		end
 	end
-	
-	
+
 	local ScreenGui = Create("ScreenGui", {
 		Name = RandomString(10),
 		Parent = ParentTarget,
@@ -387,7 +392,6 @@ function EnvielUI:CreateWindow(Config)
 	local OpenSize
 	
 	if UserInputService.TouchEnabled then
-		-- Mobile: Increase Height to 85%, Width to 55% (Wider)
 		OpenSize = UDim2.new(0.55, 0, 0.85, 0)  
 	else
 		OpenSize = UDim2.new(0, WindowWidth, 0, DEFAULT_WINDOW_HEIGHT)
@@ -411,14 +415,14 @@ function EnvielUI:CreateWindow(Config)
 		Parent = MainFrame,
 		SortOrder = Enum.SortOrder.LayoutOrder,
 		HorizontalAlignment = Enum.HorizontalAlignment.Center,
-		Padding = UDim.new(0, 10) -- Gap Reduced to 10
+		Padding = UDim.new(0, 10)
 	})
 	
 	local ContentWindow = Create("Frame", {
 		Name = "ContentWindow",
 		Parent = MainFrame,
 		BackgroundColor3 = self.Theme.Main,
-		Size = UDim2.new(1, 0, 1, -55), -- Space for Dock (40) + Gap (10) + Buffer (5)
+		Size = UDim2.new(1, 0, 1, -55),
 		LayoutOrder = 1,
 		ClipsDescendants = true
 	})
@@ -429,7 +433,7 @@ function EnvielUI:CreateWindow(Config)
 		Name = "FloatingDock",
 		Parent = MainFrame,
 		BackgroundColor3 = self.Theme.Secondary,
-		Size = UDim2.new(0, 0, 0, 40), -- Width Dynamic, Height 40
+		Size = UDim2.new(0, 0, 0, 40),
 		LayoutOrder = 2
 	})
 	Create("UICorner", {Parent = FloatingDock, CornerRadius = UDim.new(1, 0)}) -- Full Pill
