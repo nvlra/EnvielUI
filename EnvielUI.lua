@@ -1089,8 +1089,10 @@ function EnvielUI:CreateWindow(Config)
 			end)
 			
 			Btn.MouseButton1Click:Connect(function()
-				Tween(Btn, {Size = UDim2.new(0,85,0,24)}, 0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.In).Completed:Wait()
-				Tween(Btn, {Size = UDim2.new(0,90,0,26)}, 0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+				-- Press effect: Shrink slightly
+				Tween(Btn, {Size = UDim2.new(0,76,0,24)}, 0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.Out).Completed:Wait()
+				-- Release effect: Return to original size
+				Tween(Btn, {Size = UDim2.new(0,80,0,26)}, 0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 				SafeCallback(Callback)
 			end)
 			
