@@ -886,7 +886,7 @@ function EnvielUI:CreateWindow(Config)
 				local bar = btn:FindFirstChild("ActiveBar")
 				if bar then
 					Tween(bar, {Size = UDim2.new(0, 0, 0, 3)}, 0.3) -- Shrink inactive bar
-					Tween(bar, {BackgroundColor3 = self.Instance.Theme.Secondary}, 0.3)
+					Tween(bar, {BackgroundTransparency = 1}, 0.3) -- Hide efficiently
 				end
 			end
 		end
@@ -907,6 +907,7 @@ function EnvielUI:CreateWindow(Config)
 			if bar then 
 				Tween(bar, {Size = UDim2.new(1, 0, 0, 3)}, 0.3) -- Expand bar full width
 				Tween(bar, {BackgroundColor3 = self.Instance.Theme.Accent}, 0.3)
+				Tween(bar, {BackgroundTransparency = 0}, 0.3)
 			end
 
 
@@ -1075,7 +1076,7 @@ function EnvielUI:CreateWindow(Config)
 			local Btn = Create("TextButton", {
 				Parent = Frame, BackgroundColor3 = self.Instance.Theme.Accent, Position = UDim2.new(1,-95,0.5,-13), Size = UDim2.new(0,80,0,26), -- Adjusted sizing/pos
 				Font = FontBold,
-				Text = Config.ButtonText or "Interact", TextColor3 = self.Instance.Theme.TextSelected, TextSize = 11, AutoButtonColor = false,
+				Text = Config.ButtonText or "Interact", TextColor3 = self.Instance.Theme.AccentText, TextSize = 11, AutoButtonColor = false,
 				TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
 			})
 			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
@@ -1103,7 +1104,7 @@ function EnvielUI:CreateWindow(Config)
 			Window.ThemeRegistry:Register(Btn, { 
 				properties = { 
 					BackgroundColor3 = function(t) return t.Accent end, 
-					TextColor3 = function(t) return t.TextSelected end -- Force high contrast text
+					TextColor3 = function(t) return t.AccentText end -- Contrast text (Black on White, White on Black)
 				} 
 			})
 			Window:RegisterSearchable(Frame, Name)
