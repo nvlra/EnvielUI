@@ -874,8 +874,9 @@ function EnvielUI:CreateWindow(Config)
 				-- Inactive State (Transparent Background, Gray Text/Icon)
 				Tween(btn, {BackgroundTransparency = 1, BackgroundColor3 = self.Instance.Theme.Secondary}, 0.3)
 				
-				local label = btn:FindFirstChild("Label")
-				local icon = btn:FindFirstChild("ImageLabel")
+				local content = btn:FindFirstChild("Content")
+				local label = content and content:FindFirstChild("Label")
+				local icon = content and content:FindFirstChild("ImageLabel")
 				
 				if label then Tween(label, {TextColor3 = self.Instance.Theme.TextSec}, 0.3) end
 				if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSec}, 0.3) end
@@ -885,8 +886,9 @@ function EnvielUI:CreateWindow(Config)
 		if Pages:FindFirstChild(TabId) then Pages[TabId].Visible = true end
 		
 			local btn = NavbarInner[TabId.."Btn"]
-			local label = btn:FindFirstChild("Label")
-			local icon = btn:FindFirstChild("ImageLabel")
+			local content = btn:FindFirstChild("Content")
+			local label = content and content:FindFirstChild("Label")
+			local icon = content and content:FindFirstChild("ImageLabel")
 			local bar = btn:FindFirstChild("ActiveBar")
 			
 			-- Active State (Underline Style)
@@ -895,71 +897,113 @@ function EnvielUI:CreateWindow(Config)
 			if label then Tween(label, {TextColor3 = self.Instance.Theme.Accent}, 0.3) end
 			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.Accent}, 0.3) end
 			if bar then 
-				Tween(bar, {Size = UDim2.new(0, 20, 0, 3)}, 0.3) -- Expand bar
+				Tween(bar, {Size = UDim2.new(1, 0, 0, 3)}, 0.3) -- Expand bar full width
 				Tween(bar, {BackgroundColor3 = self.Instance.Theme.Accent}, 0.3)
 			end
 
+
 		Window.ActiveTab = TabId
+		
+		-- Force update active tab visuals immediately
+		local btn = NavbarInner:FindFirstChild(TabId.."Btn")
+		if btn then
+			local content = btn:FindFirstChild("Content")
+			local label = content and content:FindFirstChild("Label")
+			local icon = content and content:FindFirstChild("ImageLabel")
+			local bar = btn:FindFirstChild("ActiveBar")
+			
+			btn.BackgroundTransparency = 1
+			if label then label.TextColor3 = self.Instance.Theme.Accent end
+			if icon then icon.ImageColor3 = self.Instance.Theme.Accent end
+			if bar then 
+				bar.Size = UDim2.new(1, 0, 0, 3) 
+				bar.BackgroundColor3 = self.Instance.Theme.Accent 
+			end
+		end
 	end
 	
 	function Window:CreateTab(Config)
 		local Name = Config.Name or "Tab"
-		local IconName = Config.Icon or "layout-grid" -- Default icon if none provided
+		local IconName = Config.Icon or "layout-grid" 
 		local TabId = "Tab"..tostring(#Window.Tabs + 1)
 		
 		local IconAsset = GetIcon(IconName)
 		
-		-- Dock Button (Square-ish ratio)
+		-- 1. Button Container (Auto Width)
 		local TabBtn = Create("TextButton", {
 			Name = TabId.."Btn",
 			Parent = NavbarInner,
 			BackgroundColor3 = self.Instance.Theme.Accent,
 			BackgroundTransparency = 1, 
-			Size = UDim2.new(0, 60, 0, 50), -- Fixed width for dock items
+			Size = UDim2.new(0, 0, 1, 0), -- Auto width
+			AutomaticSize = Enum.AutomaticSize.X,
 			Text = "",
 			AutoButtonColor = false
 		})
 		
-		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 12)}) -- Pill/Rounded shape
-		
-		-- Icon (Top)
-		local IconLabel = Create("ImageLabel", {
-			Parent = TabBtn,
-			BackgroundTransparency = 1,
-			Position = UDim2.new(0.5, -12, 0.2, 0), -- Shifted up
-			Size = UDim2.new(0, 24, 0, 24),
-			Image = IconAsset,
-			ImageColor3 = self.Instance.Theme.TextSec
+		-- Padding for comfortable click area
+		Create("UIPadding", {
+			Parent = TabBtn, 
+			PaddingLeft = UDim.new(0, 12), 
+			PaddingRight = UDim.new(0, 12),
+			PaddingTop = UDim.new(0, 6)
 		})
 		
-		-- Text (Bottom)
+		-- 2. Content Wrapper (Centers Icon + Text)
+		local Content = Create("Frame", {
+			Name = "Content",
+			Parent = TabBtn,
+			BackgroundTransparency = 1,
+			Size = UDim2.new(0, 0, 1, -6), -- Reserve space for underline
+			AutomaticSize = Enum.AutomaticSize.X,
+			Position = UDim2.new(0,0,0,0)
+		})
+		
+		local Layout = Create("UIListLayout", {
+			Parent = Content,
+			FillDirection = Enum.FillDirection.Horizontal,
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+			Padding = UDim.new(0, 8), -- Space between Icon and Text
+			SortOrder = Enum.SortOrder.LayoutOrder
+		})
+		
+		-- Icon (Left)
+		local IconLabel = Create("ImageLabel", {
+			Parent = Content,
+			BackgroundTransparency = 1,
+			Size = UDim2.new(0, 20, 0, 20),
+			Image = IconAsset,
+			ImageColor3 = self.Instance.Theme.TextSec,
+			LayoutOrder = 1
+		})
+		
+		-- Text (Right)
 		local TextLabel = Create("TextLabel", {
 			Name = "Label",
-			Parent = TabBtn,
+			Parent = Content,
 			BackgroundTransparency = 1,
-			Position = UDim2.new(0, 0, 0.65, 0), -- Bottom position
-			Size = UDim2.new(1, 0, 0.3, 0),
+			Size = UDim2.new(0, 0, 0, 16),
+			AutomaticSize = Enum.AutomaticSize.X,
 			Text = Name,
 			Font = FontMedium,
-			TextSize = 10, -- Smaller text for dock
-			TextColor3 = self.Instance.Theme.TextSec
+			TextSize = 13,
+			TextColor3 = self.Instance.Theme.TextSec,
+			LayoutOrder = 2
 		})
 		
-		-- Active Bar (Underline)
+		-- 3. Active Bar (Underline - Bottom)
 		local ActiveBar = Create("Frame", {
 			Name = "ActiveBar",
 			Parent = TabBtn,
 			BackgroundColor3 = self.Instance.Theme.Accent,
-			Position = UDim2.new(0.5, 0, 1, -4), -- Bottom Center
-			Size = UDim2.new(0, 0, 0, 3), -- Start invisible
-			AnchorPoint = Vector2.new(0.5, 1),
+			Position = UDim2.new(0, 0, 1, -2), -- Bottom Aligned
+			Size = UDim2.new(0, 0, 0, 2), -- Start width 0
 			BorderSizePixel = 0
 		})
-		Create("UICorner", {Parent = ActiveBar, CornerRadius = UDim.new(1, 0)})
 		
+		-- Hover Effects
 		TabBtn.MouseEnter:Connect(function()
 			if Window.ActiveTab ~= TabId then
-				Tween(TabBtn, {BackgroundTransparency = 1}, 0.2) -- No bg change on hover
 				if TextLabel then Tween(TextLabel, {TextColor3 = self.Instance.Theme.Accent}, 0.2) end
 				if IconLabel then Tween(IconLabel, {ImageColor3 = self.Instance.Theme.Accent}, 0.2) end
 			end
@@ -967,7 +1011,6 @@ function EnvielUI:CreateWindow(Config)
 		
 		TabBtn.MouseLeave:Connect(function()
 			if Window.ActiveTab ~= TabId then
-				Tween(TabBtn, {BackgroundTransparency = 1}, 0.2)
 				if TextLabel then Tween(TextLabel, {TextColor3 = self.Instance.Theme.TextSec}, 0.2) end
 				if IconLabel then Tween(IconLabel, {ImageColor3 = self.Instance.Theme.TextSec}, 0.2) end
 			end
