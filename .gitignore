@@ -8,3 +8,4 @@ dump_remotes.lua
 tree.txt
 Debug/
 Misc/
+optimization_test.lua

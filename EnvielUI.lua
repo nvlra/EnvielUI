@@ -284,14 +284,7 @@ function EnvielUI:CreateWindow(Config)
 		self.timers = {}
 	end
 	
-	function Window:Destroy()
-		self.ConnectionManager:DisconnectAll()
-		TweenManager:CancelAll()
-		if ScreenGui then ScreenGui:Destroy() end
-		setmetatable(self, nil)
-		print("[EnvielUI] Window Destroyed")
-	end
-	
+
 	-- Theme Registry (Optimization)
 	local ThemeRegistry = {
 		objects = {}
@@ -771,6 +764,14 @@ function EnvielUI:CreateWindow(Config)
 		ConnectionManager = ConnectionManager,
 		ThemeRegistry = ThemeRegistry
 	}
+	
+	function Window:Destroy()
+		self.ConnectionManager:DisconnectAll()
+		TweenManager:CancelAll()
+		if ScreenGui then ScreenGui:Destroy() end
+		setmetatable(self, nil)
+		print("[EnvielUI] Window Destroyed")
+	end
 	
 	function Window:SetTheme(ThemeName)
 		if not Themes[ThemeName] then warn("Theme not found: " .. tostring(ThemeName)) return end
