@@ -641,7 +641,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	local Footer = Create("TextLabel", {
 		Name = "Footer", Parent = MainFrame, BackgroundTransparency = 1,
-		Size = UDim2.new(0, 100, 0, 20), Position = UDim2.new(1, -60, 0, 15), AnchorPoint = Vector2.new(1, 0),
+		Size = UDim2.new(0, 100, 0, 20), Position = UDim2.new(1, -75, 0, 15), AnchorPoint = Vector2.new(1, 0), -- Moved left
 		Text = "Made by Enviel", TextSize = 10, Font = FontBold, TextColor3 = self.Theme.TextSec, TextTransparency = 0.5,
 		TextXAlignment = Enum.TextXAlignment.Right
 	})
@@ -1039,7 +1039,7 @@ function EnvielUI:CreateWindow(Config)
 			CanvasSize = UDim2.new(0,0,0,0)
 		})
 		Create("UIListLayout", {Parent = Page, Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder})
-		Create("UIPadding", {Parent = Page, PaddingBottom = UDim.new(0,10), PaddingTop = UDim.new(0,2), PaddingRight = UDim.new(0,10)})
+		Create("UIPadding", {Parent = Page, PaddingBottom = UDim.new(0,90), PaddingTop = UDim.new(0,2), PaddingRight = UDim.new(0,10)})
 		
 		Page.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 			Page.CanvasSize = UDim2.new(0, 0, 0, Page.UIListLayout.AbsoluteContentSize.Y + 20)
