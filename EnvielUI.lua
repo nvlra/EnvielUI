@@ -734,10 +734,6 @@ function EnvielUI:CreateWindow(Config)
 		end)
 	end)
 	
-	function Window:RegisterSearchable(frame, text)
-		table.insert(searchCache, { frame = frame, searchText = text:lower() })
-	end
-	
 	local Pages = Create("Frame", {
 		Name = "Pages",
 		Parent = ContentContainer,
@@ -771,6 +767,10 @@ function EnvielUI:CreateWindow(Config)
 		if ScreenGui then ScreenGui:Destroy() end
 		setmetatable(self, nil)
 		print("[EnvielUI] Window Destroyed")
+	end
+	
+	function Window:RegisterSearchable(frame, text)
+		table.insert(searchCache, { frame = frame, searchText = text:lower() })
 	end
 	
 	function Window:SetTheme(ThemeName)
