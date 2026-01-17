@@ -175,10 +175,11 @@ local function Tween(instance, properties, duration, style, direction)
 	return TweenManager:SmartTween(instance, properties, duration, style, direction)
 end
 
-local function Dragify(Frame, ClickCallback)
+local function Dragify(Frame, ClickCallback, MoveTarget)
 	local Dragging, DragInput, DragStart, StartPos
 	local HasMoved = false
 	local dragConnection = nil
+	local TargetFrame = MoveTarget or Frame -- Default to self if no target
 	
 	local function Update(input)
 		local Delta = input.Position - DragStart
@@ -190,7 +191,7 @@ local function Dragify(Frame, ClickCallback)
 			StartPos.Y.Scale, 
 			StartPos.Y.Offset + Delta.Y
 		)
-		local DragTween = TweenService:Create(Frame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = TargetPos})
+		local DragTween = TweenService:Create(TargetFrame, TweenInfo.new(0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = TargetPos})
 		DragTween:Play()
 	end
 	
@@ -207,7 +208,7 @@ local function Dragify(Frame, ClickCallback)
 			Dragging = true
 			HasMoved = false
 			DragStart = input.Position
-			StartPos = Frame.Position
+			StartPos = TargetFrame.Position -- Use Target Position
 			
 			-- Only connect when actually dragging
 			dragConnection = UserInputService.InputChanged:Connect(function(changeInput)
@@ -401,6 +402,7 @@ function EnvielUI:CreateWindow(Config)
 	end
 	
 	
+	-- [Refactor] MainFrame is now an Invisible Wrapper for layout
 	local MainFrame = Create("Frame", {
 		Name = "MainFrame",
 		Parent = ScreenGui,
@@ -409,26 +411,56 @@ function EnvielUI:CreateWindow(Config)
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.new(0.5, 0, 0.5, 0),
 		Size = UDim2.new(0, 0, 0, 0),
-		BackgroundTransparency = 1,
-		ClipsDescendants = true,
+		BackgroundTransparency = 1, -- Invisible Wrapper
+		ClipsDescendants = false,
 		Active = true
 	})
 	
+	-- Enable Dragging on all parts to move MainFrame
+	Dragify(MainFrame, nil, MainFrame)
+	-- Fix: Dragify ContentWindow and FloatingDock too because they might block input
+	-- We will add this call below after they are created
 
-	Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 16)})
-	Create("UIStroke", {
-		Parent = MainFrame, 
-		Color = self.Theme.Stroke, 
-		Thickness = 1,
-		Transparency = 0.5
+	
+	-- Layout: Stack Content on Top, Dock on Bottom
+	Create("UIListLayout", {
+		Parent = MainFrame,
+		SortOrder = Enum.SortOrder.LayoutOrder,
+		HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		Padding = UDim.new(0, 15) -- Gap
 	})
 	
-	Dragify(MainFrame)
+	-- 1. Content Window (Top)
+	local ContentWindow = Create("Frame", {
+		Name = "ContentWindow",
+		Parent = MainFrame,
+		BackgroundColor3 = self.Theme.Main,
+		Size = UDim2.new(1, 0, 1, -75), -- Leave space for Dock (60px) + Gap (15px)
+		LayoutOrder = 1,
+		ClipsDescendants = true
+	})
+	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 16)})
+	Create("UIStroke", {Parent = ContentWindow, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
 	
+	-- 2. Floating Dock (Bottom)
+	local FloatingDock = Create("Frame", {
+		Name = "FloatingDock",
+		Parent = MainFrame,
+		BackgroundColor3 = self.Theme.Secondary,
+		Size = UDim2.new(1, -40, 0, 60), -- Pill width
+		LayoutOrder = 2
+	})
+	Create("UICorner", {Parent = FloatingDock, CornerRadius = UDim.new(0, 30)}) -- Round Effect
+	Create("UIStroke", {Parent = FloatingDock, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+
+	-- Animate Opening (Wrapper Size)
 	Tween(MainFrame, {
-		Size = OpenSize, 
-		BackgroundTransparency = 0.1
+		Size = OpenSize
 	}, 0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+	
+	-- Apply Drag Logic to Children
+	Dragify(ContentWindow, nil, MainFrame)
+	Dragify(FloatingDock, nil, MainFrame)
 	
 	local OpenBtn = Create("TextButton", {
 		Name = "OpenButton",
@@ -560,7 +592,7 @@ function EnvielUI:CreateWindow(Config)
 
 	local Header = Create("Frame", {
 		Name = "Header",
-		Parent = MainFrame,
+		Parent = ContentWindow, -- [Refactor] Parent to Top Window
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 0, 50)
 	})
@@ -634,14 +666,14 @@ function EnvielUI:CreateWindow(Config)
 
 	local ContentContainer = Create("Frame", {
 		Name = "ContentContainer",
-		Parent = MainFrame,
+		Parent = ContentWindow, -- [Refactor] Parent to Top Window
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 1, -50),
 		Position = UDim2.new(0, 0, 0, 50)
 	})
 	
 	local Footer = Create("TextLabel", {
-		Name = "Footer", Parent = MainFrame, BackgroundTransparency = 1,
+		Name = "Footer", Parent = ContentWindow, BackgroundTransparency = 1, -- [Refactor] Parent to Top Window
 		Size = UDim2.new(0, 100, 0, 20), Position = UDim2.new(1, -75, 0, 15), AnchorPoint = Vector2.new(1, 0), -- Moved left
 		Text = "Made by Enviel", TextSize = 10, Font = FontBold, TextColor3 = self.Theme.TextSec, TextTransparency = 0.5,
 		TextXAlignment = Enum.TextXAlignment.Right
@@ -670,29 +702,10 @@ function EnvielUI:CreateWindow(Config)
 	local NavbarHeight = 55 -- Reduced height
 	
 	-- Navbar Container (Floating Dock Style)
-	local Navbar = Create("Frame", {
-		Name = "Navbar",
-		Parent = ContentContainer,
-		BackgroundColor3 = self.Theme.Secondary, 
-		Position = UDim2.new(0.5, 0, 1, -25), -- Floats higher
-		Size = UDim2.new(1, -30, 0, NavbarHeight), -- Width with margin
-		AnchorPoint = Vector2.new(0.5, 1),
-		BorderSizePixel = 0,
-		Visible = true, -- Always Visible
-		ZIndex = 20
-	})
-	Create("UICorner", {Parent = Navbar, CornerRadius = UDim.new(0, 16)})
-	Create("UIStroke", {Parent = Navbar, Color = self.Theme.Stroke, Thickness = 1, Transparency = 0.5})
+	-- [Refactor] Use usage of pre-created FloatingDock
+	local Navbar = FloatingDock
 	
-	-- Navbar Shadow for Depth
-	local NavbarShadow = Create("ImageLabel", {
-		Name = "Shadow", Parent = Navbar, BackgroundTransparency = 1,
-		Position = UDim2.new(0, -15, 0, -15), Size = UDim2.new(1, 30, 1, 30),
-		Image = "rbxassetid://5554236805", ImageColor3 = Color3.new(0,0,0), ImageTransparency = 0.6,
-		ScaleType = Enum.ScaleType.Slice, SliceCenter = Rect.new(23,23,277,277), ZIndex = 19
-	})
-	
-	-- Inner Container (Scrolling)
+	-- Inner Container (Scrolling) specifically for Tabs
 	local NavbarInner = Create("ScrollingFrame", {
 		Name = "NavbarInner",
 		Parent = Navbar,
@@ -704,10 +717,8 @@ function EnvielUI:CreateWindow(Config)
 		ScrollBarThickness = 0,
 		ScrollingDirection = Enum.ScrollingDirection.X
 	})
-	-- Add padding to keep buttons away from edges
-	Create("UIPadding", {Parent = NavbarInner, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10)})
 	
-	-- Horizontal Layout for Dock Items
+	-- Keep buttons centered but allow scroll if overflow
 	Create("UIListLayout", {
 		Parent = NavbarInner,
 		FillDirection = Enum.FillDirection.Horizontal,
@@ -716,6 +727,8 @@ function EnvielUI:CreateWindow(Config)
 		Padding = UDim.new(0, 5),
 		SortOrder = Enum.SortOrder.LayoutOrder
 	})
+	
+	Create("UIPadding", {Parent = NavbarInner, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10)})
 	
 	local searchCache = {}
 	local searchDebounce = nil
@@ -758,7 +771,7 @@ function EnvielUI:CreateWindow(Config)
 		Groups = {},
 		Instance = self,
 		MainFrame = MainFrame,
-		Navbar = Navbar, -- Renamed from Sidebar to Navbar
+		Navbar = Navbar,
 		Pages = Pages,
 		TitleLabel = Title,
 		Search = SearchBar,
@@ -823,27 +836,25 @@ function EnvielUI:CreateWindow(Config)
 		Tween(Navbar, {BackgroundColor3 = T.Secondary}, 0.3)
 		if Navbar:FindFirstChild("UIStroke") then Tween(Navbar.UIStroke, {Color = T.Stroke}, 0.3) end
 		
+		-- [Refactor] SetTheme for Pill Style
 		for _, btn in pairs(NavbarInner:GetChildren()) do
 			if btn:IsA("TextButton") then
-				local label = btn:FindFirstChild("Label")
-				local icon = btn:FindFirstChild("ImageLabel")
-				local bar = btn:FindFirstChild("ActiveBar")
+				local label = btn:FindFirstChild("Label") -- Inside Content?
+				local content = btn:FindFirstChild("Content")
+				if content then label = content:FindFirstChild("Label") end
+				
+				local icon = content and content:FindFirstChild("ImageLabel")
 				
 				if Window.ActiveTab and btn.Name == Window.ActiveTab.."Btn" then
+					-- Active State logic
+					Tween(btn, {BackgroundColor3 = T.Accent}, 0.3)
 					if label then Tween(label, {TextColor3 = T.AccentText}, 0.3) end
 					if icon then Tween(icon, {ImageColor3 = T.AccentText}, 0.3) end
-					if bar then 
-						Tween(bar, {BackgroundColor3 = T.AccentText}, 0.3) 
-						Tween(bar, {Size = UDim2.new(0, 20, 0, 3)}, 0.3) -- Active Width
-					end
 				else
+					-- Inactive State
 					Tween(btn, {BackgroundTransparency = 1}, 0.3)
 					if label then Tween(label, {TextColor3 = T.TextSec}, 0.3) end
 					if icon then Tween(icon, {ImageColor3 = T.TextSec}, 0.3) end
-					if bar then 
-						Tween(bar, {BackgroundColor3 = T.Secondary}, 0.3) 
-						Tween(bar, {Size = UDim2.new(0, 0, 0, 3)}, 0.3) -- Inactive Width
-					end
 				end
 			end
 		end
@@ -872,63 +883,36 @@ function EnvielUI:CreateWindow(Config)
 		-- Reset all tab buttons in Navbar
 		for _, btn in pairs(NavbarInner:GetChildren()) do
 			if btn:IsA("TextButton") and btn.Name ~= TabId.."Btn" then
-				-- Inactive State (Transparent Background, Gray Text/Icon)
-				Tween(btn, {BackgroundTransparency = 1, BackgroundColor3 = self.Instance.Theme.Secondary}, 0.3)
+				-- Inactive State (Transparent Background)
+				Tween(btn, {BackgroundTransparency = 1}, 0.3)
 				
 				local content = btn:FindFirstChild("Content")
 				local label = content and content:FindFirstChild("Label")
 				local icon = content and content:FindFirstChild("ImageLabel")
 				
 				if label then Tween(label, {TextColor3 = self.Instance.Theme.TextSec}, 0.3) end
-				if label then Tween(label, {TextColor3 = self.Instance.Theme.TextSec}, 0.3) end
 				if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSec}, 0.3) end
-				
-				local bar = btn:FindFirstChild("ActiveBar")
-				if bar then
-					Tween(bar, {Size = UDim2.new(0, 0, 0, 3)}, 0.3) -- Shrink inactive bar
-					Tween(bar, {BackgroundTransparency = 1}, 0.3) -- Hide efficiently
-				end
 			end
 		end
 		
 		if Pages:FindFirstChild(TabId) then Pages[TabId].Visible = true end
 		
-			local btn = NavbarInner[TabId.."Btn"]
-			local content = btn:FindFirstChild("Content")
-			local label = content and content:FindFirstChild("Label")
-			local icon = content and content:FindFirstChild("ImageLabel")
-			local bar = btn:FindFirstChild("ActiveBar")
-			
-			-- Active State (Underline Style)
-			Tween(btn, {BackgroundTransparency = 1}, 0.3) -- No background fill
-			
-			if label then Tween(label, {TextColor3 = self.Instance.Theme.TextSelected}, 0.3) end
-			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.TextSelected}, 0.3) end
-			if bar then 
-				Tween(bar, {Size = UDim2.new(1, 0, 0, 3)}, 0.3) -- Expand bar full width
-				Tween(bar, {BackgroundColor3 = self.Instance.Theme.Accent}, 0.3)
-				Tween(bar, {BackgroundTransparency = 0}, 0.3)
-			end
-
-
-		Window.ActiveTab = TabId
-		
-		-- Force update active tab visuals immediately
 		local btn = NavbarInner:FindFirstChild(TabId.."Btn")
 		if btn then
 			local content = btn:FindFirstChild("Content")
 			local label = content and content:FindFirstChild("Label")
 			local icon = content and content:FindFirstChild("ImageLabel")
-			local bar = btn:FindFirstChild("ActiveBar")
 			
-			btn.BackgroundTransparency = 1
-			if label then label.TextColor3 = self.Instance.Theme.TextSelected end
-			if icon then icon.ImageColor3 = self.Instance.Theme.TextSelected end
-			if bar then 
-				bar.Size = UDim2.new(1, 0, 0, 3) 
-				bar.BackgroundColor3 = self.Instance.Theme.Accent 
-			end
+			-- Active State (Pill Style)
+			-- Ensure proper color (SetTheme logic will handle later updates, but force here)
+			btn.BackgroundColor3 = self.Instance.Theme.Accent
+			Tween(btn, {BackgroundTransparency = 0.15}, 0.3) -- Slight transparency for glass feel? Or 0.
+			
+			if label then Tween(label, {TextColor3 = self.Instance.Theme.AccentText}, 0.3) end
+			if icon then Tween(icon, {ImageColor3 = self.Instance.Theme.AccentText}, 0.3) end
 		end
+
+		Window.ActiveTab = TabId
 	end
 	
 	function Window:CreateTab(Config)
@@ -938,24 +922,26 @@ function EnvielUI:CreateWindow(Config)
 		
 		local IconAsset = GetIcon(IconName)
 		
-		-- 1. Button Container (Auto Width)
+		-- 1. Button Container (Pill Style)
 		local TabBtn = Create("TextButton", {
 			Name = TabId.."Btn",
 			Parent = NavbarInner,
 			BackgroundColor3 = self.Instance.Theme.Accent,
-			BackgroundTransparency = 1, 
+			BackgroundTransparency = 1, -- Invisible initially
 			Size = UDim2.new(0, 0, 1, 0), -- Auto width
 			AutomaticSize = Enum.AutomaticSize.X,
 			Text = "",
 			AutoButtonColor = false
 		})
+		Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 12)}) -- Round Pill
 		
 		-- Padding for comfortable click area
 		Create("UIPadding", {
 			Parent = TabBtn, 
-			PaddingLeft = UDim.new(0, 12), 
-			PaddingRight = UDim.new(0, 12),
-			PaddingTop = UDim.new(0, 6)
+			PaddingLeft = UDim.new(0, 16), -- Wider padding for Pill look
+			PaddingRight = UDim.new(0, 16),
+			PaddingTop = UDim.new(0, 6),
+			PaddingBottom = UDim.new(0, 6)
 		})
 		
 		-- 2. Content Wrapper (Centers Icon + Text)
@@ -963,7 +949,7 @@ function EnvielUI:CreateWindow(Config)
 			Name = "Content",
 			Parent = TabBtn,
 			BackgroundTransparency = 1,
-			Size = UDim2.new(0, 0, 1, -6), -- Reserve space for underline
+			Size = UDim2.new(0, 0, 1, 0), -- Full height
 			AutomaticSize = Enum.AutomaticSize.X,
 			Position = UDim2.new(0,0,0,0)
 		})
@@ -1000,20 +986,10 @@ function EnvielUI:CreateWindow(Config)
 			LayoutOrder = 2
 		})
 		
-		-- 3. Active Bar (Underline - Bottom)
-		if TabBtn:FindFirstChild("ActiveBar") then TabBtn.ActiveBar:Destroy() end -- Prevent duplicates
-		local ActiveBar = Create("Frame", {
-			Name = "ActiveBar",
-			Parent = TabBtn,
-			BackgroundColor3 = self.Instance.Theme.Accent,
-			Position = UDim2.new(0, 0, 1, -2), -- Bottom Aligned
-			Size = UDim2.new(0, 0, 0, 2), -- Start width 0
-			BorderSizePixel = 0
-		})
-		
-		-- Hover Effects
+		-- Hover Effects (Pill Hover)
 		TabBtn.MouseEnter:Connect(function()
 			if Window.ActiveTab ~= TabId then
+				Tween(TabBtn, {BackgroundTransparency = 0.8}, 0.2) -- Subtle hover bg
 				if TextLabel then Tween(TextLabel, {TextColor3 = self.Instance.Theme.TextSelected}, 0.2) end
 				if IconLabel then Tween(IconLabel, {ImageColor3 = self.Instance.Theme.TextSelected}, 0.2) end
 			end
@@ -1021,6 +997,7 @@ function EnvielUI:CreateWindow(Config)
 		
 		TabBtn.MouseLeave:Connect(function()
 			if Window.ActiveTab ~= TabId then
+				Tween(TabBtn, {BackgroundTransparency = 1}, 0.2)
 				if TextLabel then Tween(TextLabel, {TextColor3 = self.Instance.Theme.TextSec}, 0.2) end
 				if IconLabel then Tween(IconLabel, {ImageColor3 = self.Instance.Theme.TextSec}, 0.2) end
 			end
