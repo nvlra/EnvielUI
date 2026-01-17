@@ -366,10 +366,11 @@ function EnvielUI:CreateWindow(Config)
 		GroupTransparency = 0, BorderSizePixel = 0
 	})
 	
-	local NavH = IsMobile and 40 or 46
+	local NavH = IsMobile and 36 or 46
+	local NavP = IsMobile and 6 or 12
 	local Dock = Create("CanvasGroup", {
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
-		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, 12),
+		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, NavP),
 		AnchorPoint = Vector2.new(0.5, 0), AutomaticSize = Enum.AutomaticSize.X,
 		GroupTransparency = 0, BorderSizePixel = 0
 	})
