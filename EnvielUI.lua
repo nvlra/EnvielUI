@@ -429,7 +429,7 @@ function EnvielUI:CreateWindow(Config)
 		Name = "FloatingDock",
 		Parent = MainFrame,
 		BackgroundColor3 = self.Theme.Secondary,
-		Size = UDim2.new(1, 0, 0, 40), -- Height 40 (Sleek)
+		Size = UDim2.new(0, 0, 0, 40), -- Width Dynamic, Height 40
 		LayoutOrder = 2
 	})
 	Create("UICorner", {Parent = FloatingDock, CornerRadius = UDim.new(1, 0)}) -- Full Pill
@@ -728,6 +728,28 @@ function EnvielUI:CreateWindow(Config)
 			searchDebounce = nil
 		end)
 	end)
+
+    local function UpdateNavbarSize()
+        local ListLayout = NavbarInner:FindFirstChild("UIListLayout")
+        local Padding = NavbarInner:FindFirstChild("UIPadding")
+        if not ListLayout then return end
+        
+        local ContentWidth = ListLayout.AbsoluteContentSize.X
+        if Padding then
+            ContentWidth = ContentWidth + Padding.PaddingLeft.Offset + Padding.PaddingRight.Offset
+        end
+        
+        local MaxWidth = MainFrame.AbsoluteSize.X
+        local TargetWidth = math.min(ContentWidth, MaxWidth)
+        
+        -- Clamp to prevent tiny dock
+        if TargetWidth < 100 then TargetWidth = 100 end 
+        
+        FloatingDock.Size = UDim2.new(0, TargetWidth, 0, 40)
+    end
+    
+    NavbarInner:WaitForChild("UIListLayout"):GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateNavbarSize)
+    MainFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(UpdateNavbarSize)
 	
 	local Pages = Create("Frame", {
 		Name = "Pages",
