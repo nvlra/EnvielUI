@@ -659,13 +659,14 @@ function EnvielUI:CreateWindow(Config)
 				for _, opt in pairs(Options) do
 					local b = Create("TextButton", {
 						Parent = List, BackgroundColor3 = Window.Theme.Main, Size = UDim2.new(1, 0, 0, 30),
-						Text = "   "..tostring(opt), Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false
+						Text = "   "..tostring(opt), Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false,
+						BorderSizePixel = 0
 					})
 					b.MouseButton1Click:Connect(function()
 						Default = opt
 						Current.Text = tostring(opt)
 						Dropped = false
-						Tween(F, {Size = UDim2.new(1, 0, 0, 42)}, 0.2)
+						Tween(F, {Size = UDim2.new(1, 0, 0, ItemH)}, 0.2)
 						if Config.Flag then Window.Flags[Config.Flag] = opt end
 						if Config.Callback then Config.Callback(opt) end
 					end)
@@ -676,7 +677,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			Top.MouseButton1Click:Connect(function()
 				Dropped = not Dropped
-				Tween(F, {Size = UDim2.new(1, 0, 0, Dropped and (42 + math.min(#Options, 5) * 30) or 42)}, 0.2)
+				Tween(F, {Size = UDim2.new(1, 0, 0, Dropped and (ItemH + math.min(#Options, 5) * 30) or ItemH)}, 0.2)
 			end)
 		end
 		
