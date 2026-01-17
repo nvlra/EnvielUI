@@ -141,11 +141,15 @@ function EnvielUI:CreateWindow(Config)
 		IgnoreGuiInset = true
 	})
 	
-	local MainFrame = Create("CanvasGroup", {
-		Name = "MainFrame", Parent = ScreenGui, BackgroundColor3 = Window.Theme.Main,
-		Size = UDim2.fromOffset(580, 380), Position = UDim2.fromScale(0.5, 0.55), -- Smaller default size for Mobile compatibility
-		AnchorPoint = Vector2.new(0.5, 0.5), BorderSizePixel = 0,
-		Active = true, GroupTransparency = 1
+	local MainFrame = Create("Frame", {
+		Name = "MainFrame", Parent = ScreenGui, BackgroundTransparency = 1,
+		Size = UDim2.fromOffset(580, 380), Position = UDim2.fromScale(0.5, 0.45),
+		AnchorPoint = Vector2.new(0.5, 0.5), Active = true
+	})
+	
+	local ContentWindow = Create("CanvasGroup", {
+		Name = "ContentWindow", Parent = MainFrame, BackgroundColor3 = Window.Theme.Main,
+		Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, GroupTransparency = 1
 	})
 	
 	-- Mobile Responsive Logic
@@ -154,19 +158,19 @@ function EnvielUI:CreateWindow(Config)
 		MainFrame.Size = UDim2.fromScale(0.9, 0.6) -- Auto-scale on small screens
 	end
 	
-	Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 14)})
+	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 14)})
 
-	Tween(MainFrame, {GroupTransparency = 0, Position = UDim2.fromScale(0.5, 0.45)}, 0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+	Tween(ContentWindow, {GroupTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
-	local LOGO_WHITE = "rbxassetid://94854804824909"
-	local LOGO_BLACK = "rbxassetid://120261170817156"
+	local LOGO_WHITE = "94854804824909"
+	local LOGO_BLACK = "120261170817156"
 	
-	local Header = Create("Frame", {Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 50)})
+	local Header = Create("Frame", {Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 50)})
 	Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 20), PaddingRight = UDim.new(0, 20)})
 	
 	local LogoIcon = Create("ImageLabel", {
 		Parent = Header, BackgroundTransparency = 1, Size = UDim2.fromOffset(24, 24), Position = UDim2.new(0, 0, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5),
-		Image = LOGO_WHITE, ImageColor3 = Window.Theme.Accent
+		Image = "rbxthumb://type=Asset&id="..LOGO_WHITE.."&w=150&h=150", ImageColor3 = Window.Theme.Accent
 	})
 	
 	Create("TextLabel", {
@@ -232,7 +236,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	local MiniIcon = Create("ImageLabel", {
 		Parent = MiniButton, BackgroundTransparency = 1, Size = UDim2.new(0, 24, 0, 24), Position = UDim2.new(0.5, 0, 0.5, 0),
-		AnchorPoint = Vector2.new(0.5, 0.5), Image = LOGO_WHITE, ImageColor3 = Window.Theme.Accent
+		AnchorPoint = Vector2.new(0.5, 0.5), Image = "rbxthumb://type=Asset&id="..LOGO_WHITE.."&w=150&h=150", ImageColor3 = Window.Theme.Accent
 	})
 	
 	Dragify(MiniButton)
@@ -241,14 +245,14 @@ function EnvielUI:CreateWindow(Config)
 	-- Restore logic
 	MiniClick.MouseButton1Click:Connect(function()
 		Tween(MiniButton, {GroupTransparency = 1}, 0.3)
-		Tween(MainFrame, {GroupTransparency = 0, Position = UDim2.fromScale(0.5, 0.45)}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+		Tween(ContentWindow, {GroupTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 		MainFrame.Visible = true
 		MiniButton.Visible = false
 	end)
 
 	-- Minimize Logic
 	MinBtn.MouseButton1Click:Connect(function()
-		Tween(MainFrame, {GroupTransparency = 1, Position = UDim2.fromScale(0.5, 0.55)}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out).Completed:Wait()
+		Tween(ContentWindow, {GroupTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out).Completed:Wait()
 		MainFrame.Visible = false
 		MiniButton.Visible = true
 		MiniButton.GroupTransparency = 1
@@ -291,7 +295,7 @@ function EnvielUI:CreateWindow(Config)
 	end
 	
 	local ContentHolder = Create("Frame", {
-		Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, -100), Position = UDim2.new(0, 20, 0, 60), ClipsDescendants = true
+		Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, -80), Position = UDim2.new(0, 20, 0, 60), ClipsDescendants = true
 	})
 	
 	local Dock = Create("Frame", {
