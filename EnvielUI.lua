@@ -369,7 +369,7 @@ function EnvielUI:CreateWindow(Config)
 		-- Overlay
 		local Overlay = Create("TextButton", {
 			Name = "ModalOverlay", Parent = ContentWindow, BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1,
-			Size = UDim2.fromScale(1, 1), AutoButtonColor = false, Text = ""
+			Size = UDim2.fromScale(1, 1), AutoButtonColor = false, Text = "", ZIndex = 50
 		})
 		
 		-- Modal Container (Slide Up)
