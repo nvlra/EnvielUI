@@ -6,9 +6,9 @@ EnvielUI.Flags = {}
 -- [Enviel Constants]
 local LOGO_WHITE = "94854804824909"
 local LOGO_BLACK = "120261170817156"
-local DEFAULT_WINDOW_WIDTH = 500
-local DEFAULT_WINDOW_HEIGHT = 350
-local MOBILE_WIDTH_SCALE = 0.55
+local DEFAULT_WINDOW_WIDTH = 600
+local DEFAULT_WINDOW_HEIGHT = 425
+local MOBILE_WIDTH_SCALE = 0.50
 local NAVBAR_HEIGHT = 65
 local SEARCH_DEBOUNCE_TIME = 0.15
 
@@ -82,7 +82,7 @@ local Themes = {
 	Light = {
 		Main = Color3.fromHex("F5F5F5"),
 		Secondary = Color3.fromHex("EBEBEB"),
-		Stroke = Color3.fromHex("F5F5F5"), -- Transparent/Matching Main to hide borders
+		Stroke = Color3.fromHex("F5F5F5"),
 		Text = Color3.fromHex("101010"),
 		TextSec = Color3.fromHex("606060"),
 		Accent = Color3.fromHex("151515"),
