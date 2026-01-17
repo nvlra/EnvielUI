@@ -380,7 +380,7 @@ function EnvielUI:CreateWindow(Config)
 		
 		local Container = Create("Frame", {
 			Name = "DropdownModal", Parent = Overlay, BackgroundColor3 = Window.Theme.Main,
-			Size = UDim2.new(0.3, 0, 0, IsMobile and 250 or 300), Position = UDim2.new(0.5, 0, 1.5, 0), -- Start below
+			Size = UDim2.new(0.5, 0, 0, IsMobile and 250 or 300), Position = UDim2.new(0.5, 0, 1.5, 0), -- Start below
 			AnchorPoint = Vector2.new(0.5, 1), ZIndex = 10, BorderSizePixel = 0
 		})
 		Create("UICorner", {Parent = Container, CornerRadius = UDim.new(0, 16)})
@@ -392,12 +392,12 @@ function EnvielUI:CreateWindow(Config)
 		
 		-- Header
 		local Header = Create("Frame", {
-			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 80) -- Increased for Search
+			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 90) -- Increased Height
 		})
-		Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16), PaddingTop = UDim.new(0, 10)})
+		Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16), PaddingTop = UDim.new(0, 12)})
 		
 		Create("TextLabel", {
-			Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(1, -30, 0, 20),
+			Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 0, 20), -- -40 to account for padding & close btn
 			Text = Config.Name or "Select Option", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
 		})
 		
@@ -408,37 +408,35 @@ function EnvielUI:CreateWindow(Config)
 		
 		-- Search Bar
 		local SearchBg = Create("Frame", {
-			Parent = Header, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 32),
-			Position = UDim2.new(0, 0, 0, 30)
+			Parent = Header, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, -32, 0, 36), -- -32 for padding
+			Position = UDim2.new(0, 0, 0, 36) -- Moved down for spacing
 		})
-		Create("UICorner", {Parent = SearchBg, CornerRadius = UDim.new(0, 8)})
+		Create("UICorner", {Parent = SearchBg, CornerRadius = UDim.new(0, 10)})
 		Create("UIStroke", {Parent = SearchBg, Color = Window.Theme.Stroke, Thickness = 1})
 		
 		local SearchIcon = Create("ImageLabel", {
-			Parent = SearchBg, BackgroundTransparency = 1, Size = UDim2.fromOffset(16, 16), Position = UDim2.new(0, 10, 0.5, 0),
+			Parent = SearchBg, BackgroundTransparency = 1, Size = UDim2.fromOffset(16, 16), Position = UDim2.new(0, 12, 0.5, 0),
 			AnchorPoint = Vector2.new(0, 0.5), Image = GetIcon("search") or "rbxassetid://6031154871", ImageColor3 = Window.Theme.TextDark
 		})
 		
 		local SearchInput = Create("TextBox", {
-			Parent = SearchBg, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 34, 0, 0),
+			Parent = SearchBg, BackgroundTransparency = 1, Size = UDim2.new(1, -44, 1, 0), Position = UDim2.new(0, 38, 0, 0),
 			Text = "", PlaceholderText = "Search...", Font = Enum.Font.Gotham, TextSize = 13,
 			TextColor3 = Window.Theme.Text, PlaceholderColor3 = Window.Theme.TextDark, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false
 		})
 
 		-- Content List
 		local List = Create("ScrollingFrame", {
-			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -90), Position = UDim2.new(0, 0, 0, 90),
+			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -100), Position = UDim2.new(0, 0, 0, 100),
 			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0)
 		})
-		Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
+		Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6)})
 		Create("UIPadding", {Parent = List, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12), PaddingBottom = UDim.new(0, 20)})
 		
 		local function Close()
 			Tween(Container, {Position = UDim2.new(0.5, 0, 1.5, 0)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-			Tween(Overlay, {BackgroundTransparency = 1}, 0.3)
-			Tween(Blur, {Size = 0}, 0.3).Completed:Wait()
+			Tween(Overlay, {BackgroundTransparency = 1}, 0.3).Completed:Wait()
 			Overlay:Destroy()
-			Blur:Destroy()
 		end
 		
 		CloseBtn.MouseButton1Click:Connect(Close)
@@ -466,7 +464,7 @@ function EnvielUI:CreateWindow(Config)
 				
 				local Item = Create("TextButton", {
 					Parent = List, BackgroundColor3 = isSelected and Window.Theme.Secondary or Window.Theme.Main,
-					Size = UDim2.new(1, 0, 0, 40), Text = "  "..tostring(opt), Font = Enum.Font.Gotham,
+					Size = UDim2.new(1, 0, 0, 42), Text = "  "..tostring(opt), Font = Enum.Font.Gotham,
 					TextColor3 = isSelected and Window.Theme.Accent or Window.Theme.TextDark, TextSize = 13,
 					TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false,
 					BorderSizePixel = 0
@@ -488,14 +486,14 @@ function EnvielUI:CreateWindow(Config)
 			end
 			
 			-- Dynamic Weight Calculation
-			local RowHeight = 45 -- 40 Item + 5 Padding
+			local RowHeight = 48 -- 42 Item + 6 Padding
 			local ContentHeight = #filtered * RowHeight + 20 -- + PaddingBottom
-			local MinH = 150
+			local MinH = 180
 			local MaxH = IsMobile and 350 or 400
-			local TargetH = math.clamp(ContentHeight + 90, MinH, MaxH) -- + Header Height
+			local TargetH = math.clamp(ContentHeight + 100, MinH, MaxH) -- + Header/Search Height
 			
 			List.CanvasSize = UDim2.new(0, 0, 0, ContentHeight)
-			Tween(Container, {Size = UDim2.new(0.3, 0, 0, TargetH)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+			Tween(Container, {Size = UDim2.new(0.5, 0, 0, TargetH)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		end
 		
 		SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
@@ -504,9 +502,8 @@ function EnvielUI:CreateWindow(Config)
 		
 		Refresh()
 		
-		-- Animate In
-		Tween(Overlay, {BackgroundTransparency = 0.5}, 0.3)
-		Tween(Blur, {Size = 24}, 0.3)
+		-- Animate In (No 3D Blur, just Dark Overlay)
+		Tween(Overlay, {BackgroundTransparency = 0.1}, 0.3)
 		Tween(Container, {Position = UDim2.new(0.5, 0, 1, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 	end
 
