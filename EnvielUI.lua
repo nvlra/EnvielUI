@@ -10,7 +10,12 @@ local function GetService(Name)
 		return cloneref(Service)
 	end
 	return Service
+-- Security / Utility
+local function GetService(Name)
+	return cloneref and cloneref(game:GetService(Name)) or game:GetService(Name)
 end
+
+local GuiService = GetService("GuiService")
 
 -- Services
 local TweenService = GetService("TweenService")
@@ -45,31 +50,39 @@ local function Tween(instance, properties, duration, style, direction)
 	return tween
 end
 
-local function Dragify(Frame, DragTarget)
-	DragTarget = DragTarget or Frame
+local function Dragify(Frame, Parent)
+	Parent = Parent or Frame
 	local Dragging, DragInput, DragStart, StartPos
-	
-	DragTarget.InputBegan:Connect(function(input)
+
+	local function Update(input)
+		local Delta = input.Position - DragStart
+		local Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
+		TweenService:Create(Parent, TweenInfo.new(0.05), {Position = Position}):Play()
+	end
+
+	Frame.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			Dragging = true
 			DragStart = input.Position
-			StartPos = Frame.Position
-			input.Changed:Connect(function() 
-				if input.UserInputState == Enum.UserInputState.End then Dragging = false end 
+			StartPos = Parent.Position
+			
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					Dragging = false
+				end
 			end)
 		end
 	end)
-	
-	DragTarget.InputChanged:Connect(function(input)
+
+	Frame.InputChanged:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 			DragInput = input
 		end
 	end)
-	
+
 	UserInputService.InputChanged:Connect(function(input)
 		if input == DragInput and Dragging then
-			local Delta = input.Position - DragStart
-			Tween(Frame, {Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)}, 0.05)
+			Update(input)
 		end
 	end)
 end
@@ -122,11 +135,15 @@ function EnvielUI:CreateWindow(Config)
 	})
 	Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 14)})
 
-	Dragify(MainFrame) -- Enable Dragging
+	-- Intro Animation
+	MainFrame.Size = UDim2.fromScale(0, 0)
+	Tween(MainFrame, {Size = UDim2.fromOffset(620, 420)}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+
+	Dragify(Header, MainFrame) -- Drag via Header only
 	
 	-- Assets
-	local LOGO_WHITE = "rbxassetid://94854804824909"
-	local LOGO_BLACK = "rbxassetid://120261170817156"
+	local LOGO_WHITE = "rbxassetid://10709769508" -- Generic Dashboard Icon (White)
+	local LOGO_BLACK = "rbxassetid://10709769508"
 	
 	-- Header
 	local Header = Create("Frame", {Parent = MainFrame, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 50)})
@@ -168,13 +185,17 @@ function EnvielUI:CreateWindow(Config)
 	})
 	
 	-- Minimize (Mini Button)
+	local SafeArea = GuiService:GetGuiInset()
 	local MiniButton = Create("ImageButton", {
-		Name = "MiniButton", Parent = ScreenGui, BackgroundColor3 = Window.Theme.Main, Size = UDim2.fromOffset(50, 50),
-		Position = UDim2.new(0.5, 0, 0, 20), AnchorPoint = Vector2.new(0.5, 0), Visible = false, AutoButtonColor = false
+		Name = "MiniButton", Parent = ScreenGui, BackgroundColor3 = Window.Theme.Main, Size = UDim2.fromOffset(45, 45),
+		Position = UDim2.new(0, SafeArea.X + 10, 0.5, 0), -- Left side, centered vertically
+		AnchorPoint = Vector2.new(0, 0.5), Visible = false, AutoButtonColor = false
 	})
-	Create("UICorner", {Parent = MiniButton, CornerRadius = UDim.new(0, 12)})
+	Create("UICorner", {Parent = MiniButton, CornerRadius = UDim.new(0, 10)})
+	Create("UIStroke", {Parent = MiniButton, Color = Window.Theme.Stroke, Thickness = 1})
+	
 	local MiniIcon = Create("ImageLabel", {
-		Parent = MiniButton, BackgroundTransparency = 1, Size = UDim2.new(0, 30, 0, 30), Position = UDim2.new(0.5, 0, 0.5, 0),
+		Parent = MiniButton, BackgroundTransparency = 1, Size = UDim2.new(0, 24, 0, 24), Position = UDim2.new(0.5, 0, 0.5, 0),
 		AnchorPoint = Vector2.new(0.5, 0.5), Image = LOGO_WHITE, ImageColor3 = Window.Theme.Accent
 	})
 	
@@ -182,17 +203,21 @@ function EnvielUI:CreateWindow(Config)
 	
 	-- Restore logic
 	MiniButton.MouseButton1Click:Connect(function()
+		Tween(MiniButton, {Size = UDim2.fromOffset(0, 0)}, 0.2).Completed:Wait()
 		MiniButton.Visible = false
+		MiniButton.Size = UDim2.fromOffset(45, 45) -- Reset size
 		MainFrame.Visible = true
-		Tween(MainFrame, {Size = UDim2.fromOffset(620, 420)}, 0.3)
+		MainFrame.Size = UDim2.fromScale(0, 0)
+		Tween(MainFrame, {Size = UDim2.fromOffset(620, 420)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 	end)
 
 	-- Minimize Logic
 	MinBtn.MouseButton1Click:Connect(function()
+		Tween(MainFrame, {Size = UDim2.fromScale(0, 0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In).Completed:Wait()
 		MainFrame.Visible = false
 		MiniButton.Visible = true
-		-- Sync position helper (Optional: Move MiniButton to near MainFrame)
-		MiniButton.Position = UDim2.new(0, MainFrame.AbsolutePosition.X + 310, 0, MainFrame.AbsolutePosition.Y)
+		MiniButton.Size = UDim2.fromOffset(0, 0)
+		Tween(MiniButton, {Size = UDim2.fromOffset(45, 45)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 	end)
 	
 	-- Notifications
@@ -211,8 +236,8 @@ function EnvielUI:CreateWindow(Config)
 			BackgroundTransparency = 0.1
 		})
 		Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
-
-		Create("UIPadding", {Parent = F, PaddingTop = UDim.new(0, 10), PaddingBottom = UDim.new(0, 10), PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
+		Create("UIListLayout", {Parent = F, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
+		Create("UIPadding", {Parent = F, PaddingTop = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12), PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 		
 		Create("TextLabel", {
 			Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 18), Text = Title,
@@ -244,8 +269,9 @@ function EnvielUI:CreateWindow(Config)
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
 
 	
+
 	local DockList = Create("Frame", {Parent = Dock, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0)})
-	Create("UIListLayout", {Parent = DockList, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 5), HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center})
+	Create("UIListLayout", {Parent = DockList, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center})
 	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 6)})
 	
 	local ActiveIndicator = Create("Frame", {
@@ -255,35 +281,29 @@ function EnvielUI:CreateWindow(Config)
 	Create("UICorner", {Parent = ActiveIndicator, CornerRadius = UDim.new(1, 0)})
 
 	function Window:SelectTab(TabId)
-		-- Hide all pages
 		for _, p in pairs(ContentHolder:GetChildren()) do 
 			if p:IsA("ScrollingFrame") then p.Visible = false end 
 		end
 		
-		-- Show selected page
 		local Page = ContentHolder:FindFirstChild(TabId)
 		if Page then
 			Page.Visible = true
 			
 			local Btn = DockList:FindFirstChild(TabId.."Btn")
 			if Btn then
-				-- Calculate Target Position relative to Dock
-				-- We must wait a frame if the GUI isn't fully rendered, but usually it's fine.
-				-- Using task.defer to ensure AbsolutePosition is fresh if layout changed.
 				task.spawn(function()
 					local TargetX = Btn.AbsolutePosition.X - Dock.AbsolutePosition.X
 					
-					-- Smooth Tween (Quint for premium feel)
 					Tween(ActiveIndicator, {
 						Size = UDim2.new(0, Btn.AbsoluteSize.X, 1, -8), 
 						Position = UDim2.new(0, TargetX, 0.5, 0)
 					}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 				end)
 
-				-- Animate Text Colors
 				for _, b in pairs(DockList:GetChildren()) do
 					if b:IsA("TextButton") then
-						Tween(b, {TextColor3 = (b == Btn) and Window.Theme.ActiveText or Window.Theme.TextDark}, 0.3)
+						local TargetColor = (b == Btn) and Color3.new(0,0,0) or Window.Theme.TextDark
+						Tween(b, {TextColor3 = TargetColor}, 0.3)
 					end
 				end
 			end
@@ -295,10 +315,10 @@ function EnvielUI:CreateWindow(Config)
 		local TabId = "Tab_"..TabName:gsub(" ", "")
 		
 		local Btn = Create("TextButton", {
-			Name = TabId.."Btn", Parent = DockList, BackgroundTransparency = 1, Text = TabName, Font = Enum.Font.GothamBold,
-			TextColor3 = Window.Theme.TextDark, TextSize = 13, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, ZIndex = 2
+			Name = TabId.."Btn", Parent = DockList, BackgroundTransparency = 1, Text = "  "..TabName.."  ", Font = Enum.Font.GothamBold,
+			TextColor3 = Window.Theme.TextDark, TextSize = 14, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, ZIndex = 2
 		})
-		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
+		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
 		
 		local Page = Create("ScrollingFrame", {
@@ -406,11 +426,18 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = Track, CornerRadius = UDim.new(1, 0)})
 			local Fill = Create("Frame", {Parent = Track, BackgroundColor3 = Window.Theme.Accent, Size = UDim2.new((Val-Min)/(Max-Min), 0, 1, 0)})
 			Create("UICorner", {Parent = Fill, CornerRadius = UDim.new(1, 0)})
+			local Thumb = Create("Frame", {
+				Parent = Track, BackgroundColor3 = Window.Theme.Accent, Size = UDim2.fromOffset(16, 16),
+				Position = UDim2.new((Val-Min)/(Max-Min), -8, 0.5, -8), ZIndex = 2
+			})
+			Create("UICorner", {Parent = Thumb, CornerRadius = UDim.new(1, 0)})
+			Create("UIStroke", {Parent = Thumb, Color = Window.Theme.Secondary, Thickness = 2})
 			
 			local function Update(Input)
 				local Pct = math.clamp((Input.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
 				Val = math.floor(Min + (Max - Min) * Pct)
 				Fill.Size = UDim2.new(Pct, 0, 1, 0)
+				Thumb.Position = UDim2.new(Pct, -8, 0.5, -8)
 				ValLbl.Text = tostring(Val)
 				if Config.Flag then Window.Flags[Config.Flag] = Val end
 				if Config.Callback then Config.Callback(Val) end
@@ -420,7 +447,13 @@ function EnvielUI:CreateWindow(Config)
 			Track.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then Sliding = true Update(input) end end)
 			UserInputService.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then Sliding = false end end)
 			UserInputService.InputChanged:Connect(function(input) if Sliding and input.UserInputType == Enum.UserInputType.MouseMovement then Update(input) end end)
-			return {Set = function(self, v) Val = math.clamp(v, Min, Max) Fill.Size = UDim2.new((Val-Min)/(Max-Min), 0, 1, 0) ValLbl.Text = tostring(Val) end}
+			return {Set = function(self, v) 
+				Val = math.clamp(v, Min, Max) 
+				local Pct = (Val-Min)/(Max-Min)
+				Fill.Size = UDim2.new(Pct, 0, 1, 0) 
+				Thumb.Position = UDim2.new(Pct, -8, 0.5, -8)
+				ValLbl.Text = tostring(Val) 
+			end}
 		end
 
 		function Elements:CreateInput(Config)
