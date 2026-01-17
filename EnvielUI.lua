@@ -448,6 +448,12 @@ function EnvielUI:CreateWindow(Config)
 				Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
 			})
 		end
+
+		function Elements:CreateGroup(Config)
+			local Text = (type(Config) == "table" and Config.Name) or Config
+			Elements:CreateSection(Text)
+			return Elements
+		end
 		
 		function Elements:CreateParagraph(Cfg)
 			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y})
