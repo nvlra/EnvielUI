@@ -146,18 +146,16 @@ function EnvielUI:CreateWindow(Config)
 		AnchorPoint = Vector2.new(0.5, 0.5), Active = true
 	})
 	
-	local MainScale = Create("UIScale", {Parent = MainFrame, Scale = 0.9}) -- Start smaller for animation
+	local MainScale = Create("UIScale", {Parent = MainFrame, Scale = 0.9})
 	
 	local ContentWindow = Create("CanvasGroup", {
 		Name = "ContentWindow", Parent = MainFrame, BackgroundColor3 = Window.Theme.Main,
 		Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, GroupTransparency = 1, BackgroundTransparency = 0.05
 	})
 	
-	-- Mobile Responsive Logic
 	local Camera = Workspace.CurrentCamera
 	local IsMobile = Camera.ViewportSize.X < 800
 	
-	-- Dynamic Sizing Constants
 	local ItemH = IsMobile and 36 or 42
 	local TextS = IsMobile and 11 or 13
 	local TitleS = IsMobile and 14 or 18
@@ -167,7 +165,7 @@ function EnvielUI:CreateWindow(Config)
 		MainFrame.Size = UDim2.fromScale(0.60, 0.70)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.50)
 	else
-		MainFrame.Size = UDim2.fromScale(0.50, 0.65) -- Larger Desktop Size
+		MainFrame.Size = UDim2.fromScale(0.50, 0.65)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.5)
 	end
 	
@@ -211,7 +209,7 @@ function EnvielUI:CreateWindow(Config)
 		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(20, 20),
 		BackgroundTransparency = 1, Image = GetIcon("x") or "", ImageColor3 = Window.Theme.TextDark
 	})
-	-- Cleanup on Close
+
 	CloseBtn.MouseButton1Click:Connect(function() 
 		Window:Prompt({
 			Title = "Close Interface?",
@@ -254,7 +252,6 @@ function EnvielUI:CreateWindow(Config)
 	
 	Dragify(MiniClick, MiniButton)
 	
-	-- Restore logic
 	MiniClick.MouseButton1Click:Connect(function()
 		Tween(MiniScale, {Scale = 0}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
 		Tween(MiniButton, {GroupTransparency = 1}, 0.3).Completed:Wait()
@@ -262,7 +259,6 @@ function EnvielUI:CreateWindow(Config)
 		MiniButton.Visible = false
 		MainFrame.Visible = true
 		
-		-- Pop Main Window (0 -> 1)
 		MainScale.Scale = 0
 		ContentWindow.GroupTransparency = 1
 		local D = MainFrame:FindFirstChild("Dock")
@@ -273,9 +269,7 @@ function EnvielUI:CreateWindow(Config)
 		if D and D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 0}, 0.4) end
 	end)
 	
-	-- Minimize logic
 	MinBtn.MouseButton1Click:Connect(function()
-		-- Shrink Main Window (1 -> 0)
 		Tween(MainScale, {Scale = 0}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		Tween(ContentWindow, {GroupTransparency = 1}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		
@@ -303,29 +297,25 @@ function EnvielUI:CreateWindow(Config)
 		local Content = Cfg.Content or ""
 		local Duration = Cfg.Duration or 3
 		
-		-- Wrapper for layout spacing
 		local Wrapper = Create("Frame", {
 			Parent = NotifHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), ClipsDescendants = true
 		})
 		
-		-- Actual Notification Card
 		local F = Create("Frame", {
 			Parent = Wrapper, BackgroundColor3 = Window.Theme.Secondary, 
 			Size = UDim2.new(1, -4, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
-			Position = UDim2.new(1.5, 0, 0, 0) -- Start off-screen right
+			Position = UDim2.new(1.5, 0, 0, 0)
 		})
 		
 		Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 6)})
 		Create("UIStroke", {Parent = F, Color = Window.Theme.Stroke, Thickness = 1})
 		
-		-- Accent Bar (Left Side)
 		local Accent = Create("Frame", {
 			Parent = F, BackgroundColor3 = Window.Theme.Accent,
 			Size = UDim2.new(0, 3, 1, -12), Position = UDim2.new(0, 6, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)
 		})
 		Create("UICorner", {Parent = Accent, CornerRadius = UDim.new(1, 0)})
 		
-		-- Layout inside card
 		local ContentPad = Create("Frame", {
 			Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -20, 1, 0), Position = UDim2.new(0, 16, 0, 0)
 		})
@@ -341,22 +331,17 @@ function EnvielUI:CreateWindow(Config)
 			Text = Content, Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true
 		})
 		
-		-- Animation Logic
 		task.spawn(function()
-			-- 1. Expand Wrapper Height
 			local TargetSize = F.AbsoluteSize.Y
-			if TargetSize < 40 then TargetSize = 60 end -- Fallback
+			if TargetSize < 40 then TargetSize = 60 end
 			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, TargetSize + 6)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 			
-			-- 2. Slide In (from Right)
 			Tween(F, {Position = UDim2.new(0, 2, 0, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		end)
 		
 		task.delay(Duration, function()
-			-- 3. Slide Out (to Right)
 			Tween(F, {Position = UDim2.new(1.5, 0, 0, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
 			
-			-- 4. Collapse Wrapper
 			task.wait(0.2)
 			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, 0)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out).Completed:Wait()
 			Wrapper:Destroy()
@@ -368,13 +353,11 @@ function EnvielUI:CreateWindow(Config)
 		local Multi = Config.Multi or false
 		local Current = Config.CurrentValue or (Multi and {} or Options[1])
 		
-		-- Blur Effect
 		local Blur = game:GetService("Lighting"):FindFirstChild("EnvielBlur") or Instance.new("BlurEffect", game:GetService("Lighting"))
 		Blur.Name = "EnvielBlur"
 		Blur.Enabled = true
 		Blur.Size = 0
 		
-		-- Overlay
 		local Overlay = Create("TextButton", {
 			Name = "ModalOverlay", Parent = ContentWindow, BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1,
 			Size = UDim2.fromScale(1, 1), AutoButtonColor = false, Text = "", ZIndex = 50
@@ -382,24 +365,22 @@ function EnvielUI:CreateWindow(Config)
 		
 		local Container = Create("Frame", {
 			Name = "DropdownModal", Parent = Overlay, BackgroundColor3 = Window.Theme.Main,
-			Size = UDim2.new(0.5, 0, 0, IsMobile and 250 or 300), Position = UDim2.new(0.5, 0, 1.5, 0), -- Start below
+			Size = UDim2.new(0.5, 0, 0, IsMobile and 250 or 300), Position = UDim2.new(0.5, 0, 1.5, 0),
 			AnchorPoint = Vector2.new(0.5, 1), ZIndex = 10, BorderSizePixel = 0
 		})
 		Create("UICorner", {Parent = Container, CornerRadius = UDim.new(0, 16)})
-		-- Patch for square bottom corners
 		local Patch = Create("Frame", {
 			Parent = Container, BackgroundColor3 = Window.Theme.Main, Size = UDim2.new(1, 0, 0, 20),
 			Position = UDim2.new(0, 0, 1, -10), ZIndex = 9, BorderSizePixel = 0
 		})
 		
-		-- Header
 		local Header = Create("Frame", {
-			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 90) -- Increased Height
+			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 90)
 		})
 		Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16), PaddingTop = UDim.new(0, 12)})
 		
 		Create("TextLabel", {
-			Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 0, 20), -- -40 to account for padding & close btn
+			Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 0, 20),
 			Text = Config.Name or "Select Option", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
 		})
 		
@@ -408,10 +389,9 @@ function EnvielUI:CreateWindow(Config)
 			BackgroundTransparency = 1, Image = GetIcon("x") or "rbxassetid://6031094678", ImageColor3 = Window.Theme.TextDark
 		})
 		
-		-- Search Bar
 		local SearchBg = Create("Frame", {
-			Parent = Header, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 36), -- Fixed width gap
-			Position = UDim2.new(0, 0, 0, 36) -- Moved down for spacing
+			Parent = Header, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 36),
+			Position = UDim2.new(0, 0, 0, 36)
 		})
 		Create("UICorner", {Parent = SearchBg, CornerRadius = UDim.new(0, 10)})
 
@@ -427,7 +407,6 @@ function EnvielUI:CreateWindow(Config)
 			TextColor3 = Window.Theme.Text, PlaceholderColor3 = Window.Theme.TextDark, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false
 		})
 
-		-- Content List
 		local List = Create("ScrollingFrame", {
 			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -100), Position = UDim2.new(0, 0, 0, 100),
 			ScrollBarThickness = 0, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -442,7 +421,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 		
 		CloseBtn.MouseButton1Click:Connect(Close)
-		Overlay.MouseButton1Click:Connect(Close) -- Click outside to close
+		Overlay.MouseButton1Click:Connect(Close)
 		
 		local tempSelected = Multi and {unpack(Current)} or Current
 
@@ -487,15 +466,14 @@ function EnvielUI:CreateWindow(Config)
 				end)
 			end
 			
-			-- Dynamic Weight Calculation
-			local RowHeight = 48 -- 42 Item + 6 Padding
-			local ContentHeight = #filtered * RowHeight + 20 -- + PaddingBottom
+			local RowHeight = 48
+			local ContentHeight = #filtered * RowHeight + 20
 			local MinH = 180
 			local MaxH = math.floor(MainFrame.AbsoluteSize.Y * 0.70)
 			
-			if MaxH < MinH then MaxH = MinH end -- Safety fallback
+			if MaxH < MinH then MaxH = MinH end
 			
-			local TargetH = math.clamp(ContentHeight + 100, MinH, MaxH) -- + Header/Search Height
+			local TargetH = math.clamp(ContentHeight + 100, MinH, MaxH)
 			
 			List.CanvasSize = UDim2.new(0, 0, 0, ContentHeight)
 			Tween(Container, {Size = UDim2.new(0.5, 0, 0, TargetH)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
@@ -507,7 +485,6 @@ function EnvielUI:CreateWindow(Config)
 		
 		Refresh()
 		
-		-- Animate In (No 3D Blur, just Dark Overlay)
 		Tween(Overlay, {BackgroundTransparency = 0.1}, 0.3)
 		Tween(Container, {Position = UDim2.new(0.5, 0, 1, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 	end
@@ -527,7 +504,6 @@ function EnvielUI:CreateWindow(Config)
 		GroupTransparency = 0, BorderSizePixel = 0
 	})
 	
-	-- In Animation for Dock
 	task.spawn(function()
 		Dock.GroupTransparency = 1
 		Tween(Dock, {GroupTransparency = 0}, 0.4)
@@ -547,7 +523,6 @@ function EnvielUI:CreateWindow(Config)
 	Create("UICorner", {Parent = ActiveIndicator, CornerRadius = UDim.new(1, 0)})
 
 	function Window:SelectTab(TabId)
-		-- Fade Out Current
 		Tween(ContentHolder, {GroupTransparency = 1}, 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out).Completed:Wait()
 
 		for _, p in pairs(ContentHolder:GetChildren()) do 
@@ -576,7 +551,6 @@ function EnvielUI:CreateWindow(Config)
 					end
 				end
 			end
-			-- Fade In New
 			Tween(ContentHolder, {GroupTransparency = 0}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 		end
 	end
@@ -598,14 +572,13 @@ function EnvielUI:CreateWindow(Config)
 			ScrollBarThickness = 0, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0)
 		})
 
-		-- Auto Select First Tab
 		local TabCount = 0
 		for _, v in pairs(DockList:GetChildren()) do
 			if v:IsA("TextButton") then TabCount += 1 end
 		end
 		if TabCount == 1 then
 			task.spawn(function()
-				task.wait(0.2) -- Wait for layout
+				task.wait(0.2)
 				Window:SelectTab(TabId)
 			end)
 		end
@@ -808,7 +781,7 @@ function EnvielUI:CreateWindow(Config)
 			UpdateText(Default)
 			
 			Top.MouseButton1Click:Connect(function()
-				Config.CurrentValue = Default -- Pass current state
+				Config.CurrentValue = Default
 				Window:OpenDropdownModal(Config, function(NewVal)
 					Default = NewVal
 					UpdateText(NewVal)
@@ -894,17 +867,15 @@ function EnvielUI:CreateWindow(Config)
 		return Elements
 	end
 	
-	-- Alert / Prompt System
 	function Window:Prompt(Config)
 		local Title = Config.Title or "Alert"
 		local Content = Config.Content or "Are you sure?"
 		local Actions = Config.Actions or {{Text = "OK", Callback = function() end}}
 		
-		-- Changed Parent to MainFrame to keep it inside the window
 		local Blur = Create("Frame", {
 			Parent = MainFrame, BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1, Size = UDim2.fromScale(1,1), Name = "AlertBlur", ZIndex = 100
 		})
-		Create("UICorner", {Parent = Blur, CornerRadius = UDim.new(0, 14)}) -- Match ContentWindow corner
+		Create("UICorner", {Parent = Blur, CornerRadius = UDim.new(0, 14)})
 
 		local AlertFrame = Create("CanvasGroup", {
 			Parent = Blur, Size = UDim2.fromOffset(300, 160), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5),
