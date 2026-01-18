@@ -887,9 +887,12 @@ function EnvielUI:CreateWindow(Config)
 				end
 			end
 			GroupMethods.CreateCollapsibleGroup = nil 
+			GroupMethods.CreateGroup = GroupMethods.CreateCollapsibleGroup -- Alias
 			
 			return GroupMethods
 		end
+
+		Elements.CreateGroup = Elements.CreateCollapsibleGroup -- Alias for backwards compatibility
 		
 		function Elements:CreateColorPicker(Config)
 			local Flag = Config.Flag or Config.Name
