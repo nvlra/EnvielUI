@@ -287,8 +287,8 @@ function EnvielUI:CreateWindow(Config)
 	end)
 	
 	local NotifHolder = Create("Frame", {
-		Parent = ScreenGui, BackgroundTransparency = 1, Size = UDim2.new(0, 300, 1, -20), 
-		Position = UDim2.new(1, -320, 0, 20), AnchorPoint = Vector2.new(0, 0)
+		Parent = ScreenGui, BackgroundTransparency = 1, Size = IsMobile and UDim2.new(0, 220, 1, -20) or UDim2.new(0, 300, 1, -20),
+		Position = IsMobile and UDim2.new(1, -230, 0, 20) or UDim2.new(1, -320, 0, 20), AnchorPoint = Vector2.new(0, 0)
 	})
 	Create("UIListLayout", {Parent = NotifHolder, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 10), VerticalAlignment = Enum.VerticalAlignment.Bottom})
 	
