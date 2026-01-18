@@ -121,8 +121,8 @@ function EnvielUI:CreateWindow(Config)
 			AccentHover = Color3.fromHex("D0D0D0"),
 			TabActive = Color3.fromHex("2A2A2A"),
 			TabHover = Color3.fromHex("222222"),
-			TextDark = Color3.fromHex("888888"), -- Added for compatibility
-			ActiveText = Color3.fromHex("000000") -- Added for compatibility
+			TextDark = Color3.fromHex("888888"),
+			ActiveText = Color3.fromHex("000000")
 		}
 	})
 
@@ -146,7 +146,7 @@ function EnvielUI:CreateWindow(Config)
 	local ScreenGui = Create("ScreenGui", {
 		Name = "EnvielUI", Parent = Parent, 
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling, ResetOnSpawn = false,
-		IgnoreGuiInset = true, DisplayOrder = 100000000000000000000
+		IgnoreGuiInset = true, DisplayOrder = 10000000
 	})
 	
 	local MainFrame = Create("Frame", {
@@ -174,7 +174,7 @@ function EnvielUI:CreateWindow(Config)
 		MainFrame.Size = UDim2.fromScale(0.60, 0.70)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.50)
 	else
-		MainFrame.Size = UDim2.fromScale(0.50, 0.65)
+		MainFrame.Size = UDim2.fromScale(0.50, 0.60)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.5)
 	end
 	
