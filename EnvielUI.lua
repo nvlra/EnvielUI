@@ -456,7 +456,7 @@ function EnvielUI:CreateWindow(Config)
 				local Item = Create("TextButton", {
 					Parent = List, BackgroundColor3 = isSelected and Window.Theme.Secondary or Window.Theme.Main,
 					Size = UDim2.new(1, 0, 0, 42), Text = "  "..tostring(opt), Font = Enum.Font.Gotham,
-					TextColor3 = isSelected and Window.Theme.Accent or Window.Theme.TextDark, TextSize = 13,
+					TextColor3 = isSelected and Window.Theme.Accent or Window.Theme.TextDark, TextSize = IsMobile and 11 or 13,
 					TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false,
 					BorderSizePixel = 0
 				})
@@ -496,7 +496,7 @@ function EnvielUI:CreateWindow(Config)
 		Refresh()
 		
 		Tween(Overlay, {BackgroundTransparency = 0.1}, 0.3)
-		Tween(Container, {Position = UDim2.new(0.5, 0, 1, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+		Tween(Container, {Position = UDim2.new(0.5, 0, 1, IsMobile and -20 or 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 	end
 
 	
