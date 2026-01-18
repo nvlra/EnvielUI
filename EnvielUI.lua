@@ -660,7 +660,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateToggle(Config)
-			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = 0.1})
+			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = Config.Transparency or 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
@@ -755,7 +755,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateInput(Config)
-			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 4), BackgroundTransparency = 0.1})
+			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 4), BackgroundTransparency = Config.Transparency or 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
