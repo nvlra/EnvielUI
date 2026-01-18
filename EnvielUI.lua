@@ -107,8 +107,8 @@ function EnvielUI:CreateWindow(Config)
 	Config = Validate(Config, {
 		Name = "Enviel UI",
 		Theme = {
-			Main = Color3.fromRGB(15, 15, 15),
-			Secondary = Color3.fromRGB(25, 25, 25),
+			Main = Color3.fromRGB(30, 30, 30),
+			Secondary = Color3.fromRGB(45, 45, 45),
 			Stroke = Color3.fromRGB(0, 0, 0),
 			Accent = Color3.fromRGB(255, 255, 255),
 			Text = Color3.fromRGB(255, 255, 255),
@@ -150,7 +150,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	local ContentWindow = Create("CanvasGroup", {
 		Name = "ContentWindow", Parent = MainFrame, BackgroundColor3 = Window.Theme.Main,
-		Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, GroupTransparency = 1, BackgroundTransparency = 0.05
+		Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, GroupTransparency = 1, BackgroundTransparency = 0.1
 	})
 	
 	local Camera = Workspace.CurrentCamera
@@ -246,7 +246,7 @@ function EnvielUI:CreateWindow(Config)
 	Create("UIStroke", {Parent = MiniButton, Color = Window.Theme.Stroke, Thickness = 1})
 	
 	local MiniIcon = Create("ImageLabel", {
-		Parent = MiniButton, BackgroundTransparency = 1, Size = UDim2.new(0, 32, 0, 32), Position = UDim2.new(0.5, 0, 0.5, 0),
+		Parent = MiniButton, BackgroundTransparency = 1, Size = UDim2.new(0, 28, 0, 28), Position = UDim2.new(0.5, 0, 0.5, 0),
 		AnchorPoint = Vector2.new(0.5, 0.5), Image = "rbxthumb://type=Asset&id="..LOGO_WHITE.."&w=150&h=150", ImageColor3 = Window.Theme.Accent
 	})
 	
