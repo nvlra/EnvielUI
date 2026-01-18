@@ -430,7 +430,7 @@ function EnvielUI:CreateWindow(Config)
 		-- Content List
 		local List = Create("ScrollingFrame", {
 			Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, -100), Position = UDim2.new(0, 0, 0, 100),
-			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0)
+			ScrollBarThickness = 0, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0)
 		})
 		Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6)})
 		Create("UIPadding", {Parent = List, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12), PaddingBottom = UDim.new(0, 20)})
@@ -491,7 +491,7 @@ function EnvielUI:CreateWindow(Config)
 			local RowHeight = 48 -- 42 Item + 6 Padding
 			local ContentHeight = #filtered * RowHeight + 20 -- + PaddingBottom
 			local MinH = 180
-			local MaxH = math.floor(MainFrame.AbsoluteSize.Y * 0.50)
+			local MaxH = math.floor(MainFrame.AbsoluteSize.Y * 0.70)
 			
 			if MaxH < MinH then MaxH = MinH end -- Safety fallback
 			
