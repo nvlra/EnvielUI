@@ -154,6 +154,7 @@ function EnvielUI:CreateWindow(Config)
 		Size = UDim2.fromOffset(580, 380), Position = UDim2.fromScale(0.5, 0.45),
 		AnchorPoint = Vector2.new(0.5, 0.5), Active = true
 	})
+	Window.MainFrame = MainFrame
 	
 	local MainScale = Create("UIScale", {Parent = MainFrame, Scale = 0.9})
 	
@@ -618,8 +619,15 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("UIPadding", {Parent = F, PaddingTop = UDim.new(0,10), PaddingBottom = UDim.new(0,10), PaddingLeft = UDim.new(0,12), PaddingRight = UDim.new(0,12)})
-			Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,18), Text = Cfg.Title or "Header", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left})
-			Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Position=UDim2.new(0,0,0,20), Size=UDim2.new(1,0,0,0), AutomaticSize=Enum.AutomaticSize.Y, Text = Cfg.Content or "", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.TextDark, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, TextWrapped=true})
+			local Title = Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,18), Text = Cfg.Title or "Header", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left})
+			local Content = Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Position=UDim2.new(0,0,0,20), Size=UDim2.new(1,0,0,0), AutomaticSize=Enum.AutomaticSize.Y, Text = Cfg.Content or "", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.TextDark, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, TextWrapped=true})
+			
+			local Para = {}
+			function Para:Set(Props)
+				if Props.Title then Title.Text = Props.Title end
+				if Props.Content then Content.Text = Props.Content end
+			end
+			return Para
 		end
 
 		function Elements:CreateButton(Config)
