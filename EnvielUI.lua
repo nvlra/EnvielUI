@@ -107,13 +107,22 @@ function EnvielUI:CreateWindow(Config)
 	Config = Validate(Config, {
 		Name = "Enviel UI",
 		Theme = {
-			Main = Color3.fromRGB(30, 30, 30),
-			Secondary = Color3.fromRGB(45, 45, 45),
-			Stroke = Color3.fromRGB(0, 0, 0),
-			Accent = Color3.fromRGB(255, 255, 255),
-			Text = Color3.fromRGB(255, 255, 255),
-			TextDark = Color3.fromRGB(200, 200, 200),
-			ActiveText = Color3.fromRGB(0, 0, 0)
+			Main = Color3.fromHex("181818"),
+			Secondary = Color3.fromHex("202020"),
+			Stroke = Color3.fromHex("303030"),
+			Text = Color3.fromHex("E0E0E0"),
+			TextSec = Color3.fromHex("888888"),
+			Accent = Color3.fromHex("FFFFFF"),
+			AccentText = Color3.fromHex("000000"),
+			Hover = Color3.fromHex("252525"),
+			Element = Color3.fromHex("1E1E1E"),
+			TextSelected = Color3.fromHex("FFFFFF"),
+			Description = Color3.fromHex("666666"),
+			AccentHover = Color3.fromHex("D0D0D0"),
+			TabActive = Color3.fromHex("2A2A2A"),
+			TabHover = Color3.fromHex("222222"),
+			TextDark = Color3.fromHex("888888"), -- Added for compatibility
+			ActiveText = Color3.fromHex("000000") -- Added for compatibility
 		}
 	})
 
