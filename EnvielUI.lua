@@ -107,15 +107,15 @@ function EnvielUI:CreateWindow(Config)
 	Config = Validate(Config, {
 		Name = "Enviel UI",
 		Theme = {
-			Main = Color3.fromHex("181818"),
-			Secondary = Color3.fromHex("202020"),
-			Stroke = Color3.fromHex("303030"),
+			Main = Color3.fromHex("0F0F0F"),
+			Secondary = Color3.fromHex("151515"),
+			Stroke = Color3.fromHex("252525"),
 			Text = Color3.fromHex("E0E0E0"),
 			TextSec = Color3.fromHex("888888"),
 			Accent = Color3.fromHex("FFFFFF"),
 			AccentText = Color3.fromHex("000000"),
-			Hover = Color3.fromHex("252525"),
-			Element = Color3.fromHex("1E1E1E"),
+			Hover = Color3.fromHex("222222"),
+			Element = Color3.fromHex("181818"),
 			TextSelected = Color3.fromHex("FFFFFF"),
 			Description = Color3.fromHex("666666"),
 			AccentHover = Color3.fromHex("D0D0D0"),
@@ -160,7 +160,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	local ContentWindow = Create("CanvasGroup", {
 		Name = "ContentWindow", Parent = MainFrame, BackgroundColor3 = Window.Theme.Main,
-		Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, GroupTransparency = 1, BackgroundTransparency = 0.1
+		Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, GroupTransparency = 1, BackgroundTransparency = 0
 	})
 	
 	local Camera = Workspace.CurrentCamera
