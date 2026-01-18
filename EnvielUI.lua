@@ -817,15 +817,14 @@ function EnvielUI:CreateWindow(Config)
 		end
 		
 		function Elements:CreateCollapsibleGroup(Config)
-			local Open = Config.DefaultOpen or true
+			local Open = Config.DefaultOpen or false
 			local GroupH = 0
 			
 			local ContainerStub = Create("Frame", {
-				Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), 
-				AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 0.8
+				Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 36), 
+				BackgroundTransparency = 0.8, ClipsDescendants = true
 			})
 			Create("UICorner", {Parent = ContainerStub, CornerRadius = UDim.new(0, 8)})
-			-- Create("UIStroke", {Parent = ContainerStub, Color = Window.Theme.Stroke, Thickness = 1})
 			
 			local HeaderBtn = Create("TextButton", {
 				Parent = ContainerStub, Size = UDim2.new(1, 0, 0, 36), BackgroundTransparency = 1, Text = "", AutoButtonColor = false
@@ -842,8 +841,8 @@ function EnvielUI:CreateWindow(Config)
 			})
 
 			local Content = Create("Frame", {
-				Parent = ContainerStub, Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 36),
-				BackgroundTransparency = 1, ClipsDescendants = true
+				Parent = ContainerStub, Size = UDim2.new(1, 0, 0, Open and 0 or 0), Position = UDim2.new(0, 0, 0, 36),
+				BackgroundTransparency = 1, ClipsDescendants = true, Visible = true -- Always visible for tween
 			})
 			
 			-- List Layout for Children
@@ -853,11 +852,12 @@ function EnvielUI:CreateWindow(Config)
 			Create("UIPadding", {Parent = Content, PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8), PaddingBottom = UDim.new(0, 10)})
 			
 			local function UpdateHeight()
-				GroupH = Layout.AbsoluteContentSize.Y + 10
-				if Open then 
-					Content.Size = UDim2.new(1, 0, 0, GroupH) 
-					-- ContainerStub Size is Automatic
+				GroupH = Layout.AbsoluteContentSize.Y + 10 -- Padding
+				if Open then
+					ContainerStub.Size = UDim2.new(1, 0, 0, 36 + GroupH)
+					Content.Size = UDim2.new(1, 0, 0, GroupH)
 				else
+					ContainerStub.Size = UDim2.new(1, 0, 0, 36)
 					Content.Size = UDim2.new(1, 0, 0, 0)
 				end
 			end
@@ -867,7 +867,15 @@ function EnvielUI:CreateWindow(Config)
 			HeaderBtn.MouseButton1Click:Connect(function()
 				Open = not Open
 				Tween(Arrow, {Rotation = Open and 180 or 0}, 0.2)
-				Tween(Content, {Size = UDim2.new(1, 0, 0, Open and GroupH or 0)}, 0.3)
+				
+				local TargetH = Open and (36 + GroupH) or 36
+				local ContentTargetH = Open and GroupH or 0
+				
+				-- Tween Container Height (Smooth Push)
+				Tween(ContainerStub, {Size = UDim2.new(1, 0, 0, TargetH)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+				
+				-- Tween Content Height (Optional clip)
+				Tween(Content, {Size = UDim2.new(1, 0, 0, ContentTargetH)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 			end)
 
 			-- Child Proxy
