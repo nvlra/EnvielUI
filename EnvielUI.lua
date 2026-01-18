@@ -806,6 +806,14 @@ function EnvielUI:CreateWindow(Config)
 					if Config.Callback then Config.Callback(NewVal) end
 				end)
 			end)
+			
+			return {
+				Refresh = function(self, NewOptions)
+					Config.Options = NewOptions
+					Default = NewOptions[1] or "None"
+					UpdateText(Default)
+				end
+			}
 		end
 		
 		function Elements:CreateColorPicker(Config)
