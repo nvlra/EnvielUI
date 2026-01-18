@@ -615,7 +615,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 		
 		function Elements:CreateParagraph(Cfg)
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 0.1})
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("UIPadding", {Parent = F, PaddingTop = UDim.new(0,10), PaddingBottom = UDim.new(0,10), PaddingLeft = UDim.new(0,12), PaddingRight = UDim.new(0,12)})
@@ -631,7 +631,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateButton(Config)
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = 0.1})
+			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 			Create("UIPadding", {Parent = F, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 
@@ -660,7 +660,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateToggle(Config)
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = 0.1})
+			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
@@ -694,7 +694,7 @@ function EnvielUI:CreateWindow(Config)
 		function Elements:CreateSlider(Config)
 			local Min, Max = Config.Min or 0, Config.Max or 100
 			local Val = Config.Default or Min
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 8), BackgroundTransparency = 0.1})
+			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 8), BackgroundTransparency = 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
@@ -755,7 +755,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateInput(Config)
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 4), BackgroundTransparency = 0.1})
+			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 4), BackgroundTransparency = 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
@@ -779,7 +779,7 @@ function EnvielUI:CreateWindow(Config)
 			local Default = Config.Default or Options[1]
 			local Multi = Config.Multi or false
 			
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = 0.1})
+			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = 0.1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 			
 			local Top = Create("TextButton", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, ItemH), Text = "", AutoButtonColor = false})
@@ -814,6 +814,73 @@ function EnvielUI:CreateWindow(Config)
 					UpdateText(Default)
 				end
 			}
+		end
+		
+		function Elements:CreateCollapsibleGroup(Config)
+			local Open = Config.DefaultOpen or true
+			local GroupH = 0
+			
+			local ContainerStub = Create("Frame", {
+				Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), 
+				AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 0.8
+			})
+			Create("UICorner", {Parent = ContainerStub, CornerRadius = UDim.new(0, 8)})
+			-- Create("UIStroke", {Parent = ContainerStub, Color = Window.Theme.Stroke, Thickness = 1})
+			
+			local HeaderBtn = Create("TextButton", {
+				Parent = ContainerStub, Size = UDim2.new(1, 0, 0, 36), BackgroundTransparency = 1, Text = "", AutoButtonColor = false
+			})
+			
+			local Title = Create("TextLabel", {
+				Parent = HeaderBtn, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0, 0), Size = UDim2.new(1, -40, 1, 0),
+				Text = Config.Title or "Group", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left
+			})
+			
+			local Arrow = Create("ImageLabel", {
+				Parent = HeaderBtn, BackgroundTransparency = 1, Position = UDim2.new(1, -28, 0.5, -8), Size = UDim2.fromOffset(16, 16),
+				Image = "rbxassetid://6031091004", ImageColor3 = Window.Theme.TextDark, Rotation = Open and 180 or 0
+			})
+
+			local Content = Create("Frame", {
+				Parent = ContainerStub, Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 36),
+				BackgroundTransparency = 1, ClipsDescendants = true
+			})
+			
+			-- List Layout for Children
+			local Layout = Create("UIListLayout", {
+				Parent = Content, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)
+			})
+			Create("UIPadding", {Parent = Content, PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8), PaddingBottom = UDim.new(0, 10)})
+			
+			local function UpdateHeight()
+				GroupH = Layout.AbsoluteContentSize.Y + 10
+				if Open then 
+					Content.Size = UDim2.new(1, 0, 0, GroupH) 
+					-- ContainerStub Size is Automatic
+				else
+					Content.Size = UDim2.new(1, 0, 0, 0)
+				end
+			end
+
+			Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateHeight)
+			
+			HeaderBtn.MouseButton1Click:Connect(function()
+				Open = not Open
+				Tween(Arrow, {Rotation = Open and 180 or 0}, 0.2)
+				Tween(Content, {Size = UDim2.new(1, 0, 0, Open and GroupH or 0)}, 0.3)
+			end)
+
+			-- Child Proxy
+			local GroupMethods = {}
+			for k, v in pairs(Elements) do
+				GroupMethods[k] = function(self, ChildConfig)
+					ChildConfig.Parent = Content
+					return Elements[k](Elements, ChildConfig)
+				end
+			end
+			GroupMethods.CreateCollapsibleGroup = nil 
+			
+			return GroupMethods
 		end
 		
 		function Elements:CreateColorPicker(Config)
