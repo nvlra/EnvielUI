@@ -414,7 +414,7 @@ function EnvielUI:CreateWindow(Config)
 			Position = UDim2.new(0, 0, 0, 36) -- Moved down for spacing
 		})
 		Create("UICorner", {Parent = SearchBg, CornerRadius = UDim.new(0, 10)})
-		Create("UIStroke", {Parent = SearchBg, Color = Window.Theme.Stroke, Thickness = 1})
+
 		
 		local SearchIcon = Create("ImageLabel", {
 			Parent = SearchBg, BackgroundTransparency = 1, Size = UDim2.fromOffset(16, 16), Position = UDim2.new(0, 12, 0.5, 0),
