@@ -263,8 +263,8 @@ function EnvielUI:CreateWindow(Config)
 	Dragify(MiniClick, MiniButton)
 	
 	MiniClick.MouseButton1Click:Connect(function()
-		Tween(MiniScale, {Scale = 0}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-		Tween(MiniButton, {GroupTransparency = 1}, 0.3).Completed:Wait()
+		Tween(MiniScale, {Scale = 0}, 0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
+		Tween(MiniButton, {GroupTransparency = 1}, 0.15).Completed:Wait()
 		
 		MiniButton.Visible = false
 		MainFrame.Visible = true
@@ -274,26 +274,26 @@ function EnvielUI:CreateWindow(Config)
 		local D = MainFrame:FindFirstChild("Dock")
 		if D and D:IsA("CanvasGroup") then D.GroupTransparency = 1 end
 		
-		Tween(MainScale, {Scale = 1}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-		Tween(ContentWindow, {GroupTransparency = 0}, 0.4)
-		if D and D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 0}, 0.4) end
+		Tween(MainScale, {Scale = 1}, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+		Tween(ContentWindow, {GroupTransparency = 0}, 0.2)
+		if D and D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 0}, 0.2) end
 	end)
 	
 	MinBtn.MouseButton1Click:Connect(function()
-		Tween(MainScale, {Scale = 0}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-		Tween(ContentWindow, {GroupTransparency = 1}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+		Tween(MainScale, {Scale = 0}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+		Tween(ContentWindow, {GroupTransparency = 1}, 0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		
 		local D = MainFrame:FindFirstChild("Dock")
-		if D and D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 1}, 0.4) end
+		if D and D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 1}, 0.15) end
 		
-		task.wait(0.3)
+		task.wait(0.2)
 		MainFrame.Visible = false
 		
 		MiniButton.Visible = true
 		MiniButton.GroupTransparency = 1
 		MiniScale.Scale = 0
-		Tween(MiniButton, {GroupTransparency = 0}, 0.3)
-		Tween(MiniScale, {Scale = 1}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+		Tween(MiniButton, {GroupTransparency = 0}, 0.2)
+		Tween(MiniScale, {Scale = 1}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 	end)
 	
 	local NotifHolder = Create("Frame", {
