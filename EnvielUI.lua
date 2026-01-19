@@ -1,12 +1,54 @@
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
 
+local LOGO_WHITE = "94854804824909"
+local LOGO_BLACK = "120261170817156"
+
+local LibraryConfig = {
+    Transparency = 0.25,
+    CornerRadius = {
+        Window = 14,
+        Group = 12,
+        Element = 8,
+        Inner = 6
+    },
+    Colors = {
+        Main = Color3.fromHex("0A0A0A"),
+        Secondary = Color3.fromHex("121212"),
+        Stroke = Color3.fromHex("222222"),
+        Text = Color3.fromHex("F0F0F0"),
+        TextSec = Color3.fromHex("AAAAAA"),
+        Accent = Color3.fromHex("FFFFFF"),
+        AccentText = Color3.fromHex("000000"),
+        Hover = Color3.fromHex("1E1E1E"),
+        Element = Color3.fromHex("181818"),
+        TextSelected = Color3.fromHex("FFFFFF"),
+        Description = Color3.fromHex("666666"),
+        AccentHover = Color3.fromHex("D0D0D0"),
+        TabActive = Color3.fromHex("FFFFFF"),
+        TabHover = Color3.fromHex("222222"),
+        TextDark = Color3.fromHex("888888"),
+        ActiveText = Color3.fromHex("000000")
+    },
+    Sizes = {
+        HeaderHeight = {PC = 50, Mobile = 38},
+        NavHeight = {PC = 44, Mobile = 36},
+        NavPadding = {PC = 20, Mobile = 10},
+        ItemHeight = {PC = 42, Mobile = 36},
+        TextSize = {PC = 13, Mobile = 11},
+        TitleSize = {PC = 18, Mobile = 14}
+    },
+    Animation = {
+        TweenSpeed = 0.25,
+        SpringSpeed = 0.4
+    }
+}
+
 local function GetService(Name)
 	return cloneref and cloneref(game:GetService(Name)) or game:GetService(Name)
 end
 
 local GuiService = GetService("GuiService")
-
 local TweenService = GetService("TweenService")
 local UserInputService = GetService("UserInputService")
 local RunService = GetService("RunService")
@@ -103,36 +145,30 @@ local function LoadFile(Name)
 	return nil
 end
 
+function EnvielUI:GetIcon(Name)
+	return GetIcon(Name)
+end
+
 function EnvielUI:CreateWindow(Config)
 	Config = Validate(Config, {
 		Name = "Enviel UI",
-        Transparency = 0,
-		Theme = {
-			Main = Color3.fromHex("0F0F0F"),
-			Secondary = Color3.fromHex("151515"),
-			Stroke = Color3.fromHex("252525"),
-			Text = Color3.fromHex("E0E0E0"),
-			TextSec = Color3.fromHex("888888"),
-			Accent = Color3.fromHex("FFFFFF"),
-			AccentText = Color3.fromHex("000000"),
-			Hover = Color3.fromHex("222222"),
-			Element = Color3.fromHex("181818"),
-			TextSelected = Color3.fromHex("FFFFFF"),
-			Description = Color3.fromHex("666666"),
-			AccentHover = Color3.fromHex("D0D0D0"),
-			TabActive = Color3.fromHex("2A2A2A"),
-			TabHover = Color3.fromHex("222222"),
-			TextDark = Color3.fromHex("888888"),
-			ActiveText = Color3.fromHex("000000")
-		}
+        Transparency = LibraryConfig.Transparency,
+		Theme = LibraryConfig.Colors
 	})
 
 	local Window = {
 		Flags = {}, 
 		Theme = Config.Theme,
-		Connections = {}
+		Connections = {},
+        OnCloseCallbacks = {}
 	}
 	
+	function Window:OnClose(Callback)
+        if type(Callback) == "function" then
+            table.insert(Window.OnCloseCallbacks, Callback)
+        end
+    end
+
 	function Window:SafeConnect(Signal, Callback)
 		local Conn = Signal:Connect(Callback)
 		table.insert(Window.Connections, Conn)
@@ -162,24 +198,38 @@ function EnvielUI:CreateWindow(Config)
 	
 	local ContentWindow = Create("CanvasGroup", {
 		Name = "ContentWindow", Parent = MainFrame, BackgroundColor3 = Window.Theme.Main,
-		Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, GroupTransparency = 1, BackgroundTransparency = Config.Transparency
+		Size = UDim2.new(1, 0, 0, 0), BorderSizePixel = 0, GroupTransparency = 1, BackgroundTransparency = Config.Transparency,
+        AutomaticSize = Enum.AutomaticSize.Y
 	})
 	
-	local Camera = Workspace.CurrentCamera
+	local Character = Players.LocalPlayer.Character
 	local IsMobile = Camera.ViewportSize.X < 800
 	
-	local ItemH = IsMobile and 36 or 42
-	local TextS = IsMobile and 11 or 13
-	local TitleS = IsMobile and 14 or 18
-	local HdrH = IsMobile and 38 or 50
+	local ItemH = IsMobile and LibraryConfig.Sizes.ItemHeight.Mobile or LibraryConfig.Sizes.ItemHeight.PC
+	local TextS = IsMobile and LibraryConfig.Sizes.TextSize.Mobile or LibraryConfig.Sizes.TextSize.PC
+	local TitleS = IsMobile and LibraryConfig.Sizes.TitleSize.Mobile or LibraryConfig.Sizes.TitleSize.PC
+	local HdrH = IsMobile and LibraryConfig.Sizes.HeaderHeight.Mobile or LibraryConfig.Sizes.HeaderHeight.PC
 	
+	-- // Dynamic Frame Logic //
+    local ViewportSize = Camera.ViewportSize
 	if IsMobile then 
-		MainFrame.Size = UDim2.fromScale(0.60, 0.70)
+		MainFrame.Size = UDim2.fromScale(0.60, 0)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.50)
+        MainFrame.AutomaticSize = Enum.AutomaticSize.Y
 	else
-		MainFrame.Size = UDim2.fromScale(0.35, 0.45)
+		MainFrame.Size = UDim2.fromScale(0.35, 0)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.5)
+        MainFrame.AutomaticSize = Enum.AutomaticSize.Y
 	end
+    
+    local MaxHeight = math.floor(ViewportSize.Y * 0.8)
+    local MinHeight = 220 
+    
+    Create("UISizeConstraint", {
+        Parent = MainFrame,
+        MinSize = Vector2.new(0, MinHeight),
+        MaxSize = Vector2.new(9999, MaxHeight)
+    })
 	
 	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 14)})
 
@@ -188,9 +238,6 @@ function EnvielUI:CreateWindow(Config)
 		Tween(MainScale, {Scale = 1}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		Tween(ContentWindow, {GroupTransparency = 0}, 0.4)
 	end)
-
-	local LOGO_WHITE = "94854804824909"
-	local LOGO_BLACK = "120261170817156"
 	
 	local Header = Create("Frame", {Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, HdrH)})
 	Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 20), PaddingRight = UDim.new(0, 20)})
@@ -230,6 +277,7 @@ function EnvielUI:CreateWindow(Config)
 				{Text = "Cancel", Callback = function() end}, 
 				{Text = "Confirm", Callback = function() 
 					ScreenGui:Destroy() 
+                    for _, cb in pairs(Window.OnCloseCallbacks) do task.spawn(cb) end
 					for _, c in pairs(Window.Connections) do c:Disconnect() end
 					Window.Connections = {}
 				end}
@@ -503,17 +551,17 @@ function EnvielUI:CreateWindow(Config)
 
 	
 	local ContentHolder = Create("CanvasGroup", {
-		Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, -(HdrH + 30)), Position = UDim2.new(0, 20, 0, HdrH + 10), 
-		GroupTransparency = 0, BorderSizePixel = 0
+		Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 0, 0), Position = UDim2.new(0, 20, 0, HdrH + 10), 
+		GroupTransparency = 0, BorderSizePixel = 0, AutomaticSize = Enum.AutomaticSize.Y
 	})
 	
-	local NavH = IsMobile and 30 or 40
-	local NavP = IsMobile and 4 or 12
+	local NavH = IsMobile and LibraryConfig.Sizes.NavHeight.Mobile or LibraryConfig.Sizes.NavHeight.PC
+	local NavP = IsMobile and LibraryConfig.Sizes.NavPadding.Mobile or LibraryConfig.Sizes.NavPadding.PC
 	local Dock = Create("CanvasGroup", {
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
 		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, NavP),
-		AnchorPoint = Vector2.new(0.5, 0), AutomaticSize = Enum.AutomaticSize.X,
-		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = Config.Transparency
+		AnchorPoint = Vector2.new(0.5, 1), AutomaticSize = Enum.AutomaticSize.X,
+		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = 0.25
 	})
 	
 	task.spawn(function()
@@ -521,6 +569,7 @@ function EnvielUI:CreateWindow(Config)
 		Tween(Dock, {GroupTransparency = 0}, 0.4)
 	end)
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
+	Create("UIStroke", {Parent = Dock, Color = Window.Theme.Stroke, Thickness = 1})
 
 	
 
@@ -580,8 +629,9 @@ function EnvielUI:CreateWindow(Config)
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
 		
 		local Page = Create("ScrollingFrame", {
-			Name = TabId, Parent = ContentHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), Visible = false,
-			ScrollBarThickness = 0, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0)
+			Name = TabId, Parent = ContentHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Visible = false,
+			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0),
+            AutomaticSize = Enum.AutomaticSize.Y, AutomaticCanvasSize = Enum.AutomaticSize.Y
 		})
 
 		local TabCount = 0
@@ -594,11 +644,16 @@ function EnvielUI:CreateWindow(Config)
 				Window:SelectTab(TabId)
 			end)
 		end
+		
+        -- UIListLayout updates AutomaticCanvasSize automatically, but we ensure padding is accounted for
+        -- Logic: Page (AutoSize Y) expands MainFrame. When MainFrame hits MaxSize, Page stops expanding.
+        -- Since CanvasSize > PhysicalSize, Scrollbar appears.
 		Create("UIListLayout", {Parent = Page, Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder})
-		Create("UIPadding", {Parent = Page, PaddingBottom = UDim.new(0, 10)})
-		Page.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
-			Page.CanvasSize = UDim2.new(0, 0, 0, Page.UIListLayout.AbsoluteContentSize.Y + 20) 
-		end)
+		Create("UIPadding", {
+            Parent = Page, 
+            PaddingBottom = UDim.new(0, NavH + NavP + 20), -- Ensure space for Dock at bottom
+            PaddingTop = UDim.new(0, 5)
+        })
 		
 		local Elements = {}
 		
@@ -612,8 +667,34 @@ function EnvielUI:CreateWindow(Config)
 
 		function Elements:CreateGroup(Cfg)
 			local Text = (type(Cfg) == "table" and Cfg.Name) or Cfg
-			Elements:CreateSection(Text)
-			return Elements
+			
+			local GroupContainer = Create("Frame", {
+				Parent = Page, BackgroundColor3 = Window.Theme.Element, Size = UDim2.new(1, 0, 0, 0), 
+				AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 0.6
+			})
+			Create("UICorner", {Parent = GroupContainer, CornerRadius = UDim.new(0, 12)})
+			Create("UIPadding", {Parent = GroupContainer, PaddingTop = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12), PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
+			Create("UIListLayout", {Parent = GroupContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
+			
+			if Text and Text ~= "" then
+				Create("TextLabel", {
+					Parent = GroupContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 20), Text = Text,
+					Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 13,
+					TextXAlignment = Enum.TextXAlignment.Left, LayoutOrder = -1
+				})
+			end
+
+			local GroupElements = {}
+			for k,v in pairs(Elements) do
+				if type(v) == "function" and k ~= "CreateGroup" and k ~= "CreateSection" then
+					GroupElements[k] = function(self, Config)
+						Config = Config or {}
+						Config.Parent = GroupContainer
+						return v(self, Config)
+					end
+				end
+			end
+			return GroupElements
 		end
 		
 		function Elements:CreateParagraph(Cfg)
@@ -643,6 +724,7 @@ function EnvielUI:CreateWindow(Config)
 			})
 			
 			local BScale = Create("UIScale", {Parent = B, Scale = 1})
+			Create("UIStroke", {Parent = B, Color = Window.Theme.Stroke, Thickness = 1})
 
 			B.MouseButton1Click:Connect(function()
 				Tween(BScale, {Scale = 0.95}, 0.05).Completed:Wait()
@@ -761,6 +843,8 @@ function EnvielUI:CreateWindow(Config)
 				Text = "", PlaceholderText = Cfg.PlaceholderText or "...", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, 
 				PlaceholderColor3 = Color3.fromRGB(80, 80, 80), TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 1, ClearTextOnFocus = false
 			})
+			Create("UIStroke", {Parent = Box, Color = Window.Theme.Stroke, Thickness = 1})
+			Create("UICorner", {Parent = Box, CornerRadius = UDim.new(0, 6)})
 			Box.FocusLost:Connect(function()
 				if Cfg.Flag then Window.Flags[Cfg.Flag] = Box.Text end
 				if Cfg.Callback then Cfg.Callback(Box.Text) end
@@ -836,7 +920,6 @@ function EnvielUI:CreateWindow(Config)
 				BackgroundTransparency = 1, ClipsDescendants = true, Visible = true -- Always visible for tween
 			})
 			
-			-- List Layout for Children
 			local Layout = Create("UIListLayout", {
 				Parent = Content, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)
 			})
@@ -861,15 +944,12 @@ function EnvielUI:CreateWindow(Config)
 				
 				local TargetH = Open and (36 + GroupH) or 36
 				local ContentTargetH = Open and GroupH or 0
-				
-				-- Tween Container Height (Smooth Push)
+
 				Tween(ContainerStub, {Size = UDim2.new(1, 0, 0, TargetH)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 				
-				-- Tween Content Height (Optional clip)
 				Tween(Content, {Size = UDim2.new(1, 0, 0, ContentTargetH)}, 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 			end)
 
-			-- Child Proxy
 			local GroupMethods = {}
 			for k, v in pairs(Elements) do
 				GroupMethods[k] = function(self, ChildConfig)
@@ -883,8 +963,6 @@ function EnvielUI:CreateWindow(Config)
 			return GroupMethods
 		end
 
-		Elements.CreateGroup = Elements.CreateCollapsibleGroup -- Alias for backwards compatibility
-		
 		function Elements:CreateColorPicker(Config)
 			local Flag = Config.Flag or Config.Name
 			local Val = Config.Default or Color3.fromRGB(255, 255, 255)
