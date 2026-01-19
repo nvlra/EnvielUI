@@ -106,6 +106,7 @@ end
 function EnvielUI:CreateWindow(Config)
 	Config = Validate(Config, {
 		Name = "Enviel UI",
+        Transparency = 0,
 		Theme = {
 			Main = Color3.fromHex("0F0F0F"),
 			Secondary = Color3.fromHex("151515"),
@@ -160,7 +161,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	local ContentWindow = Create("CanvasGroup", {
 		Name = "ContentWindow", Parent = MainFrame, BackgroundColor3 = Window.Theme.Main,
-		Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, GroupTransparency = 1, BackgroundTransparency = 0
+		Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, GroupTransparency = 1, BackgroundTransparency = Config.Transparency
 	})
 	
 	local Camera = Workspace.CurrentCamera
