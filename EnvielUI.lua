@@ -176,7 +176,8 @@ function EnvielUI:CreateWindow(Config)
 		MainFrame.Size = UDim2.fromScale(0.60, 0.70)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.50)
 	else
-		MainFrame.Size = UDim2.fromScale(0.50, 0.60)
+		-- Reduced desktop size as requested
+		MainFrame.Size = UDim2.fromScale(0.35, 0.45)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.5)
 	end
 	
@@ -217,7 +218,7 @@ function EnvielUI:CreateWindow(Config)
 	})
 	
 	local CloseBtn = Create("ImageButton", {
-		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(20, 20),
+		Parent = Controls, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(20, 20),
 		BackgroundTransparency = 1, Image = GetIcon("x") or "", ImageColor3 = Window.Theme.TextDark
 	})
 
@@ -512,7 +513,7 @@ function EnvielUI:CreateWindow(Config)
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
 		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, NavP),
 		AnchorPoint = Vector2.new(0.5, 0), AutomaticSize = Enum.AutomaticSize.X,
-		GroupTransparency = 0, BorderSizePixel = 0
+		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = Config.Transparency
 	})
 	
 	task.spawn(function()
