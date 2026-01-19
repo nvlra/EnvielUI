@@ -547,9 +547,9 @@ function EnvielUI:CreateWindow(Config)
 	end
 
 	
-	local ContentHolder = Create("CanvasGroup", {
+	local ContentHolder = Create("Frame", {
 		Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, -(HdrH + 20)), Position = UDim2.new(0, 20, 0, HdrH + 10), 
-		BorderSizePixel = 0, GroupTransparency = 0
+		BorderSizePixel = 0
 	})
 	
 	local NavH = IsMobile and LibraryConfig.Sizes.NavHeight.Mobile or LibraryConfig.Sizes.NavHeight.PC
@@ -578,8 +578,7 @@ function EnvielUI:CreateWindow(Config)
 	Create("UICorner", {Parent = ActiveIndicator, CornerRadius = UDim.new(1, 0)})
 
 	function Window:SelectTab(TabId)
-		Tween(ContentHolder, {GroupTransparency = 1}, 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out).Completed:Wait()
-
+        -- Removed Fade Effect for Stability
 		for _, p in pairs(ContentHolder:GetChildren()) do 
 			if p:IsA("ScrollingFrame") then p.Visible = false end 
 		end
@@ -606,7 +605,6 @@ function EnvielUI:CreateWindow(Config)
 					end
 				end
 			end
-			Tween(ContentHolder, {GroupTransparency = 0}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 			
 			-- Dynamic Resizing Logic
             task.spawn(function()
