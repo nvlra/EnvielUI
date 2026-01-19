@@ -321,7 +321,9 @@ function EnvielUI:CreateWindow(Config)
 		
 		Tween(MainScale, {Scale = 1}, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		Tween(ContentWindow, {GroupTransparency = 0}, 0.2)
-		if D and D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 0}, 0.2) end
+		if D then
+            if D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 0}, 0.2) else Tween(D, {BackgroundTransparency = 0.25}, 0.2) end
+        end
 	end)
 	
 	MinBtn.MouseButton1Click:Connect(function()
@@ -329,7 +331,9 @@ function EnvielUI:CreateWindow(Config)
 		Tween(ContentWindow, {GroupTransparency = 1}, 0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		
 		local D = MainFrame:FindFirstChild("Dock")
-		if D and D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 1}, 0.15) end
+		if D then
+            if D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 1}, 0.15) else Tween(D, {BackgroundTransparency = 1}, 0.15) end
+        end
 		
 		task.wait(0.2)
 		MainFrame.Visible = false
@@ -1063,6 +1067,12 @@ function EnvielUI:CreateWindow(Config)
 				Tween(F, {Size = UDim2.new(1, 0, 0, Expanded and ExpandH or BaseH)}, 0.2)
 				RS.UpdateFill() GS.UpdateFill() BS.UpdateFill()
 			end)
+
+            return {Set = function(self, v)
+                Val = v
+                Preview.BackgroundColor3 = Val
+                RS.UpdateFill() GS.UpdateFill() BS.UpdateFill()
+            end}
 		end
 
 		return Elements
@@ -1108,14 +1118,23 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
 			Btn.MouseButton1Click:Connect(function()
 				if Action.Callback then Action.Callback() end
-				Tween(AlertFrame, {GroupTransparency = 1, Size = UDim2.fromOffset(280, 140)}, 0.2, Enum.EasingStyle.Quint)
+                if AlertFrame:IsA("CanvasGroup") then
+				    Tween(AlertFrame, {GroupTransparency = 1, Size = UDim2.fromOffset(280, 140)}, 0.2, Enum.EasingStyle.Quint)
+                else
+                    Tween(AlertFrame, {BackgroundTransparency = 1, Size = UDim2.fromOffset(280, 140)}, 0.2, Enum.EasingStyle.Quint)
+                end
 				Tween(Blur, {BackgroundTransparency = 1}, 0.2).Completed:Wait()
 				Blur:Destroy()
 			end)
 		end
 		
 		Tween(Blur, {BackgroundTransparency = 0.4}, 0.3)
-		Tween(AlertFrame, {GroupTransparency = 0, Size = UDim2.fromOffset(300, 160)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+		Tween(Blur, {BackgroundTransparency = 0.4}, 0.3)
+        if AlertFrame:IsA("CanvasGroup") then
+		    Tween(AlertFrame, {GroupTransparency = 0, Size = UDim2.fromOffset(300, 160)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+        else
+            Tween(AlertFrame, {BackgroundTransparency = 0, Size = UDim2.fromOffset(300, 160)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+        end
 	end
 	
 	local ConfigName = Name:gsub(" ", "").."_Config.json"
