@@ -612,12 +612,14 @@ function EnvielUI:CreateWindow(Config)
 
 		function Elements:CreateGroup(Config)
 			local Text = (type(Config) == "table" and Config.Name) or Config
+		function Elements:CreateGroup(Cfg)
+			local Text = (type(Cfg) == "table" and Cfg.Name) or Cfg
 			Elements:CreateSection(Text)
 			return Elements
 		end
 		
 		function Elements:CreateParagraph(Cfg)
-			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 0.1})
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = WindowTransparency})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("UIPadding", {Parent = F, PaddingTop = UDim.new(0,10), PaddingBottom = UDim.new(0,10), PaddingLeft = UDim.new(0,12), PaddingRight = UDim.new(0,12)})
@@ -632,21 +634,21 @@ function EnvielUI:CreateWindow(Config)
 			return Para
 		end
 
-		function Elements:CreateButton(Config)
-			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = 0.1})
+		function Elements:CreateButton(Cfg)
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = WindowTransparency})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 			Create("UIPadding", {Parent = F, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 
 			
 			local B = Create("TextButton", {
 				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
-				Font = Enum.Font.GothamMedium, Text = Config.Name or "Button", TextColor3 = Window.Theme.Text, TextSize = TextS,
+				Font = Enum.Font.GothamMedium, Text = Cfg.Name or "Button", TextColor3 = Window.Theme.Text, TextSize = TextS,
 				TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, AutoButtonColor = false
 			})
 			
 			local B = Create("TextButton", {
 				Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.new(0, 0, 0, IsMobile and 24 or 28),
-				BackgroundColor3 = Window.Theme.Text, Text = Config.Text or "Interact", Font = Enum.Font.GothamBold, TextColor3 = Color3.new(0,0,0), TextSize = 11, AutoButtonColor=false,
+				BackgroundColor3 = Window.Theme.Text, Text = Cfg.Text or "Interact", Font = Enum.Font.GothamBold, TextColor3 = Color3.new(0,0,0), TextSize = 11, AutoButtonColor=false,
 				AutomaticSize = Enum.AutomaticSize.X, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
 			})
 			Create("UIPadding", {Parent = B, PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14)})
@@ -657,20 +659,20 @@ function EnvielUI:CreateWindow(Config)
 			B.MouseButton1Click:Connect(function()
 				Tween(BScale, {Scale = 0.95}, 0.05).Completed:Wait()
 				Tween(BScale, {Scale = 1}, 0.1, Enum.EasingStyle.Quint)
-				if Config.Callback then Config.Callback() end
+				if Cfg.Callback then Cfg.Callback() end
 			end)
 		end
 
-		function Elements:CreateToggle(Config)
-			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = Config.Transparency or 0.1})
+		function Elements:CreateToggle(Cfg)
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = WindowTransparency})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 12, 0, 0),
-				Text = Config.Name or "Toggle", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
+				Text = Cfg.Name or "Toggle", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			
-			local Val = Config.CurrentValue or Config.Default or false
+			local Val = Cfg.CurrentValue or Cfg.Default or false
 			local Switch = Create("TextButton", {
 				Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -10, 0.5, 0), Size = UDim2.new(0, 44, 0, 22),
 				BackgroundColor3 = Val and Window.Theme.Accent or Window.Theme.Stroke, Text = "", AutoButtonColor = false
@@ -685,23 +687,62 @@ function EnvielUI:CreateWindow(Config)
 			local function Update()
 				Tween(Switch, {BackgroundColor3 = Val and Window.Theme.Accent or Window.Theme.Stroke}, 0.2)
 				Tween(Circle, {Position = Val and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9), BackgroundColor3 = Val and Window.Theme.Secondary or Window.Theme.Text}, 0.2)
-				if Config.Flag then Window.Flags[Config.Flag] = Val end
-				if Config.Callback then Config.Callback(Val) end
+				if Cfg.Flag then Window.Flags[Cfg.Flag] = Val end
+				if Cfg.Callback then Cfg.Callback(Val) end
 			end
 			Switch.MouseButton1Click:Connect(function() Val = not Val Update() end)
-			if Config.Default then Update() end
+			if Cfg.Default then Update() end
 			return {Set = function(self, v) Val = v Update() end}
 		end
 
-		function Elements:CreateSlider(Config)
-			local Min, Max = Config.Min or 0, Config.Max or 100
-			local Val = Config.Default or Min
-			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 8), BackgroundTransparency = 0.1})
+        function Elements:CreateDropdown(Cfg)
+            local Options = Cfg.Options or {}
+            local Current = Cfg.CurrentValue or (Cfg.Multi and "..." or Options[1])
+            
+            local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = WindowTransparency})
+            Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
+            
+            Create("TextLabel", {
+                Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, 0), Position = UDim2.new(0, 12, 0, 0),
+                Text = Cfg.Name or "Dropdown", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
+            })
+            
+            local Btn = Create("TextButton", {
+                Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -10, 0.5, 0), Size = UDim2.new(0, 120, 0, 26),
+                BackgroundColor3 = Window.Theme.Main, Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current)),
+                Font = Enum.Font.Gotham, TextColor3 = Window.Theme.Text, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false
+            })
+            Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
+            Create("UIStroke", {Parent = Btn, Color = Window.Theme.Stroke, Thickness = 1})
+            
+            Create("ImageLabel", {
+                Parent = Btn, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -8, 0.5, 0), Size = UDim2.fromOffset(14, 14),
+                BackgroundTransparency = 1, Image = GetIcon("chevron-down") or "rbxassetid://6031091004", ImageColor3 = Window.Theme.TextDark
+            })
+            
+            Btn.MouseButton1Click:Connect(function()
+                Window:OpenDropdownModal(Cfg, function(val)
+                    Current = val
+                    Btn.Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current))
+                    if Cfg.Flag then Window.Flags[Cfg.Flag] = Current end
+                    if Cfg.Callback then Cfg.Callback(Current) end
+                end)
+            end)
+            return {Set = function(self, v)
+                 Current = v
+                 Btn.Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current))
+            end}
+        end
+
+		function Elements:CreateSlider(Cfg)
+			local Min, Max = Cfg.Min or 0, Cfg.Max or 100
+			local Val = Cfg.Default or Min
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 8), BackgroundTransparency = WindowTransparency})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 0, 24), Position = UDim2.new(0, 12, 0, 4),
-				Text = Config.Name or "Slider", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
+				Text = Cfg.Name or "Slider", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			local ValLbl = Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(1, -50, 0, 5), Size = UDim2.new(0, 40, 0, 20),
@@ -726,8 +767,8 @@ function EnvielUI:CreateWindow(Config)
 				Fill.Size = UDim2.new(Pct, 0, 1, 0)
 				Thumb.Position = UDim2.new(Pct, -8, 0.5, -8)
 				ValLbl.Text = tostring(Val)
-				if Config.Flag then Window.Flags[Config.Flag] = Val end
-				if Config.Callback then Config.Callback(Val) end
+				if Cfg.Flag then Window.Flags[Cfg.Flag] = Val end
+				if Cfg.Callback then Cfg.Callback(Val) end
 			end
 			
 			local Sliding = false
@@ -756,68 +797,65 @@ function EnvielUI:CreateWindow(Config)
 			end}
 		end
 
-		function Elements:CreateInput(Config)
-			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 4), BackgroundTransparency = Config.Transparency or 0.1})
+		function Elements:CreateInput(Cfg)
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 4), BackgroundTransparency = WindowTransparency})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0, 0), Size = UDim2.new(1, -24, 0, ItemH - 18),
-				Text = Config.Name or "Input", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
+				Text = Cfg.Name or "Input", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			local Box = Create("TextBox", {
 				Parent = F, BackgroundColor3 = Window.Theme.Main, Position = UDim2.new(0, 12, 0, ItemH - 18), Size = UDim2.new(1, -24, 0, 16),
-				Text = "", PlaceholderText = Config.PlaceholderText or "...", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, 
+				Text = "", PlaceholderText = Cfg.PlaceholderText or "...", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, 
 				PlaceholderColor3 = Color3.fromRGB(80, 80, 80), TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 1, ClearTextOnFocus = false
 			})
 			Box.FocusLost:Connect(function()
-				if Config.Flag then Window.Flags[Config.Flag] = Box.Text end
-				if Config.Callback then Config.Callback(Box.Text) end
-				if Config.RemoveTextAfterFocusLost then Box.Text = "" end
+				if Cfg.Flag then Window.Flags[Cfg.Flag] = Box.Text end
+				if Cfg.Callback then Cfg.Callback(Box.Text) end
+				if Cfg.RemoveTextAfterFocusLost then Box.Text = "" end
 			end)
 		end
-		
-		function Elements:CreateDropdown(Config)
-			local Options = Config.Options or {}
-			local Default = Config.Default or Options[1]
-			local Multi = Config.Multi or false
-			
-			local F = Create("Frame", {Parent = Config.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = 0.1})
-			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
-			
-			local Top = Create("TextButton", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, ItemH), Text = "", AutoButtonColor = false})
-			Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0,12,0,0), Size=UDim2.new(1,-40,0,ItemH), Text = Config.Name or "Dropdown", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Left})
-			
-			local Current = Create("TextLabel", {Parent = Top, BackgroundTransparency=1, Position=UDim2.new(0.5,0,0,0), Size=UDim2.new(0.5,-30,0,ItemH), Text = "", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize=TextS, TextXAlignment=Enum.TextXAlignment.Right})
-			
-			local function UpdateText(Val)
-				local DisplayText = Val
-				if type(Val) == "table" then
-					if #Val > 0 then DisplayText = table.concat(Val, ", ") else DisplayText = "Select..." end
-				end
-				Current.Text = tostring(DisplayText).." >"
-			end
-			
-			UpdateText(Default)
-			
-			Top.MouseButton1Click:Connect(function()
-				Config.CurrentValue = Default
-				Window:OpenDropdownModal(Config, function(NewVal)
-					Default = NewVal
-					UpdateText(NewVal)
-					if Config.Flag then Window.Flags[Config.Flag] = NewVal end
-					if Config.Callback then Config.Callback(NewVal) end
-				end)
-			end)
-			
-			return {
-				Refresh = function(self, NewOptions)
-					Config.Options = NewOptions
-					Default = NewOptions[1] or "None"
-					UpdateText(Default)
-				end
-			}
-		end
-		
+
+        function Elements:CreateDropdown(Cfg)
+            local Options = Cfg.Options or {}
+            local Current = Cfg.CurrentValue or (Cfg.Multi and "..." or Options[1])
+            
+            local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = WindowTransparency})
+            Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
+            
+            Create("TextLabel", {
+                Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, 0), Position = UDim2.new(0, 12, 0, 0),
+                Text = Cfg.Name or "Dropdown", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
+            })
+            
+            local Btn = Create("TextButton", {
+                Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -10, 0.5, 0), Size = UDim2.new(0, 120, 0, 26),
+                BackgroundColor3 = Window.Theme.Main, Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current)),
+                Font = Enum.Font.Gotham, TextColor3 = Window.Theme.Text, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false
+            })
+            Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
+            Create("UIStroke", {Parent = Btn, Color = Window.Theme.Stroke, Thickness = 1})
+            
+            Create("ImageLabel", {
+                Parent = Btn, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -8, 0.5, 0), Size = UDim2.fromOffset(14, 14),
+                BackgroundTransparency = 1, Image = GetIcon("chevron-down") or "rbxassetid://6031091004", ImageColor3 = Window.Theme.TextDark
+            })
+            
+            Btn.MouseButton1Click:Connect(function()
+                Window:OpenDropdownModal(Cfg, function(val)
+                    Current = val
+                    Btn.Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current))
+                    if Cfg.Flag then Window.Flags[Cfg.Flag] = Current end
+                    if Cfg.Callback then Cfg.Callback(Current) end
+                end)
+            end)
+            return {Set = function(self, v)
+                 Current = v
+                 Btn.Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current))
+            end}
+        end
+
 		function Elements:CreateCollapsibleGroup(Config)
 			local Open = Config.DefaultOpen or false
 			local GroupH = 0
