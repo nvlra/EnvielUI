@@ -662,8 +662,8 @@ function EnvielUI:CreateWindow(Config)
             Parent = Page, 
             PaddingBottom = UDim.new(0, 10),
             PaddingTop = UDim.new(0, 5),
-            PaddingLeft = UDim.new(0, 12), 
-            PaddingRight = UDim.new(0, 12)
+            PaddingLeft = UDim.new(0, 4), 
+            PaddingRight = UDim.new(0, 4)
         })
 		
 		local Elements = {}
@@ -687,12 +687,12 @@ function EnvielUI:CreateWindow(Config)
 				AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 0.6
 			})
 			Create("UICorner", {Parent = GroupContainer, CornerRadius = UDim.new(0, 12)})
-			Create("UIPadding", {Parent = GroupContainer, PaddingTop = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12), PaddingLeft = UDim.new(0, 0), PaddingRight = UDim.new(0, 0)})
+			Create("UIPadding", {Parent = GroupContainer, PaddingTop = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12), PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10)})
 			Create("UIListLayout", {Parent = GroupContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
 			
 			if Text and Text ~= "" then
 				Create("TextLabel", {
-					Parent = GroupContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 16, 0, 0), Text = Text,
+					Parent = GroupContainer, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 0), Text = Text,
 					Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 13,
 					TextXAlignment = Enum.TextXAlignment.Left, LayoutOrder = -1
 				})
@@ -755,7 +755,7 @@ function EnvielUI:CreateWindow(Config)
 			if not Cfg.InGroup then Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)}) end
 
 			Create("TextLabel", {
-				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 16, 0, 0),
+				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 0, 0, 0),
 				Text = Cfg.Name or "Toggle", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			
@@ -790,7 +790,7 @@ function EnvielUI:CreateWindow(Config)
 			if not Cfg.InGroup then Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)}) end
 
 			Create("TextLabel", {
-				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 0, 24), Position = UDim2.new(0, 16, 0, 4),
+				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 0, 24), Position = UDim2.new(0, 0, 0, 4),
 				Text = Cfg.Name or "Slider", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			local ValLbl = Create("TextLabel", {
@@ -851,13 +851,13 @@ function EnvielUI:CreateWindow(Config)
 			if not Cfg.InGroup then Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)}) end
 
 			Create("TextLabel", {
-				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -160, 1, 0), Position = UDim2.new(0, 16, 0, 0),
+				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -160, 1, 0), Position = UDim2.new(0, 0, 0, 0),
 				Text = Cfg.Name or "Input", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			
             local BoxContainer = Create("Frame", {
                 Parent = F, BackgroundColor3 = Window.Theme.Input, 
-                AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -16, 0.5, 0), Size = UDim2.new(0, 140, 0, 26)
+                AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.new(0, 140, 0, 26)
             })
             Create("UICorner", {Parent = BoxContainer, CornerRadius = UDim.new(0, 6)})
             Create("UIStroke", {Parent = BoxContainer, Color = Window.Theme.Stroke, Thickness = 1})
