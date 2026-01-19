@@ -571,7 +571,6 @@ function EnvielUI:CreateWindow(Config)
 		Tween(Dock, {GroupTransparency = 0}, 0.4)
 	end)
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
-	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
 
 	local DockList = Create("Frame", {Parent = Dock, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0)})
 	Create("UIListLayout", {Parent = DockList, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center})
@@ -1065,9 +1064,8 @@ function EnvielUI:CreateWindow(Config)
 			Parent = Blur, Size = UDim2.fromOffset(300, 160), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5),
 			BackgroundColor3 = Window.Theme.Secondary, GroupTransparency = 1
 		})
+		
 		Create("UICorner", {Parent = AlertFrame, CornerRadius = UDim.new(0, 12)})
-		Create("UICorner", {Parent = AlertFrame, CornerRadius = UDim.new(0, 12)})
-		-- Removed AlertFrame UIStroke per user request
 		
 		Create("TextLabel", {
 			Parent = AlertFrame, Size = UDim2.new(1, 0, 0, 40), Position = UDim2.new(0, 0, 0, 10), BackgroundTransparency = 1,
