@@ -688,10 +688,14 @@ function EnvielUI:CreateWindow(Config)
 	end
 
 	DockLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(QueueDockUpdate)
+	
+    -- Folder to isolate Indicator from UIListLayout
+    local DecorFolder = Instance.new("Folder", DockList)
+    DecorFolder.Name = "Decor"
 
 	local ActiveIndicator = Create("Frame", {
-		Parent = DockList, 
-		BackgroundColor3 = Window.Theme.Accent, 
+		Parent = DecorFolder, -- Parent to Folder, not DockList directly
+        BackgroundColor3 = Window.Theme.Accent, 
 		Size = UDim2.new(0, 0, 1, -8), 
 		Position = UDim2.new(0, 0, 0.5, 0),
 		AnchorPoint = Vector2.new(0.5, 0.5), 
