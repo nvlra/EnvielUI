@@ -140,6 +140,7 @@ function EnvielUI:CreateWindow(Config)
 	end
 	
 	local Name = Config.Name
+    local WindowTransparency = Config.Transparency
 	
 	local Parent = game:GetService("CoreGui")
 	if not pcall(function() return Parent.Name end) then Parent = Players.LocalPlayer.PlayerGui end
@@ -618,7 +619,6 @@ function EnvielUI:CreateWindow(Config)
 		function Elements:CreateParagraph(Cfg)
 			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = WindowTransparency})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
-
 			Create("UIPadding", {Parent = F, PaddingTop = UDim.new(0,10), PaddingBottom = UDim.new(0,10), PaddingLeft = UDim.new(0,12), PaddingRight = UDim.new(0,12)})
 			local Title = Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,18), Text = Cfg.Title or "Header", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left})
 			local Content = Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Position=UDim2.new(0,0,0,20), Size=UDim2.new(1,0,0,0), AutomaticSize=Enum.AutomaticSize.Y, Text = Cfg.Content or "", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.TextDark, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, TextWrapped=true})
