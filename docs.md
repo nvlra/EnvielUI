@@ -300,6 +300,68 @@ Currently, icons are primarily used internally (Close, Minimize, Search), but yo
 
 ---
 
+## 8. Popups & Feedback
+
+### Notification
+
+Show a temporary message at the top right (PC) or top center (Mobile).
+
+```lua
+Window:Notify({
+    Title = "Success",
+    Content = "Config loaded successfully!",
+    Duration = 3, -- Optional, defaults to 2s
+    Image = "check" -- Optional Icon name (Lucide)
+})
+```
+
+### Prompt (Alert/Confirmation)
+
+Show a modal dialog requiring user action (e.g., Yes/No).
+
+```lua
+Window:Prompt({
+    Title = "Reset Settings?",
+    Content = "Are you sure you want to reset all settings to default? This cannot be undone.",
+    Actions = {
+        {
+            Text = "Yes",
+            Callback = function()
+                print("User confirmed reset")
+            end
+        },
+        {
+            Text = "No",
+            Callback = function()
+                print("User cancelled")
+            end
+        }
+    }
+})
+```
+
+---
+
+## 9. Configuration System
+
+Built-in system to validly save and load flags (Input, Toggles, Sliders, etc.).
+
+### Saving
+
+```lua
+Window:SaveConfig()
+-- Saves all flags to "{WindowName}_Config.json" in user's exploit folder.
+```
+
+### Loading
+
+```lua
+Window:LoadConfig()
+-- Loads settings from file and updates UI elements automatically.
+```
+
+---
+
 ## 8. Notifications
 
 Displays a notification at the bottom right.

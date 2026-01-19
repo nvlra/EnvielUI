@@ -615,7 +615,7 @@ function EnvielUI:CreateWindow(Config)
 	local Dock = Create("CanvasGroup", {
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
 		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, 15),
-		AnchorPoint = Vector2.new(0.5, 0), AutomaticSize = Enum.AutomaticSize.X,
+		AnchorPoint = Vector2.new(0.5, 0), AutomaticSize = Enum.AutomaticSize.None,
 		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = 0, ZIndex = 10
 	})
 	
@@ -629,14 +629,22 @@ function EnvielUI:CreateWindow(Config)
 
 	local DockList = Create("ScrollingFrame", {
          Parent = Dock, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
-         AutomaticCanvasSize = Enum.AutomaticSize.X, CanvasSize = UDim2.new(0,0,0,0),
-         ScrollBarThickness = 0, ScrollingDirection = Enum.ScrollingDirection.X, AutomaticSize = Enum.AutomaticSize.X
+         AutomaticCanvasSize = Enum.AutomaticSize.None, CanvasSize = UDim2.new(0,0,0,0),
+         ScrollBarThickness = 0, ScrollingDirection = Enum.ScrollingDirection.X, AutomaticSize = Enum.AutomaticSize.None
     })
-	Create("UIListLayout", {
+	local DockLayout = Create("UIListLayout", {
         Parent = DockList, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), 
         HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center
     })
-	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 6)})
+	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
+
+    local function UpdateDockSize()
+        local ContentW = DockLayout.AbsoluteContentSize.X + 24
+        local MaxW = IsMobile and 350 or 620
+        Dock.Size = UDim2.new(0, math.clamp(ContentW, 0, MaxW), 0, NavH)
+        DockList.CanvasSize = UDim2.new(0, ContentW, 0, 0)
+    end
+    DockLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateDockSize)
 	
 	local ActiveIndicator = Create("Frame", {
 		Parent = DockList, BackgroundColor3 = Window.Theme.Accent, Size = UDim2.new(0, 0, 1, -8), Position = UDim2.new(0, 0, 0.5, 0),
