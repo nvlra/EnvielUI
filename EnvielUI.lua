@@ -496,6 +496,21 @@ function EnvielUI:CreateWindow(Config)
 				end
 			end
 			
+			if Multi and not Query then
+				local sList, uList = {}, {}
+				for _, opt in pairs(filtered) do
+					if table.find(tempSelected, opt) then
+						table.insert(sList, opt)
+					else
+						table.insert(uList, opt)
+					end
+				end
+				local newFiltered = {}
+				for _, v in pairs(sList) do table.insert(newFiltered, v) end
+				for _, v in pairs(uList) do table.insert(newFiltered, v) end
+				filtered = newFiltered
+			end
+			
 			for _, opt in pairs(filtered) do
 				local isSelected = false
 				if Multi then
@@ -869,10 +884,12 @@ function EnvielUI:CreateWindow(Config)
 			})
 
 			Box.FocusLost:Connect(function()
+				if tonumber(Box.Text) then Box.Text = tostring(tonumber(Box.Text)) end
 				if Cfg.Flag then Window.Flags[Cfg.Flag] = Box.Text end
 				if Cfg.Callback then Cfg.Callback(Box.Text) end
 				if Cfg.RemoveTextAfterFocusLost then Box.Text = "" end
 			end)
+			return {Set = function(self, v) Box.Text = tostring(v) end}
 		end
 
         function Elements:CreateDropdown(Cfg)
@@ -890,7 +907,8 @@ function EnvielUI:CreateWindow(Config)
             local Btn = Create("TextButton", {
                 Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -10, 0.5, 0), Size = UDim2.new(0, 120, 0, 26),
                 BackgroundColor3 = Window.Theme.Input, Text = "  "..(type(Current)=="table" and table.concat(Current, ", ") or tostring(Current)),
-                Font = Enum.Font.Gotham, TextColor3 = Window.Theme.Text, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false
+                Font = Enum.Font.Gotham, TextColor3 = Window.Theme.Text, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false,
+				TextTruncate = Enum.TextTruncate.AtEnd
             })
             Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
             Create("UIStroke", {Parent = Btn, Color = Window.Theme.Stroke, Thickness = 1})
