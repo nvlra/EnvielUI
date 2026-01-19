@@ -276,6 +276,8 @@ function EnvielUI:CreateWindow(Config)
 		Text = "Made By Enviel", Font = Enum.Font.Gotham, TextColor3 = Color3.fromHex("FFFFFF"), TextTransparency = 0.55, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right, BackgroundTransparency = 1
 	})
 	
+	local CloseBtn = Create("ImageButton", {
+		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(20, 20),
 		BackgroundTransparency = 1, Image = GetIcon("x") or "", ImageColor3 = Window.Theme.TextDark
 	})
     
@@ -300,6 +302,8 @@ function EnvielUI:CreateWindow(Config)
 		})
 	end)
 
+	local MinBtn = Create("ImageButton", {
+		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -30, 0.5, 0), Size = UDim2.fromOffset(18, 18),
 		BackgroundTransparency = 1, Image = GetIcon("minimize") or "", ImageColor3 = Window.Theme.TextDark
 	})
     if not IsMobile then
@@ -821,11 +825,8 @@ function EnvielUI:CreateWindow(Config)
 			})
 			Create("UICorner", {Parent = Circle, CornerRadius = UDim.new(1, 0)})
 			
-			local Hovering = false
 			local function UpdateVisuals()
 				local TargetC = Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive
-				if Hovering and not IsMobile then TargetC = Lighten(TargetC, 0.1) end
-				
 				Tween(Switch, {BackgroundColor3 = TargetC}, 0.2)
 				Tween(Circle, {Position = Val and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}, 0.2)
 			end
@@ -835,7 +836,6 @@ function EnvielUI:CreateWindow(Config)
 				if Cfg.Callback then Cfg.Callback(Val) end
 				UpdateVisuals()
 			end
-            -- Hover logic removed as requested
 			Switch.MouseButton1Click:Connect(function() Val = not Val UpdateState() end)
 			if Cfg.Default then UpdateState() end
 			return {Set = function(self, v) Val = v UpdateState() end}
