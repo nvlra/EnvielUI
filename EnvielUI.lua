@@ -5,7 +5,7 @@ local LOGO_WHITE = "94854804824909"
 local LOGO_BLACK = "120261170817156"
 
 local LibraryConfig = {
-    Transparency = 0.25,
+    Transparency = 0.2,
     CornerRadius = {
         Window = 14,
         Group = 12,
@@ -13,15 +13,20 @@ local LibraryConfig = {
         Inner = 6
     },
     Colors = {
-        Main = Color3.fromHex("0A0A0A"),
+        Main = Color3.fromHex("2B2B2B"),
         Secondary = Color3.fromHex("121212"),
-        Stroke = Color3.fromHex("222222"),
+        Stroke = Color3.fromHex("787878"),
         Text = Color3.fromHex("F0F0F0"),
         TextSec = Color3.fromHex("AAAAAA"),
         Accent = Color3.fromHex("FFFFFF"),
         AccentText = Color3.fromHex("000000"),
         Hover = Color3.fromHex("1E1E1E"),
         Element = Color3.fromHex("181818"),
+        ToggleActive = Color3.fromHex("D4D4D4"),
+        ToggleInactive = Color3.fromHex("676767"),
+        Input = Color3.fromHex("747474"),
+        Button = Color3.fromHex("FFFFFF"),
+        ButtonText = Color3.fromHex("000000"),
         TextSelected = Color3.fromHex("FFFFFF"),
         Description = Color3.fromHex("666666"),
         AccentHover = Color3.fromHex("D0D0D0"),
@@ -196,40 +201,48 @@ function EnvielUI:CreateWindow(Config)
 	
 	local MainScale = Create("UIScale", {Parent = MainFrame, Scale = 0.9})
 	
+	local IsMobile = Camera.ViewportSize.X < 800
+	
+	local IsMobile = Camera.ViewportSize.X < 800
+	
 	local ContentWindow = Create("CanvasGroup", {
 		Name = "ContentWindow", Parent = MainFrame, BackgroundColor3 = Window.Theme.Main,
 		Size = UDim2.new(1, 0, 0, 0), BorderSizePixel = 0, GroupTransparency = 1, BackgroundTransparency = Config.Transparency,
         AutomaticSize = Enum.AutomaticSize.Y
 	})
 	
-	local Camera = workspace.CurrentCamera
-	local Character = Players.LocalPlayer.Character
-	local IsMobile = Camera.ViewportSize.X < 800
-	
 	local ItemH = IsMobile and LibraryConfig.Sizes.ItemHeight.Mobile or LibraryConfig.Sizes.ItemHeight.PC
 	local TextS = IsMobile and LibraryConfig.Sizes.TextSize.Mobile or LibraryConfig.Sizes.TextSize.PC
 	local TitleS = IsMobile and LibraryConfig.Sizes.TitleSize.Mobile or LibraryConfig.Sizes.TitleSize.PC
 	local HdrH = IsMobile and LibraryConfig.Sizes.HeaderHeight.Mobile or LibraryConfig.Sizes.HeaderHeight.PC
-	
+	-- // Frame Logic //
     local ViewportSize = Camera.ViewportSize
+    local MinHeight = 320
+    
 	if IsMobile then 
 		MainFrame.Size = UDim2.fromScale(0.60, 0)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.50)
         MainFrame.AutomaticSize = Enum.AutomaticSize.Y
+        
+        local MaxHeight = math.floor(ViewportSize.Y * 0.8)
+        
+        Create("UISizeConstraint", {
+            Parent = MainFrame,
+            MinSize = Vector2.new(0, MinHeight),
+            MaxSize = Vector2.new(9999, MaxHeight)
+        })
 	else
-		MainFrame.Size = UDim2.fromScale(0.35, 0)
+		MainFrame.Size = UDim2.fromOffset(650, 0)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.5)
         MainFrame.AutomaticSize = Enum.AutomaticSize.Y
+        
+        -- Desktop: Fixed Width 650, Dynamic Height (Min 320, Max 450)
+        Create("UISizeConstraint", {
+            Parent = MainFrame,
+            MinSize = Vector2.new(650, MinHeight),
+            MaxSize = Vector2.new(650, 450)
+        })
 	end
-    
-    local MaxHeight = math.floor(ViewportSize.Y * 0.8)
-    local MinHeight = 220 
-    
-    Create("UISizeConstraint", {
-        Parent = MainFrame,
-        MinSize = Vector2.new(0, MinHeight),
-        MaxSize = Vector2.new(9999, MaxHeight)
-    })
 	
 	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 14)})
 
@@ -261,7 +274,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	Create("TextLabel", {
 		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -70, 0.5, 0), Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X,
-		Text = "Made By Enviel", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right, BackgroundTransparency = 1
+		Text = "Made By Enviel", Font = Enum.Font.Gotham, TextColor3 = Color3.fromHex("FFFFFF"), TextTransparency = 0.55, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right, BackgroundTransparency = 1
 	})
 	
 	local CloseBtn = Create("ImageButton", {
@@ -710,18 +723,18 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateButton(Cfg)
-			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = WindowTransparency})
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Button, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = WindowTransparency})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 			Create("UIPadding", {Parent = F, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 
 			local B = Create("TextButton", {
 				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
-				Font = Enum.Font.GothamMedium, Text = Cfg.Name or "Button", TextColor3 = Window.Theme.Text, TextSize = TextS,
-				TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, AutoButtonColor = false
+				Font = Enum.Font.GothamMedium, Text = Cfg.Name or "Button", TextColor3 = Window.Theme.ButtonText, TextSize = TextS,
+				TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, AutoButtonColor = false
 			})
 			
 			local BScale = Create("UIScale", {Parent = B, Scale = 1})
-			Create("UIStroke", {Parent = B, Color = Window.Theme.Stroke, Thickness = 1})
+			Create("UIStroke", {Parent = B, Color = Window.Theme.Stroke, Thickness = 0, Transparency = 1}) -- Removed stroke for clean button
 
 			B.MouseButton1Click:Connect(function()
 				Tween(BScale, {Scale = 0.95}, 0.05).Completed:Wait()
@@ -742,18 +755,18 @@ function EnvielUI:CreateWindow(Config)
 			local Val = Cfg.CurrentValue or Cfg.Default or false
 			local Switch = Create("TextButton", {
 				Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -10, 0.5, 0), Size = UDim2.new(0, 44, 0, 22),
-				BackgroundColor3 = Val and Window.Theme.Accent or Window.Theme.Stroke, Text = "", AutoButtonColor = false
+				BackgroundColor3 = Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive, Text = "", AutoButtonColor = false
 			})
 			Create("UICorner", {Parent = Switch, CornerRadius = UDim.new(1, 0)})
 			local Circle = Create("Frame", {
-				Parent = Switch, BackgroundColor3 = Val and Window.Theme.Secondary or Window.Theme.Text, Size = UDim2.new(0, 18, 0, 18),
+				Parent = Switch, BackgroundColor3 = Color3.new(1,1,1), Size = UDim2.new(0, 18, 0, 18),
 				Position = Val and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)
 			})
 			Create("UICorner", {Parent = Circle, CornerRadius = UDim.new(1, 0)})
 			
 			local function Update()
-				Tween(Switch, {BackgroundColor3 = Val and Window.Theme.Accent or Window.Theme.Stroke}, 0.2)
-				Tween(Circle, {Position = Val and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9), BackgroundColor3 = Val and Window.Theme.Secondary or Window.Theme.Text}, 0.2)
+				Tween(Switch, {BackgroundColor3 = Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive}, 0.2)
+				Tween(Circle, {Position = Val and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}, 0.2)
 				if Cfg.Flag then Window.Flags[Cfg.Flag] = Val end
 				if Cfg.Callback then Cfg.Callback(Val) end
 			end
@@ -836,11 +849,11 @@ function EnvielUI:CreateWindow(Config)
 				Text = Cfg.Name or "Input", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
 			local Box = Create("TextBox", {
-				Parent = F, BackgroundColor3 = Window.Theme.Main, Position = UDim2.new(0, 12, 0, ItemH - 18), Size = UDim2.new(1, -24, 0, 16),
-				Text = "", PlaceholderText = Cfg.PlaceholderText or "...", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, 
-				PlaceholderColor3 = Color3.fromRGB(80, 80, 80), TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 1, ClearTextOnFocus = false
+				Parent = F, BackgroundColor3 = Window.Theme.Input, Position = UDim2.new(0, 12, 0, ItemH - 18), Size = UDim2.new(1, -24, 0, 16),
+				Text = "", PlaceholderText = Cfg.PlaceholderText or "...", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.Text, 
+				PlaceholderColor3 = Color3.fromRGB(180, 180, 180), TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 0, ClearTextOnFocus = false
 			})
-			Create("UIStroke", {Parent = Box, Color = Window.Theme.Stroke, Thickness = 1})
+			Create("UIStroke", {Parent = Box, Color = Window.Theme.Stroke, Thickness = 0, Transparency = 1}) -- User wanted input box color, assume no stroke if solid color used
 			Create("UICorner", {Parent = Box, CornerRadius = UDim.new(0, 6)})
 			Box.FocusLost:Connect(function()
 				if Cfg.Flag then Window.Flags[Cfg.Flag] = Box.Text end

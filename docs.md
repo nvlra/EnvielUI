@@ -20,7 +20,7 @@ Here is the **complete** default configuration for reference:
 
 ```lua
 local LibraryConfig = {
-    Transparency = 0.25, -- Default Window Transparency (Glass Effect)
+    Transparency = 0.20, -- Default Window Transparency (20% Transparent / 80% Opacity)
     CornerRadius = {
         Window = 14,
         Group = 12,
@@ -28,19 +28,27 @@ local LibraryConfig = {
         Inner = 6
     },
     Colors = {
-        Main = Color3.fromHex("0A0A0A"),       -- Main Background (Dark Grey)
+        Main = Color3.fromHex("2B2B2B"),       -- Main Background (Dark Grey)
         Secondary = Color3.fromHex("121212"),  -- Element/Group Background
-        Stroke = Color3.fromHex("222222"),     -- Border/Outline Color
+        Stroke = Color3.fromHex("787878"),     -- Border/Outline Color
         Text = Color3.fromHex("F0F0F0"),       -- Main Text Color
         TextSec = Color3.fromHex("AAAAAA"),    -- Secondary Text
         Accent = Color3.fromHex("FFFFFF"),     -- Active/Highlight Color
         AccentText = Color3.fromHex("000000"), -- Text on Accent
         Hover = Color3.fromHex("1E1E1E"),      -- Hover State
         Element = Color3.fromHex("181818"),    -- Container Group Background
+
+        -- Specific Element Colors
+        ToggleActive = Color3.fromHex("D4D4D4"),
+        ToggleInactive = Color3.fromHex("676767"),
+        Input = Color3.fromHex("747474"),
+        Button = Color3.fromHex("FFFFFF"),
+        ButtonText = Color3.fromHex("000000"),
+
         TextSelected = Color3.fromHex("FFFFFF"),
         Description = Color3.fromHex("666666"),
         AccentHover = Color3.fromHex("D0D0D0"),
-        TabActive = Color3.fromHex("FFFFFF"),  -- Active Tab Pill Color
+        TabActive = Color3.fromHex("FFFFFF"),
         TabHover = Color3.fromHex("222222"),
         TextDark = Color3.fromHex("888888"),
         ActiveText = Color3.fromHex("000000")
@@ -59,6 +67,21 @@ local LibraryConfig = {
     }
 }
 ```
+
+---
+
+## 3. Responsive Behavior (New!)
+
+EnvielUI now handles sizing differently based on the device:
+
+- **Desktop (PC)**:
+  - **Width:** Fixed at 650px.
+  - **Height:** Dynamic, adjusting to content height.
+  - **Constraint:** Height is constrained between 320px (Min) and 450px (Max). Scrollbar appears if content exceeds 450px.
+- **Mobile**:
+  - **Width:** Fixed at 60% of screen width.
+  - **Height:** Dynamic, adjusting to content height.
+  - **Constraint:** Height is constrained up to 80% of the screen height before scrolling.
 
 ---
 
