@@ -660,7 +660,7 @@ function EnvielUI:CreateWindow(Config)
 		Create("UIListLayout", {Parent = Page, Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder})
 		Create("UIPadding", {
             Parent = Page, 
-            PaddingBottom = UDim.new(0, NavH + NavP + 20),
+            PaddingBottom = UDim.new(0, 10),
             PaddingTop = UDim.new(0, 5)
         })
 		
