@@ -560,8 +560,8 @@ function EnvielUI:CreateWindow(Config)
 	local NavP = IsMobile and LibraryConfig.Sizes.NavPadding.Mobile or LibraryConfig.Sizes.NavPadding.PC
 	local Dock = Create("CanvasGroup", {
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
-		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, -20),
-		AnchorPoint = Vector2.new(0.5, 1), AutomaticSize = Enum.AutomaticSize.X,
+		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, 15),
+		AnchorPoint = Vector2.new(0.5, 0), AutomaticSize = Enum.AutomaticSize.X,
 		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = 0.25, ZIndex = 10
 	})
 	
