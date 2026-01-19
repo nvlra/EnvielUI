@@ -28,11 +28,11 @@ local LibraryConfig = {
         ButtonText = Color3.fromHex("000000"),
     },
     Sizes = {
-        HeaderHeight = {PC = 50, Mobile = 38},
-        NavHeight = {PC = 44, Mobile = 36},
+        HeaderHeight = {PC = 50, Mobile = 34},
+        NavHeight = {PC = 44, Mobile = 32},
         NavPadding = {PC = 20, Mobile = 10},
-        ItemHeight = {PC = 42, Mobile = 36},
-        TextSize = {PC = 13, Mobile = 11},
+        ItemHeight = {PC = 42, Mobile = 32},
+        TextSize = {PC = 13, Mobile = 10},
         TitleSize = {PC = 18, Mobile = 14}
     },
     Animation = {
@@ -210,8 +210,8 @@ function EnvielUI:CreateWindow(Config)
     local MinHeight = IsMobile and 130 or 320
     
 	if IsMobile then 
-		MainFrame.Size = UDim2.fromScale(0.60, 0)
-		MainFrame.Position = UDim2.fromScale(0.5, 0.50)
+		MainFrame.Size = UDim2.fromScale(0.55, 0)
+		MainFrame.Position = UDim2.fromScale(0.5, 0.45)
         MainFrame.AutomaticSize = Enum.AutomaticSize.Y
         
         local MaxHeight = math.floor(ViewportSize.Y * 0.8)
@@ -426,7 +426,7 @@ function EnvielUI:CreateWindow(Config)
 		
 		local Container = Create("Frame", {
 			Name = "DropdownModal", Parent = Overlay, BackgroundColor3 = Window.Theme.Main,
-			Size = UDim2.new(0.5, 0, 0, IsMobile and 250 or 300), Position = UDim2.new(0.5, 0, 1.5, 0),
+			Size = UDim2.new(IsMobile and 0.6 or 0.5, 0, 0, IsMobile and 250 or 300), Position = UDim2.new(0.5, 0, 1.5, 0),
 			AnchorPoint = Vector2.new(0.5, 1), ZIndex = 10, BorderSizePixel = 0
 		})
 		Create("UICorner", {Parent = Container, CornerRadius = UDim.new(0, 16)})
@@ -546,7 +546,7 @@ function EnvielUI:CreateWindow(Config)
 		
 		Refresh()
 		
-		Tween(Overlay, {BackgroundTransparency = 0.1}, 0.3)
+		Tween(Overlay, {BackgroundTransparency = 0.4}, 0.3)
 		Tween(Container, {Position = UDim2.new(0.5, 0, 1, IsMobile and -20 or 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 	end
 
@@ -562,7 +562,7 @@ function EnvielUI:CreateWindow(Config)
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
 		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, 15),
 		AnchorPoint = Vector2.new(0.5, 0), AutomaticSize = Enum.AutomaticSize.X,
-		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = 0.25, ZIndex = 10
+		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = 0.1, ZIndex = 10
 	})
 	
 	task.spawn(function()
@@ -616,7 +616,7 @@ function EnvielUI:CreateWindow(Config)
                  if List then
                       local ContentH = List.AbsoluteContentSize.Y
                       local Padding = 60
-                      local TargetH = math.clamp(ContentH + HdrH + Padding, 320, 450)
+                      local TargetH = math.clamp(ContentH + HdrH + Padding, 180, 450)
                       
                       if IsMobile then
                           Tween(MainFrame, {Size = UDim2.new(0.60, 0, 0, TargetH)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
@@ -661,7 +661,9 @@ function EnvielUI:CreateWindow(Config)
 		Create("UIPadding", {
             Parent = Page, 
             PaddingBottom = UDim.new(0, 10),
-            PaddingTop = UDim.new(0, 5)
+            PaddingTop = UDim.new(0, 5),
+            PaddingLeft = UDim.new(0, 4), 
+            PaddingRight = UDim.new(0, 4)
         })
 		
 		local Elements = {}
