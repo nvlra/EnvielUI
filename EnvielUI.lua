@@ -276,10 +276,13 @@ function EnvielUI:CreateWindow(Config)
 		Text = "Made By Enviel", Font = Enum.Font.Gotham, TextColor3 = Color3.fromHex("FFFFFF"), TextTransparency = 0.55, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right, BackgroundTransparency = 1
 	})
 	
-	local CloseBtn = Create("ImageButton", {
-		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(20, 20),
 		BackgroundTransparency = 1, Image = GetIcon("x") or "", ImageColor3 = Window.Theme.TextDark
 	})
+    
+    if not IsMobile then
+        CloseBtn.MouseEnter:Connect(function() Tween(CloseBtn, {ImageColor3 = Window.Theme.Text}, 0.2) end)
+        CloseBtn.MouseLeave:Connect(function() Tween(CloseBtn, {ImageColor3 = Window.Theme.TextDark}, 0.2) end)
+    end
 
 	CloseBtn.MouseButton1Click:Connect(function() 
 		Window:Prompt({
@@ -297,10 +300,12 @@ function EnvielUI:CreateWindow(Config)
 		})
 	end)
 
-	local MinBtn = Create("ImageButton", {
-		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -30, 0.5, 0), Size = UDim2.fromOffset(18, 18),
 		BackgroundTransparency = 1, Image = GetIcon("minimize") or "", ImageColor3 = Window.Theme.TextDark
 	})
+    if not IsMobile then
+        MinBtn.MouseEnter:Connect(function() Tween(MinBtn, {ImageColor3 = Window.Theme.Text}, 0.2) end)
+        MinBtn.MouseLeave:Connect(function() Tween(MinBtn, {ImageColor3 = Window.Theme.TextDark}, 0.2) end)
+    end
 	
 	
 	local SafeArea = GuiService:GetGuiInset()
@@ -513,7 +518,7 @@ function EnvielUI:CreateWindow(Config)
 				end
 			end
 			
-			if Multi and not Query then
+			if Multi and (not Query or Query == "") then
 				local sList, uList = {}, {}
 				for _, opt in pairs(filtered) do
 					if table.find(tempSelected, opt) then
@@ -546,7 +551,9 @@ function EnvielUI:CreateWindow(Config)
 				Create("UICorner", {Parent = Item, CornerRadius = UDim.new(0, 8)})
 				if isSelected then Create("UIStroke", {Parent = Item, Color = Window.Theme.Stroke, Thickness = 1}) end
                 
-                AddHover(Item, isSelected and Window.Theme.Secondary or Window.Theme.Main)
+                if not isSelected then
+                    AddHover(Item, Window.Theme.Main)
+                end
 				
 				Item.MouseButton1Click:Connect(function()
 					if Multi then
@@ -828,12 +835,7 @@ function EnvielUI:CreateWindow(Config)
 				if Cfg.Callback then Cfg.Callback(Val) end
 				UpdateVisuals()
 			end
-            
-            if not IsMobile then
-                Switch.MouseEnter:Connect(function() Hovering = true UpdateVisuals() end)
-                Switch.MouseLeave:Connect(function() Hovering = false UpdateVisuals() end)
-            end
-            
+            -- Hover logic removed as requested
 			Switch.MouseButton1Click:Connect(function() Val = not Val UpdateState() end)
 			if Cfg.Default then UpdateState() end
 			return {Set = function(self, v) Val = v UpdateState() end}
