@@ -29,17 +29,17 @@ local LibraryConfig = {
     },
     Colors = {
         Main = Color3.fromHex("2B2B2B"),       -- Main Background (Dark Grey)
-        Secondary = Color3.fromHex("121212"),  -- Element/Group Background
+        Secondary = Color3.fromHex("1D1D1D"),  -- Element/Group Background
         Stroke = Color3.fromHex("787878"),     -- Border/Outline Color
-        Text = Color3.fromHex("F0F0F0"),       -- Main Text Color
+        Text = Color3.fromHex("FFFFFF"),       -- Main Text Color
         TextDark = Color3.fromHex("888888"),   -- Secondary/Darker Text
         Accent = Color3.fromHex("FFFFFF"),     -- Active/Highlight Color
-        Element = Color3.fromHex("181818"),    -- Container Group Background
+        Element = Color3.fromHex("1D1D1D"),    -- Container Group Background
 
         -- Specific Element Colors
         ToggleActive = Color3.fromHex("D4D4D4"),
-        ToggleInactive = Color3.fromHex("676767"),
-        Input = Color3.fromHex("747474"),
+        ToggleInactive = Color3.fromHex("505050"),
+        Input = Color3.fromHex("414141"),
         Button = Color3.fromHex("FFFFFF"),     -- Button Background
         ButtonText = Color3.fromHex("000000"), -- Button Text Color
     },
