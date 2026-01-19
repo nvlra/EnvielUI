@@ -861,6 +861,7 @@ function EnvielUI:CreateWindow(Config)
 			})
 			Create("UICorner", {Parent = Thumb, CornerRadius = UDim.new(1, 0)})
 			Create("UIStroke", {Parent = Thumb, Color = Window.Theme.Secondary, Thickness = 2})
+            AddHover(Thumb, Window.Theme.Accent)
 			
 			local function Update(Input)
 				local Pct = math.clamp((Input.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
