@@ -547,9 +547,9 @@ function EnvielUI:CreateWindow(Config)
 	end
 
 	
-	local ContentHolder = Create("Frame", {
+	local ContentHolder = Create("CanvasGroup", {
 		Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, -(HdrH + 20)), Position = UDim2.new(0, 20, 0, HdrH + 10), 
-		BorderSizePixel = 0
+		BorderSizePixel = 0, GroupTransparency = 0
 	})
 	
 	local NavH = IsMobile and LibraryConfig.Sizes.NavHeight.Mobile or LibraryConfig.Sizes.NavHeight.PC
