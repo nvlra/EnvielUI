@@ -547,16 +547,16 @@ function EnvielUI:CreateWindow(Config)
 	end
 
 	
-	local ContentHolder = Create("CanvasGroup", {
-		Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 0, 0), Position = UDim2.new(0, 20, 0, HdrH + 10), 
-		GroupTransparency = 0, BorderSizePixel = 0, AutomaticSize = Enum.AutomaticSize.Y
+	local ContentHolder = Create("Frame", {
+		Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, -(HdrH + 20)), Position = UDim2.new(0, 20, 0, HdrH + 10), 
+		BorderSizePixel = 0
 	})
 	
 	local NavH = IsMobile and LibraryConfig.Sizes.NavHeight.Mobile or LibraryConfig.Sizes.NavHeight.PC
 	local NavP = IsMobile and LibraryConfig.Sizes.NavPadding.Mobile or LibraryConfig.Sizes.NavPadding.PC
 	local Dock = Create("CanvasGroup", {
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
-		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, NavP),
+		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, -15),
 		AnchorPoint = Vector2.new(0.5, 1), AutomaticSize = Enum.AutomaticSize.X,
 		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = 0.25
 	})
@@ -607,6 +607,24 @@ function EnvielUI:CreateWindow(Config)
 				end
 			end
 			Tween(ContentHolder, {GroupTransparency = 0}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+			
+			-- Dynamic Resizing Logic
+            task.spawn(function()
+                 task.wait(0.05) -- Wait for layout
+                 local List = Page:FindFirstChildWhichIsA("UIListLayout")
+                 if List then
+                      local ContentH = List.AbsoluteContentSize.Y
+                      local Padding = 60 -- Header + Padding spacing
+                      local TargetH = math.clamp(ContentH + HdrH + Padding, 320, 450)
+                      
+                      -- Resize MainFrame
+                      if IsMobile then
+                          Tween(MainFrame, {Size = UDim2.new(0.60, 0, 0, TargetH)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+                      else
+                          Tween(MainFrame, {Size = UDim2.fromOffset(650, TargetH)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+                      end
+                 end
+            end)
 		end
 	end
 
