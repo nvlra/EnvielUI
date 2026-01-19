@@ -623,13 +623,14 @@ function EnvielUI:CreateWindow(Config)
 		Dock.GroupTransparency = 1
 		Tween(Dock, {GroupTransparency = 0}, 0.4)
 	end)
+	
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
     Create("UISizeConstraint", {Parent = Dock, MaxSize = Vector2.new(IsMobile and 350 or 620, 50)})
 
 	local DockList = Create("ScrollingFrame", {
          Parent = Dock, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
          AutomaticCanvasSize = Enum.AutomaticSize.X, CanvasSize = UDim2.new(0,0,0,0),
-         ScrollBarThickness = 0, ScrollingDirection = Enum.ScrollingDirection.X
+         ScrollBarThickness = 0, ScrollingDirection = Enum.ScrollingDirection.X, AutomaticSize = Enum.AutomaticSize.X
     })
 	Create("UIListLayout", {
         Parent = DockList, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), 
