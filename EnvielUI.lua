@@ -398,7 +398,7 @@ function EnvielUI:CreateWindow(Config)
 
 		local Accent = Create("Frame", {
 			Parent = F, BackgroundColor3 = Window.Theme.Accent,
-			Size = UDim2.new(0, 4, 1, -16), Position = UDim2.new(0, 8, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)
+			Size = UDim2.new(0, 4, 1, -30), Position = UDim2.new(0, 8, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)
 		})
 		Create("UICorner", {Parent = Accent, CornerRadius = UDim.new(1, 0)})
 		
