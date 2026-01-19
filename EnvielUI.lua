@@ -646,14 +646,16 @@ function EnvielUI:CreateWindow(Config)
 
     local LastContentW = 0
     local function UpdateDockSize()
-        local RawW = DockLayout.AbsoluteContentSize.X
-        if math.abs(RawW - LastContentW) < 1 then return end
-        LastContentW = RawW
+        task.defer(function()
+            local RawW = DockLayout.AbsoluteContentSize.X
+            if math.abs(RawW - LastContentW) < 1 then return end
+            LastContentW = RawW
 
-        local ContentW = RawW + 8
-        local MaxW = IsMobile and 350 or 650
-        Dock.Size = UDim2.new(0, math.clamp(ContentW, 0, MaxW), 0, NavH)
-        DockList.CanvasSize = UDim2.new(0, ContentW, 0, 0)
+            local ContentW = RawW + 8
+            local MaxW = IsMobile and 350 or 650
+            Dock.Size = UDim2.new(0, math.clamp(ContentW, 0, MaxW), 0, NavH)
+            DockList.CanvasSize = UDim2.new(0, ContentW, 0, 0)
+        end)
     end
     DockLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateDockSize)
 	
