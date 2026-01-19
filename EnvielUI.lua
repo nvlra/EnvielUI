@@ -395,6 +395,7 @@ function EnvielUI:CreateWindow(Config)
 		})
 		
 		task.spawn(function()
+            task.wait()
 			local TargetSize = F.AbsoluteSize.Y
 			if TargetSize < 40 then TargetSize = 60 end
 			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, TargetSize + 6)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
@@ -634,7 +635,9 @@ function EnvielUI:CreateWindow(Config)
             AutomaticSize = Enum.AutomaticSize.Y, AutomaticCanvasSize = Enum.AutomaticSize.Y
 		})
         
-        local MaxH = IsMobile and (Camera.ViewportSize.Y * 0.8) or 450
+        local MaxH = 450
+        if IsMobile then MaxH = math.floor(Camera.ViewportSize.Y * 0.8) end
+        
         Create("UISizeConstraint", {
              Parent = Page,
              MinSize = Vector2.new(0, 0),
