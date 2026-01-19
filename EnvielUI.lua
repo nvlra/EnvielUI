@@ -214,7 +214,7 @@ function EnvielUI:CreateWindow(Config)
 	local TextS = IsMobile and LibraryConfig.Sizes.TextSize.Mobile or LibraryConfig.Sizes.TextSize.PC
 	local TitleS = IsMobile and LibraryConfig.Sizes.TitleSize.Mobile or LibraryConfig.Sizes.TitleSize.PC
 	local HdrH = IsMobile and LibraryConfig.Sizes.HeaderHeight.Mobile or LibraryConfig.Sizes.HeaderHeight.PC
-	-- // Frame Logic //
+
     local ViewportSize = Camera.ViewportSize
     local MinHeight = 320
     
@@ -235,7 +235,6 @@ function EnvielUI:CreateWindow(Config)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.5)
         MainFrame.AutomaticSize = Enum.AutomaticSize.Y
         
-        -- Desktop: Fixed Width 650, Dynamic Height (Min 320, Max 450)
         Create("UISizeConstraint", {
             Parent = MainFrame,
             MinSize = Vector2.new(650, MinHeight),
@@ -733,7 +732,7 @@ function EnvielUI:CreateWindow(Config)
 			})
 			
 			local BScale = Create("UIScale", {Parent = B, Scale = 1})
-			Create("UIStroke", {Parent = B, Color = Window.Theme.Stroke, Thickness = 0, Transparency = 1}) -- Removed stroke for clean button
+			Create("UIStroke", {Parent = B, Color = Window.Theme.Stroke, Thickness = 0, Transparency = 1}) 
 
 			B.MouseButton1Click:Connect(function()
 				Tween(BScale, {Scale = 0.95}, 0.05).Completed:Wait()
@@ -773,8 +772,6 @@ function EnvielUI:CreateWindow(Config)
 			if Cfg.Default then Update() end
 			return {Set = function(self, v) Val = v Update() end}
 		end
-
-
 
 		function Elements:CreateSlider(Cfg)
 			local Min, Max = Cfg.Min or 0, Cfg.Max or 100
@@ -852,7 +849,7 @@ function EnvielUI:CreateWindow(Config)
 				Text = "", PlaceholderText = Cfg.PlaceholderText or "...", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.Text, 
 				PlaceholderColor3 = Color3.fromRGB(180, 180, 180), TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 0, ClearTextOnFocus = false
 			})
-			Create("UIStroke", {Parent = Box, Color = Window.Theme.Stroke, Thickness = 0, Transparency = 1}) -- User wanted input box color, assume no stroke if solid color used
+			Create("UIStroke", {Parent = Box, Color = Window.Theme.Stroke, Thickness = 0, Transparency = 1}) 
 			Create("UICorner", {Parent = Box, CornerRadius = UDim.new(0, 6)})
 			Box.FocusLost:Connect(function()
 				if Cfg.Flag then Window.Flags[Cfg.Flag] = Box.Text end
