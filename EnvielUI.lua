@@ -636,20 +636,11 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 			Create("UIPadding", {Parent = F, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 
-			
 			local B = Create("TextButton", {
 				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
 				Font = Enum.Font.GothamMedium, Text = Cfg.Name or "Button", TextColor3 = Window.Theme.Text, TextSize = TextS,
 				TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, AutoButtonColor = false
 			})
-			
-			local B = Create("TextButton", {
-				Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.new(0, 0, 0, IsMobile and 24 or 28),
-				BackgroundColor3 = Window.Theme.Text, Text = Cfg.Text or "Interact", Font = Enum.Font.GothamBold, TextColor3 = Color3.new(0,0,0), TextSize = 11, AutoButtonColor=false,
-				AutomaticSize = Enum.AutomaticSize.X, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
-			})
-			Create("UIPadding", {Parent = B, PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14)})
-			Create("UICorner", {Parent = B, CornerRadius = UDim.new(0, 6)})
 			
 			local BScale = Create("UIScale", {Parent = B, Scale = 1})
 
