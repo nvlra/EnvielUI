@@ -623,7 +623,6 @@ function EnvielUI:CreateWindow(Config)
 		Dock.GroupTransparency = 1
 		Tween(Dock, {GroupTransparency = 0}, 0.4)
 	end)
-	end)
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
     Create("UISizeConstraint", {Parent = Dock, MaxSize = Vector2.new(IsMobile and 350 or 620, 50)})
 
