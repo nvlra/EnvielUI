@@ -615,8 +615,8 @@ function EnvielUI:CreateWindow(Config)
 	local Dock = Create("CanvasGroup", {
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
 		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, 15),
-		AnchorPoint = Vector2.new(0.5, 0), AutomaticSize = Enum.AutomaticSize.None,
-		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = 0, ZIndex = 10
+		AnchorPoint = Vector2.new(0.5, 0), GroupTransparency = 0, BorderSizePixel = 0, 
+		BackgroundTransparency = 0, ZIndex = 10
 	})
 	
 	task.spawn(function()
@@ -627,37 +627,47 @@ function EnvielUI:CreateWindow(Config)
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
     Create("UISizeConstraint", {Parent = Dock, MaxSize = Vector2.new(IsMobile and 350 or 650, 50)})
 
+	-- DockList as ScrollingFrame (Modified from user snippet to keep scrolling)
 	local DockList = Create("ScrollingFrame", {
          Parent = Dock, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
          AutomaticCanvasSize = Enum.AutomaticSize.None, CanvasSize = UDim2.new(0,0,0,0),
          ScrollBarThickness = 0, ScrollingDirection = Enum.ScrollingDirection.X, AutomaticSize = Enum.AutomaticSize.None
     })
-    
-    local TabsHolder = Create("Frame", {
-        Parent = DockList, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
-        -- AutomaticSize removed to prevent re-entrancy loop with CanvasSize
-    })
-
+	
 	local DockLayout = Create("UIListLayout", {
-        Parent = TabsHolder, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), 
+        Parent = DockList, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), 
         HorizontalAlignment = Enum.HorizontalAlignment.Left, VerticalAlignment = Enum.VerticalAlignment.Center
     })
-	Create("UIPadding", {Parent = TabsHolder, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
+	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
 
-    local LastContentW = 0
-    local function UpdateDockSize()
-        task.defer(function()
-            local RawW = DockLayout.AbsoluteContentSize.X
-            if math.abs(RawW - LastContentW) < 1 then return end
-            LastContentW = RawW
+	-- Robust Queue/Debounce Logic
+	local UpdateQueued = false
+	local CurrentWidth = 0
 
-            local ContentW = RawW + 8
-            local MaxW = IsMobile and 350 or 650
-            Dock.Size = UDim2.new(0, math.clamp(ContentW, 0, MaxW), 0, NavH)
-            DockList.CanvasSize = UDim2.new(0, ContentW, 0, 0)
-        end)
-    end
-    DockLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(UpdateDockSize)
+	local function QueueDockUpdate()
+		if UpdateQueued then return end
+		UpdateQueued = true
+		
+		task.defer(function()
+			task.wait(0.05) -- Debounce delay
+			
+			local NewWidth = DockLayout.AbsoluteContentSize.X + 8
+			local MaxW = IsMobile and 350 or 650
+			local ClampedWidth = math.clamp(NewWidth, 0, MaxW)
+			
+			-- Update CanvasSize always for scrolling
+			DockList.CanvasSize = UDim2.new(0, NewWidth, 0, 0)
+
+			-- Only update Dock Size if changed significantly (prevents loop)
+			if math.abs(ClampedWidth - CurrentWidth) > 2 then
+				CurrentWidth = ClampedWidth
+				Dock.Size = UDim2.new(0, ClampedWidth, 0, NavH)
+			end
+			
+			UpdateQueued = false
+		end)
+	end
+    DockLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(QueueDockUpdate)
 	
 	local ActiveIndicator = Create("Frame", {
 		Parent = DockList, BackgroundColor3 = Window.Theme.Accent, Size = UDim2.new(0, 0, 1, -8), Position = UDim2.new(0, 0, 0.5, 0),
@@ -674,7 +684,7 @@ function EnvielUI:CreateWindow(Config)
 		if Page then
 			Page.Visible = true
 			
-			local Btn = TabsHolder:FindFirstChild(TabId.."Btn")
+			local Btn = DockList:FindFirstChild(TabId.."Btn")
 			if Btn then
 				task.spawn(function()
 					RunService.RenderStepped:Wait()
@@ -685,12 +695,12 @@ function EnvielUI:CreateWindow(Config)
 						Position = UDim2.new(0, CenterX, 0.5, 0)
 					}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 
-                    -- Auto Scroll to Tab
+                    -- Auto Scroll to Tab (Preserved feature)
                     local CanvasX = CenterX - (DockList.AbsoluteWindowSize.X / 2)
                     Tween(DockList, {CanvasPosition = Vector2.new(CanvasX, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 				end)
 
-				for _, b in pairs(TabsHolder:GetChildren()) do
+				for _, b in pairs(DockList:GetChildren()) do
 					if b:IsA("TextButton") then
 						local TargetColor = (b == Btn) and Color3.new(0,0,0) or Window.Theme.TextDark
 						Tween(b, {TextColor3 = TargetColor}, 0.3)
@@ -721,15 +731,16 @@ function EnvielUI:CreateWindow(Config)
 		local TabId = "Tab_"..TabName:gsub(" ", "")
 		
 		local Btn = Create("TextButton", {
-			Name = TabId.."Btn", Parent = TabsHolder, BackgroundTransparency = 1, Text = TabName, Font = Enum.Font.GothamBold,
+			Name = TabId.."Btn", Parent = DockList, BackgroundTransparency = 1, Text = TabName, Font = Enum.Font.GothamBold,
 			TextColor3 = Window.Theme.TextDark, TextSize = TextS + 1, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, ZIndex = 2,
 			TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
 		})
 		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
-
-
 		
+        -- Trigger update ensuring layout catches the new button
+        task.defer(QueueDockUpdate)
+
 		local Page = Create("ScrollingFrame", {
 			Name = TabId, Parent = ContentHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Visible = false,
 			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -742,7 +753,7 @@ function EnvielUI:CreateWindow(Config)
         end
 
 		local TabCount = 0
-		for _, v in pairs(TabsHolder:GetChildren()) do
+		for _, v in pairs(DockList:GetChildren()) do
 			if v:IsA("TextButton") then TabCount += 1 end
 		end
 		if TabCount == 1 then
