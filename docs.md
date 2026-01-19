@@ -32,26 +32,16 @@ local LibraryConfig = {
         Secondary = Color3.fromHex("121212"),  -- Element/Group Background
         Stroke = Color3.fromHex("787878"),     -- Border/Outline Color
         Text = Color3.fromHex("F0F0F0"),       -- Main Text Color
-        TextSec = Color3.fromHex("AAAAAA"),    -- Secondary Text
+        TextDark = Color3.fromHex("888888"),   -- Secondary/Darker Text
         Accent = Color3.fromHex("FFFFFF"),     -- Active/Highlight Color
-        AccentText = Color3.fromHex("000000"), -- Text on Accent
-        Hover = Color3.fromHex("1E1E1E"),      -- Hover State
         Element = Color3.fromHex("181818"),    -- Container Group Background
 
         -- Specific Element Colors
         ToggleActive = Color3.fromHex("D4D4D4"),
         ToggleInactive = Color3.fromHex("676767"),
         Input = Color3.fromHex("747474"),
-        Button = Color3.fromHex("FFFFFF"),
-        ButtonText = Color3.fromHex("000000"),
-
-        TextSelected = Color3.fromHex("FFFFFF"),
-        Description = Color3.fromHex("666666"),
-        AccentHover = Color3.fromHex("D0D0D0"),
-        TabActive = Color3.fromHex("FFFFFF"),
-        TabHover = Color3.fromHex("222222"),
-        TextDark = Color3.fromHex("888888"),
-        ActiveText = Color3.fromHex("000000")
+        Button = Color3.fromHex("FFFFFF"),     -- Button Background
+        ButtonText = Color3.fromHex("000000"), -- Button Text Color
     },
     Sizes = {
         HeaderHeight = {PC = 50, Mobile = 38},
