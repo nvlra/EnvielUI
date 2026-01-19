@@ -652,7 +652,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 		if TabCount == 1 then
 			task.spawn(function()
-				task.wait(0.5) -- Increased wait for clearer initial layout
+				task.wait(0.5)
 				Window:SelectTab(TabId)
 			end)
 		end
@@ -717,7 +717,7 @@ function EnvielUI:CreateWindow(Config)
 			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(1, 0)})
 			Create("UIPadding", {Parent = F, PaddingTop = UDim.new(0,10), PaddingBottom = UDim.new(0,10), PaddingLeft = UDim.new(0,16), PaddingRight = UDim.new(0,16)})
-			Create("UIStroke", {Parent = F, Color = Window.Theme.TextDark, Thickness = 1, Transparency = 0.5}) -- Outline for pill shape
+			Create("UIStroke", {Parent = F, Color = Window.Theme.TextDark, Thickness = 1, Transparency = 0.5})
 			local Title = Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,18), Text = Cfg.Title or "Header", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left})
 			local Content = Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Position=UDim2.new(0,0,0,20), Size=UDim2.new(1,0,0,0), AutomaticSize=Enum.AutomaticSize.Y, Text = Cfg.Content or "", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.TextDark, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, TextWrapped=true})
 			
@@ -903,7 +903,7 @@ function EnvielUI:CreateWindow(Config)
             Btn.MouseButton1Click:Connect(function()
                 Window:OpenDropdownModal(Cfg, function(val)
                     Current = val
-					Cfg.CurrentValue = val -- Update Config so it persists next reopen
+					Cfg.CurrentValue = val
                     Btn.Text = "  "..(type(Current)=="table" and table.concat(Current, ", ") or tostring(Current))
                     if Cfg.Flag then Window.Flags[Cfg.Flag] = Current end
                     if Cfg.Callback then Cfg.Callback(Current) end
