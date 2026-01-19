@@ -716,7 +716,8 @@ function EnvielUI:CreateWindow(Config)
 			if Btn then
 				task.spawn(function()
 					RunService.RenderStepped:Wait()
-                    local CenterX = Btn.AbsolutePosition.X - DockList.AbsolutePosition.X + (Btn.AbsoluteSize.X / 2) + DockList.CanvasPosition.X
+                    -- Subtract 3 (PaddingLeft) because UIPadding shifts the Indicator too
+                    local CenterX = (Btn.AbsolutePosition.X - DockList.AbsolutePosition.X + (Btn.AbsoluteSize.X / 2) + DockList.CanvasPosition.X) - 3
 					
 					Tween(ActiveIndicator, {
 						Size = UDim2.new(0, Btn.AbsoluteSize.X, 1, -8), 
@@ -788,7 +789,7 @@ function EnvielUI:CreateWindow(Config)
 			task.spawn(function()
                 local sT = tick()
                 repeat RunService.RenderStepped:Wait() until Btn.AbsoluteSize.X > 0 or (tick()-sT > 2)
-                task.wait(0.5) -- Stabilize layout (increased for final consistency)
+                task.wait(0.1) -- Fast but stable
 				Window:SelectTab(TabId)
 			end)
 		end
