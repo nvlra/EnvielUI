@@ -664,7 +664,7 @@ function EnvielUI:CreateWindow(Config)
 		task.defer(function()
 			task.wait(0.05) -- 50ms debounce
 			
-			local ContentW = DockLayout.AbsoluteContentSize.X + 24
+			local ContentW = DockLayout.AbsoluteContentSize.X + 34
 			local MaxW = IsMobile and 350 or 650
 			local ClampedWidth = math.clamp(ContentW, 60, MaxW)
 			
@@ -1248,29 +1248,40 @@ function EnvielUI:CreateWindow(Config)
 			BackgroundColor3 = Window.Theme.Secondary, GroupTransparency = 1
 		})
 		
-		Create("UICorner", {Parent = AlertFrame, CornerRadius = UDim.new(0, 12)})
+		Create("UICorner", {Parent = AlertFrame, CornerRadius = UDim.new(0, 16)})
 		
 		Create("TextLabel", {
-			Parent = AlertFrame, Size = UDim2.new(1, 0, 0, 40), Position = UDim2.new(0, 0, 0, 10), BackgroundTransparency = 1,
-			Text = Title, Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 16
+			Parent = AlertFrame, Size = UDim2.new(1, 0, 0, 40), Position = UDim2.new(0, 0, 0, 15), BackgroundTransparency = 1,
+			Text = Title, Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Center
 		})
 		
 		Create("TextLabel", {
-			Parent = AlertFrame, Size = UDim2.new(1, -40, 0, 40), Position = UDim2.new(0, 20, 0, 45), BackgroundTransparency = 1,
-			Text = Content, Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 13, TextWrapped = true
+			Parent = AlertFrame, Size = UDim2.new(1, -40, 0, 40), Position = UDim2.new(0, 20, 0, 50), BackgroundTransparency = 1,
+			Text = Content, Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 13, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Center
 		})
 		
 		local BtnContainer = Create("Frame", {
-			Parent = AlertFrame, Size = UDim2.new(1, -40, 0, 35), Position = UDim2.new(0, 20, 1, -50), BackgroundTransparency = 1
+			Parent = AlertFrame, Size = UDim2.new(1, -40, 0, 36), Position = UDim2.new(0, 20, 1, -25), AnchorPoint = Vector2.new(0, 1), BackgroundTransparency = 1
 		})
-		Create("UIListLayout", {Parent = BtnContainer, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), HorizontalAlignment = Enum.HorizontalAlignment.Center})
+		Create("UIListLayout", {Parent = BtnContainer, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 12), HorizontalAlignment = Enum.HorizontalAlignment.Center})
 		
-		for _, Action in pairs(Actions) do
+		for i, Action in pairs(Actions) do
+            local IsPrimary = Action.Primary or (i == #Actions)
+            
 			local Btn = Create("TextButton", {
-				Parent = BtnContainer, Size = UDim2.new(0.5, -5, 1, 0), BackgroundColor3 = Window.Theme.Stroke,
-				Text = Action.Text, Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 12, AutoButtonColor = false
+				Parent = BtnContainer, Size = UDim2.new(0.5, -6, 1, 0), 
+                BackgroundColor3 = IsPrimary and Window.Theme.Text or Color3.new(0,0,0),
+                BackgroundTransparency = IsPrimary and 0 or 1,
+				Text = Action.Text, Font = Enum.Font.GothamBold, 
+                TextColor3 = IsPrimary and Window.Theme.Main or Window.Theme.Text, 
+                TextSize = 13, AutoButtonColor = false
 			})
-			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
+			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(1, 0)})
+            
+            if not IsPrimary then
+                Create("UIStroke", {Parent = Btn, Color = Window.Theme.Text, Thickness = 1})
+            end
+
 			Btn.MouseButton1Click:Connect(function()
 				if Action.Callback then Action.Callback() end
                 if AlertFrame:IsA("CanvasGroup") then
