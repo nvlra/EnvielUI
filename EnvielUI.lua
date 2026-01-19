@@ -651,7 +651,7 @@ function EnvielUI:CreateWindow(Config)
 		HorizontalAlignment = Enum.HorizontalAlignment.Left, -- Left for stable anchoring
 		VerticalAlignment = Enum.VerticalAlignment.Center
 	})
-	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 3), PaddingRight = UDim.new(0, 4)})
+	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
 
 	-- Safe Queue System
 	local UpdateQueued = false
@@ -664,7 +664,7 @@ function EnvielUI:CreateWindow(Config)
 		task.defer(function()
 			task.wait(0.05) -- 50ms debounce
 			
-			local ContentW = DockLayout.AbsoluteContentSize.X + 14
+			local ContentW = DockLayout.AbsoluteContentSize.X + 24
 			local MaxW = IsMobile and 350 or 650
 			local ClampedWidth = math.clamp(ContentW, 60, MaxW)
 			
@@ -716,8 +716,8 @@ function EnvielUI:CreateWindow(Config)
 			if Btn then
 				task.spawn(function()
 					RunService.RenderStepped:Wait()
-                    -- Subtract 3 (PaddingLeft) because UIPadding shifts the Indicator too
-                    local CenterX = (Btn.AbsolutePosition.X - DockList.AbsolutePosition.X + (Btn.AbsoluteSize.X / 2) + DockList.CanvasPosition.X) - 3
+                    -- Subtract 4 (PaddingLeft) because UIPadding shifts the Indicator too
+                    local CenterX = (Btn.AbsolutePosition.X - DockList.AbsolutePosition.X + (Btn.AbsoluteSize.X / 2) + DockList.CanvasPosition.X) - 4
 					
 					Tween(ActiveIndicator, {
 						Size = UDim2.new(0, Btn.AbsoluteSize.X, 1, -8), 
