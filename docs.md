@@ -44,11 +44,11 @@ local LibraryConfig = {
         ButtonText = Color3.fromHex("000000"), -- Button Text Color
     },
     Sizes = {
-        HeaderHeight = {PC = 50, Mobile = 38},
-        NavHeight = {PC = 44, Mobile = 36},
+        HeaderHeight = {PC = 50, Mobile = 34},
+        NavHeight = {PC = 44, Mobile = 32},
         NavPadding = {PC = 20, Mobile = 10},
-        ItemHeight = {PC = 42, Mobile = 36},
-        TextSize = {PC = 13, Mobile = 11},
+        ItemHeight = {PC = 42, Mobile = 32},
+        TextSize = {PC = 13, Mobile = 10},
         TitleSize = {PC = 18, Mobile = 14}
     },
     Animation = {
@@ -69,9 +69,9 @@ EnvielUI now handles sizing differently based on the device:
   - **Height:** Dynamic, adjusting to content height.
   - **Constraint:** Height is constrained between 320px (Min) and 450px (Max). Scrollbar appears if content exceeds 450px.
 - **Mobile**:
-  - **Width:** Fixed at 60% of screen width.
+  - **Width:** Fixed at 60% of screen width (Compact Mode).
   - **Height:** Dynamic, adjusting to content height.
-  - **Constraint:** Height is constrained up to 80% of the screen height before scrolling.
+  - **Constraint:** Height is constrained up to 80% of the screen height. Items are smaller (32px height) for better fit.
 
 ---
 

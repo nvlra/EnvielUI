@@ -346,8 +346,8 @@ function EnvielUI:CreateWindow(Config)
 	end)
 	
 	local NotifHolder = Create("Frame", {
-		Parent = ScreenGui, BackgroundTransparency = 1, Size = IsMobile and UDim2.new(0, 220, 1, -20) or UDim2.new(0, 360, 1, -20),
-		Position = IsMobile and UDim2.new(1, -230, 0, 20) or UDim2.new(1, -380, 0, 20), AnchorPoint = Vector2.new(0, 0)
+		Parent = ScreenGui, BackgroundTransparency = 1, Size = IsMobile and UDim2.new(0, 180, 1, -20) or UDim2.new(0, 360, 1, -20),
+		Position = IsMobile and UDim2.new(1, -190, 0, 20) or UDim2.new(1, -380, 0, 20), AnchorPoint = Vector2.new(0, 0)
 	})
 	Create("UIListLayout", {Parent = NotifHolder, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2), VerticalAlignment = Enum.VerticalAlignment.Bottom})
 	
@@ -361,7 +361,7 @@ function EnvielUI:CreateWindow(Config)
 		})
 		
 		local F = Create("Frame", {
-			Parent = F, BackgroundColor3 = Window.Theme.Main, 
+			Parent = Wrapper, BackgroundColor3 = Window.Theme.Main, 
 			Size = UDim2.new(1, -4, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
 			Position = UDim2.new(1.5, 0, 0, 0),
             BackgroundTransparency = 0.05
