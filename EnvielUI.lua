@@ -198,8 +198,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	local ContentWindow = Create("CanvasGroup", {
 		Name = "ContentWindow", Parent = MainFrame, BackgroundColor3 = Window.Theme.Main,
-		Size = UDim2.new(1, 0, 0, 0), BorderSizePixel = 0, GroupTransparency = 1, BackgroundTransparency = Config.Transparency,
-        AutomaticSize = Enum.AutomaticSize.Y
+		Size = UDim2.new(1, 0, 1, 0), BorderSizePixel = 0, GroupTransparency = 1, BackgroundTransparency = Config.Transparency
 	})
 	
 	local ItemH = IsMobile and LibraryConfig.Sizes.ItemHeight.Mobile or LibraryConfig.Sizes.ItemHeight.PC
