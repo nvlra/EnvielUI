@@ -386,9 +386,7 @@ function EnvielUI:CreateWindow(Config)
 			Parent = ContentPad, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 16), Text = Title,
 			Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left
 		})
-		Create("TextLabel", {
-			Parent = ContentPad, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
-			Text = Content, Font = Enum.Font.Gotham, TextColor3 = Window.Theme.TextDark, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true
+			Text = Content, Font = Enum.Font.Gotham, TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true
 		})
 		
 		task.spawn(function()
