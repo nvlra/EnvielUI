@@ -642,11 +642,11 @@ function EnvielUI:CreateWindow(Config)
         Parent = TabsHolder, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), 
         HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center
     })
-	Create("UIPadding", {Parent = TabsHolder, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
+	Create("UIPadding", {Parent = TabsHolder, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
 
     local function UpdateDockSize()
         local ContentW = DockLayout.AbsoluteContentSize.X + 60
-        local MaxW = IsMobile and 350 or 620
+        local MaxW = IsMobile and 350 or 650
         Dock.Size = UDim2.new(0, math.clamp(ContentW, 0, MaxW), 0, NavH)
         DockList.CanvasSize = UDim2.new(0, ContentW, 0, 0)
     end
@@ -677,6 +677,10 @@ function EnvielUI:CreateWindow(Config)
 						Size = UDim2.new(0, Btn.AbsoluteSize.X, 1, -8), 
 						Position = UDim2.new(0, CenterX, 0.5, 0)
 					}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+
+                    -- Auto Scroll to Tab
+                    local CanvasX = CenterX - (DockList.AbsoluteWindowSize.X / 2)
+                    Tween(DockList, {CanvasPosition = Vector2.new(CanvasX, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 				end)
 
 				for _, b in pairs(TabsHolder:GetChildren()) do
@@ -736,7 +740,8 @@ function EnvielUI:CreateWindow(Config)
 		end
 		if TabCount == 1 then
 			task.spawn(function()
-				task.wait(0.5)
+                local sT = tick()
+                repeat RunService.RenderStepped:Wait() until Btn.AbsoluteSize.X > 0 or (tick()-sT > 2)
 				Window:SelectTab(TabId)
 			end)
 		end
