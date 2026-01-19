@@ -572,9 +572,6 @@ function EnvielUI:CreateWindow(Config)
 	end)
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
-    -- Removed Dock UIStroke per user request
-
-	
 
 	local DockList = Create("Frame", {Parent = Dock, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0)})
 	Create("UIListLayout", {Parent = DockList, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center})
@@ -631,6 +628,7 @@ function EnvielUI:CreateWindow(Config)
 		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
 		
+		local Page = Create("ScrollingFrame", {
 			Name = TabId, Parent = ContentHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Visible = false,
 			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0),
             AutomaticSize = Enum.AutomaticSize.Y, AutomaticCanvasSize = Enum.AutomaticSize.Y
