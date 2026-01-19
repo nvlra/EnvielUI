@@ -813,26 +813,29 @@ function EnvielUI:CreateWindow(Config)
 			})
 			Create("UICorner", {Parent = Circle, CornerRadius = UDim.new(1, 0)})
 			
-			local function Update()
+			local Hovering = false
+			local function UpdateVisuals()
+				local TargetC = Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive
+				if Hovering and not IsMobile then TargetC = Lighten(TargetC, 0.1) end
+				
+				Tween(Switch, {BackgroundColor3 = TargetC}, 0.2)
+				Tween(Circle, {Position = Val and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}, 0.2)
+			end
+			
+			local function UpdateState()
 				if Cfg.Flag then Window.Flags[Cfg.Flag] = Val end
 				if Cfg.Callback then Cfg.Callback(Val) end
+				UpdateVisuals()
 			end
-            AddHover(Switch, Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive) -- Update this inside Update() too?
-             -- Actually AddHover binds to a fixed color. Toggles change color.
-             -- Manual hover for Toggle:
+            
             if not IsMobile then
-                Switch.MouseEnter:Connect(function()
-                    local C = Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive
-                    Tween(Switch, {BackgroundColor3 = Lighten(C, 0.1)}, 0.2)
-                end)
-                Switch.MouseLeave:Connect(function()
-                    local C = Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive
-                    Tween(Switch, {BackgroundColor3 = C}, 0.2)
-                end)
+                Switch.MouseEnter:Connect(function() Hovering = true UpdateVisuals() end)
+                Switch.MouseLeave:Connect(function() Hovering = false UpdateVisuals() end)
             end
-			Switch.MouseButton1Click:Connect(function() Val = not Val Update() end)
-			if Cfg.Default then Update() end
-			return {Set = function(self, v) Val = v Update() end}
+            
+			Switch.MouseButton1Click:Connect(function() Val = not Val UpdateState() end)
+			if Cfg.Default then UpdateState() end
+			return {Set = function(self, v) Val = v UpdateState() end}
 		end
 
 		function Elements:CreateSlider(Cfg)
