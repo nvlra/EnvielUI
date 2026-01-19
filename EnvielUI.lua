@@ -454,7 +454,7 @@ function EnvielUI:CreateWindow(Config)
 		local Container = Create("Frame", {
 			Name = "DropdownModal", Parent = Overlay, BackgroundColor3 = Window.Theme.Main,
 			Size = UDim2.new(IsMobile and 0.6 or 0.5, 0, 0, IsMobile and 250 or 300), Position = UDim2.new(0.5, 0, 1.5, 0),
-			AnchorPoint = Vector2.new(0.5, 1), ZIndex = 10, BorderSizePixel = 0
+			AnchorPoint = Vector2.new(0.5, 1), ZIndex = 10, BorderSizePixel = 0, BackgroundTransparency = 0.1
 		})
 		Create("UICorner", {Parent = Container, CornerRadius = UDim.new(0, 16)})
 		local Patch = Create("Frame", {
@@ -523,10 +523,18 @@ function EnvielUI:CreateWindow(Config)
 				end
 			end
 			
-			if Multi and (not Query or Query == "") then
+			
+			if (not Query or Query == "") then
 				local sList, uList = {}, {}
 				for _, opt in pairs(filtered) do
-					if table.find(tempSelected, opt) then
+                    local isSel = false
+                    if Multi then
+                        if table.find(tempSelected, opt) then isSel = true end
+                    else
+                        if tempSelected == opt then isSel = true end
+                    end
+                    
+					if isSel then
 						table.insert(sList, opt)
 					else
 						table.insert(uList, opt)
@@ -691,7 +699,7 @@ function EnvielUI:CreateWindow(Config)
 		local Page = Create("ScrollingFrame", {
 			Name = TabId, Parent = ContentHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Visible = false,
 			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0),
-			Size = UDim2.new(1, 0, 1, 0), AutomaticCanvasSize = Enum.AutomaticSize.Y, BorderSizePixel = 0
+			Size = UDim2.new(1, 0, 1, 0), AutomaticCanvasSize = Enum.AutomaticSize.Y, BorderSizePixel = 0, ScrollingDirection = Enum.ScrollingDirection.Y
 		})
         
         if not IsMobile then
