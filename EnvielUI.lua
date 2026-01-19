@@ -97,17 +97,6 @@ local function Lighten(Color, Amount)
 	return Color3.fromHSV(H, S, V)
 end
 
-local function AddHover(Obj, NormalColor)
-	if IsMobile then return end
-	if not Obj then return end
-    Obj.MouseEnter:Connect(function()
-        Tween(Obj, {BackgroundColor3 = Lighten(NormalColor, 0.1)}, 0.2)
-    end)
-    Obj.MouseLeave:Connect(function()
-        Tween(Obj, {BackgroundColor3 = NormalColor}, 0.2)
-    end)
-end
-
 local function Dragify(Frame, Parent)
 	if not Frame then return end
 	Parent = Parent or Frame
@@ -212,6 +201,17 @@ function EnvielUI:CreateWindow(Config)
 	
     local Camera = workspace.CurrentCamera
 	local IsMobile = Camera.ViewportSize.X < 800
+    
+    local function AddHover(Obj, NormalColor)
+        if IsMobile then return end
+        if not Obj then return end
+        Obj.MouseEnter:Connect(function()
+            Tween(Obj, {BackgroundColor3 = Lighten(NormalColor, 0.1)}, 0.2)
+        end)
+        Obj.MouseLeave:Connect(function()
+            Tween(Obj, {BackgroundColor3 = NormalColor}, 0.2)
+        end)
+    end
 	
 	local ContentWindow = Create("CanvasGroup", {
 		Name = "ContentWindow", Parent = MainFrame, BackgroundColor3 = Window.Theme.Main,
@@ -674,16 +674,18 @@ function EnvielUI:CreateWindow(Config)
 		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
 
-        if not IsMobile then
-            Btn.MouseEnter:Connect(function() Tween(Btn, {TextColor3 = Window.Theme.Text}, 0.2) end)
-            Btn.MouseLeave:Connect(function() if Page.Visible == false then Tween(Btn, {TextColor3 = Window.Theme.TextDark}, 0.2) end end)
-        end
+
 		
 		local Page = Create("ScrollingFrame", {
 			Name = TabId, Parent = ContentHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Visible = false,
 			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0),
 			Size = UDim2.new(1, 0, 1, 0), AutomaticCanvasSize = Enum.AutomaticSize.Y, BorderSizePixel = 0
 		})
+        
+        if not IsMobile then
+            Btn.MouseEnter:Connect(function() Tween(Btn, {TextColor3 = Window.Theme.Text}, 0.2) end)
+            Btn.MouseLeave:Connect(function() if Page.Visible == false then Tween(Btn, {TextColor3 = Window.Theme.TextDark}, 0.2) end end)
+        end
 
 		local TabCount = 0
 		for _, v in pairs(DockList:GetChildren()) do
@@ -973,7 +975,7 @@ function EnvielUI:CreateWindow(Config)
                 Set = function(self, v)
                      Current = v
 					 Cfg.CurrentValue = v
-                     Btn.Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current))
+                     Btn.Text = "  "..(type(Current)=="table" and table.concat(Current, ", ") or tostring(Current))
                 end,
                 Refresh = function(self, NewOptions)
                     Cfg.Options = NewOptions
