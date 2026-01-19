@@ -732,11 +732,11 @@ function EnvielUI:CreateWindow(Config)
 			Create("UIPadding", {Parent = F, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 
 			local B = Create("TextButton", {
-				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
+				Parent = F, BackgroundTransparency = 0, BackgroundColor3 = Window.Theme.Button, Size = UDim2.new(1, 0, 1, 0),
 				Font = Enum.Font.GothamMedium, Text = Cfg.Name or "Button", TextColor3 = Window.Theme.ButtonText, TextSize = TextS,
 				TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, AutoButtonColor = false
 			})
-			
+			Create("UICorner", {Parent = B, CornerRadius = UDim.new(0, 8)})
 			local BScale = Create("UIScale", {Parent = B, Scale = 1})
 			Create("UIStroke", {Parent = B, Color = Window.Theme.Stroke, Thickness = 0, Transparency = 1}) 
 
@@ -886,7 +886,7 @@ function EnvielUI:CreateWindow(Config)
             
             local Btn = Create("TextButton", {
                 Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -10, 0.5, 0), Size = UDim2.new(0, 120, 0, 26),
-                BackgroundColor3 = Window.Theme.Main, Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current)),
+                BackgroundColor3 = Window.Theme.Input, Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current)),
                 Font = Enum.Font.Gotham, TextColor3 = Window.Theme.Text, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false
             })
             Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
