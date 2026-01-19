@@ -612,66 +612,90 @@ function EnvielUI:CreateWindow(Config)
 	
 	local NavH = IsMobile and LibraryConfig.Sizes.NavHeight.Mobile or LibraryConfig.Sizes.NavHeight.PC
 	local NavP = IsMobile and LibraryConfig.Sizes.NavPadding.Mobile or LibraryConfig.Sizes.NavPadding.PC
+
 	local Dock = Create("CanvasGroup", {
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
-		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, 15),
-		AnchorPoint = Vector2.new(0.5, 0), GroupTransparency = 0, BorderSizePixel = 0, 
-		BackgroundTransparency = 0, ZIndex = 10
+		Size = UDim2.new(0, 100, 0, NavH), -- Start small
+		Position = UDim2.new(0.5, 0, 1, 15),
+		AnchorPoint = Vector2.new(0.5, 0), 
+		GroupTransparency = 0, BorderSizePixel = 0, 
+		BackgroundTransparency = 0, ZIndex = 10,
+		ClipsDescendants = true -- Prevent visual overflow
 	})
-	
+
 	task.spawn(function()
 		Dock.GroupTransparency = 1
 		Tween(Dock, {GroupTransparency = 0}, 0.4)
 	end)
-	
+
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
     Create("UISizeConstraint", {Parent = Dock, MaxSize = Vector2.new(IsMobile and 350 or 650, 50)})
 
-	-- DockList as ScrollingFrame (Modified from user snippet to keep scrolling)
+	-- ScrollingFrame for horizontal scrolling (if many tabs)
 	local DockList = Create("ScrollingFrame", {
-         Parent = Dock, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
-         AutomaticCanvasSize = Enum.AutomaticSize.None, CanvasSize = UDim2.new(0,0,0,0),
-         ScrollBarThickness = 0, ScrollingDirection = Enum.ScrollingDirection.X, AutomaticSize = Enum.AutomaticSize.None
-    })
-	
+		Parent = Dock, 
+		BackgroundTransparency = 1, 
+		Size = UDim2.new(1, 0, 1, 0),
+		AutomaticCanvasSize = Enum.AutomaticSize.None, -- CRITICAL: Manual control
+		CanvasSize = UDim2.new(0, 0, 0, 0),
+		ScrollBarThickness = 0, 
+		ScrollingDirection = Enum.ScrollingDirection.X,
+		BorderSizePixel = 0,
+		ScrollBarImageTransparency = 1
+	})
+
 	local DockLayout = Create("UIListLayout", {
-        Parent = DockList, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), 
-        HorizontalAlignment = Enum.HorizontalAlignment.Left, VerticalAlignment = Enum.VerticalAlignment.Center
-    })
+		Parent = DockList, 
+		FillDirection = Enum.FillDirection.Horizontal, 
+		Padding = UDim.new(0, 10), 
+		HorizontalAlignment = Enum.HorizontalAlignment.Center, -- Center tabs
+		VerticalAlignment = Enum.VerticalAlignment.Center
+	})
 	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
 
-	-- Robust Queue/Debounce Logic
+	-- Safe Queue System
 	local UpdateQueued = false
-	local CurrentWidth = 0
+	local CurrentDockWidth = 100 -- Match initial Dock.Size
 
 	local function QueueDockUpdate()
 		if UpdateQueued then return end
 		UpdateQueued = true
 		
 		task.defer(function()
-			task.wait(0.05) -- Debounce delay
+			task.wait(0.05) -- 50ms debounce
 			
-			local NewWidth = DockLayout.AbsoluteContentSize.X + 8
+			local ContentW = DockLayout.AbsoluteContentSize.X + 8
 			local MaxW = IsMobile and 350 or 650
-			local ClampedWidth = math.clamp(NewWidth, 0, MaxW)
+			local ClampedWidth = math.clamp(ContentW, 60, MaxW)
 			
-			-- Update CanvasSize always for scrolling
-			DockList.CanvasSize = UDim2.new(0, NewWidth, 0, 0)
-
-			-- Only update Dock Size if changed significantly (prevents loop)
-			if math.abs(ClampedWidth - CurrentWidth) > 2 then
-				CurrentWidth = ClampedWidth
+			-- Only update if changed significantly (>2px threshold)
+			if math.abs(ClampedWidth - CurrentDockWidth) > 2 then
+				CurrentDockWidth = ClampedWidth
+				
+				-- Update Dock size (direct, no tween to prevent cascade)
 				Dock.Size = UDim2.new(0, ClampedWidth, 0, NavH)
+				
+				-- Update CanvasSize for scrolling (only if content exceeds dock)
+				if ContentW > ClampedWidth then
+					DockList.CanvasSize = UDim2.new(0, ContentW, 0, 0)
+				else
+					DockList.CanvasSize = UDim2.new(0, 0, 0, 0) -- No scroll needed
+				end
 			end
 			
 			UpdateQueued = false
 		end)
 	end
-    DockLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(QueueDockUpdate)
-	
+
+	DockLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(QueueDockUpdate)
+
 	local ActiveIndicator = Create("Frame", {
-		Parent = DockList, BackgroundColor3 = Window.Theme.Accent, Size = UDim2.new(0, 0, 1, -8), Position = UDim2.new(0, 0, 0.5, 0),
-		AnchorPoint = Vector2.new(0.5, 0.5), ZIndex = 0
+		Parent = DockList, 
+		BackgroundColor3 = Window.Theme.Accent, 
+		Size = UDim2.new(0, 0, 1, -8), 
+		Position = UDim2.new(0, 0, 0.5, 0),
+		AnchorPoint = Vector2.new(0.5, 0.5), 
+		ZIndex = 0
 	})
 	Create("UICorner", {Parent = ActiveIndicator, CornerRadius = UDim.new(1, 0)})
 
