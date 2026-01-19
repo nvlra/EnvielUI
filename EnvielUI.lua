@@ -651,11 +651,12 @@ function EnvielUI:CreateWindow(Config)
 		HorizontalAlignment = Enum.HorizontalAlignment.Left, -- Left for stable anchoring
 		VerticalAlignment = Enum.VerticalAlignment.Center
 	})
-	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 12)})
+	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
 
 	-- Safe Queue System
 	local UpdateQueued = false
 	local CurrentDockWidth = 100 -- Match initial Dock.Size
+	local ActiveTabButton = nil -- Track active button for sync
 
 	local function QueueDockUpdate()
 		if UpdateQueued then return end
@@ -684,6 +685,12 @@ function EnvielUI:CreateWindow(Config)
 			end
 			
 			UpdateQueued = false
+			
+			-- Sync Indicator Position after Resize
+			if ActiveTabButton then
+				local CenterX = (ActiveTabButton.AbsolutePosition.X - DockList.AbsolutePosition.X + (ActiveTabButton.AbsoluteSize.X / 2) + DockList.CanvasPosition.X) - 4
+				ActiveIndicator.Position = UDim2.new(0, CenterX, 0.5, 0)
+			end
 		end)
 	end
 
@@ -714,6 +721,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local Btn = DockList:FindFirstChild(TabId.."Btn")
 			if Btn then
+				ActiveTabButton = Btn -- Updates the tracking variable
 				task.spawn(function()
 					RunService.RenderStepped:Wait()
                     -- Subtract 4 (PaddingLeft) because UIPadding shifts the Indicator too
@@ -1238,14 +1246,15 @@ function EnvielUI:CreateWindow(Config)
 		local Content = Config.Content or "Are you sure?"
 		local Actions = Config.Actions or {{Text = "OK", Callback = function() end}}
 		
-		local Blur = Create("Frame", {
-			Parent = MainFrame, BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1, Size = UDim2.fromScale(1,1), Name = "AlertBlur", ZIndex = 100
+		local Blur = Create("TextButton", { -- Changed to TextButton to capture input (Modal)
+			Parent = MainFrame, BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1, Size = UDim2.fromScale(1,1), 
+            Name = "AlertBlur", ZIndex = 100, AutoButtonColor = false, Text = ""
 		})
 		Create("UICorner", {Parent = Blur, CornerRadius = UDim.new(0, 14)})
 
 		local AlertFrame = Create("CanvasGroup", {
 			Parent = Blur, Size = UDim2.fromOffset(300, 160), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5),
-			BackgroundColor3 = Window.Theme.Secondary, GroupTransparency = 1
+			BackgroundColor3 = Window.Theme.Secondary, GroupTransparency = 1, Active = true
 		})
 		
 		Create("UICorner", {Parent = AlertFrame, CornerRadius = UDim.new(0, 16)})
@@ -1263,10 +1272,11 @@ function EnvielUI:CreateWindow(Config)
 		local BtnContainer = Create("Frame", {
 			Parent = AlertFrame, Size = UDim2.new(1, -40, 0, 36), Position = UDim2.new(0, 20, 1, -25), AnchorPoint = Vector2.new(0, 1), BackgroundTransparency = 1
 		})
-		Create("UIListLayout", {Parent = BtnContainer, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 12), HorizontalAlignment = Enum.HorizontalAlignment.Center})
+		Create("UIListLayout", {Parent = BtnContainer, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 12), HorizontalAlignment = Enum.HorizontalAlignment.Center, SortOrder = Enum.SortOrder.LayoutOrder})
 		
 		for i, Action in pairs(Actions) do
-            local IsPrimary = Action.Primary or (i == #Actions)
+            -- Smart detection: If explicitly Primary OR text is Confirm/Yes/OK -> Primary logic
+            local IsPrimary = Action.Primary or (Action.Text:lower() == "yes" or Action.Text:lower() == "confirm" or Action.Text:lower() == "ok")
             
 			local Btn = Create("TextButton", {
 				Parent = BtnContainer, Size = UDim2.new(0.5, -6, 1, 0), 
@@ -1274,7 +1284,8 @@ function EnvielUI:CreateWindow(Config)
                 BackgroundTransparency = IsPrimary and 0 or 1,
 				Text = Action.Text, Font = Enum.Font.GothamBold, 
                 TextColor3 = IsPrimary and Window.Theme.Main or Window.Theme.Text, 
-                TextSize = 13, AutoButtonColor = false
+                TextSize = 13, AutoButtonColor = false,
+                LayoutOrder = IsPrimary and 2 or 1 -- Primary always on Right
 			})
 			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(1, 0)})
             
@@ -1283,7 +1294,7 @@ function EnvielUI:CreateWindow(Config)
                     Parent = Btn, 
                     Color = Window.Theme.Text, 
                     Thickness = 1,
-                    ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- Ensure it strokes the border, not text
+                    ApplyStrokeMode = Enum.ApplyStrokeMode.Border
                 })
             end
 
