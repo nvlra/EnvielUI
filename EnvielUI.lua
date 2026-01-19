@@ -632,14 +632,20 @@ function EnvielUI:CreateWindow(Config)
          AutomaticCanvasSize = Enum.AutomaticSize.None, CanvasSize = UDim2.new(0,0,0,0),
          ScrollBarThickness = 0, ScrollingDirection = Enum.ScrollingDirection.X, AutomaticSize = Enum.AutomaticSize.None
     })
+    
+    local TabsHolder = Create("Frame", {
+        Parent = DockList, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
+        AutomaticSize = Enum.AutomaticSize.X
+    })
+
 	local DockLayout = Create("UIListLayout", {
-        Parent = DockList, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), 
+        Parent = TabsHolder, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), 
         HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center
     })
-	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
+	Create("UIPadding", {Parent = TabsHolder, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 
     local function UpdateDockSize()
-        local ContentW = DockLayout.AbsoluteContentSize.X + 24
+        local ContentW = DockLayout.AbsoluteContentSize.X + 60
         local MaxW = IsMobile and 350 or 620
         Dock.Size = UDim2.new(0, math.clamp(ContentW, 0, MaxW), 0, NavH)
         DockList.CanvasSize = UDim2.new(0, ContentW, 0, 0)
@@ -661,7 +667,7 @@ function EnvielUI:CreateWindow(Config)
 		if Page then
 			Page.Visible = true
 			
-			local Btn = DockList:FindFirstChild(TabId.."Btn")
+			local Btn = TabsHolder:FindFirstChild(TabId.."Btn")
 			if Btn then
 				task.spawn(function()
 					RunService.RenderStepped:Wait()
@@ -673,7 +679,7 @@ function EnvielUI:CreateWindow(Config)
 					}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 				end)
 
-				for _, b in pairs(DockList:GetChildren()) do
+				for _, b in pairs(TabsHolder:GetChildren()) do
 					if b:IsA("TextButton") then
 						local TargetColor = (b == Btn) and Color3.new(0,0,0) or Window.Theme.TextDark
 						Tween(b, {TextColor3 = TargetColor}, 0.3)
@@ -704,7 +710,7 @@ function EnvielUI:CreateWindow(Config)
 		local TabId = "Tab_"..TabName:gsub(" ", "")
 		
 		local Btn = Create("TextButton", {
-			Name = TabId.."Btn", Parent = DockList, BackgroundTransparency = 1, Text = TabName, Font = Enum.Font.GothamBold,
+			Name = TabId.."Btn", Parent = TabsHolder, BackgroundTransparency = 1, Text = TabName, Font = Enum.Font.GothamBold,
 			TextColor3 = Window.Theme.TextDark, TextSize = TextS + 1, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, ZIndex = 2,
 			TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
 		})
@@ -725,7 +731,7 @@ function EnvielUI:CreateWindow(Config)
         end
 
 		local TabCount = 0
-		for _, v in pairs(DockList:GetChildren()) do
+		for _, v in pairs(TabsHolder:GetChildren()) do
 			if v:IsA("TextButton") then TabCount += 1 end
 		end
 		if TabCount == 1 then
