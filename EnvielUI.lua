@@ -1,3 +1,4 @@
+if task and task.synchronize then task.synchronize() end
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
 
@@ -371,8 +372,7 @@ function EnvielUI:CreateWindow(Config)
 		})
 		
 		Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 10)})
-		-- Create("UIStroke", {Parent = F, Color = Window.Theme.Stroke, Thickness = 1}) -- Removed Stroke per Request
-		
+
 		local Accent = Create("Frame", {
 			Parent = F, BackgroundColor3 = Window.Theme.Accent,
 			Size = UDim2.new(0, 3, 1, -12), Position = UDim2.new(0, 6, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)
