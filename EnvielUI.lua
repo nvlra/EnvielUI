@@ -658,6 +658,20 @@ function EnvielUI:CreateWindow(Config)
 	local CurrentDockWidth = 100 -- Match initial Dock.Size
 	local ActiveTabButton = nil -- Track active button for sync
 
+    -- Folder to isolate Indicator from UIListLayout
+    local DecorFolder = Instance.new("Folder", DockList)
+    DecorFolder.Name = "Decor"
+
+	local ActiveIndicator = Create("Frame", {
+		Parent = DecorFolder, -- Parent to Folder, not DockList directly
+        BackgroundColor3 = Window.Theme.Accent, 
+		Size = UDim2.new(0, 0, 1, -8), 
+		Position = UDim2.new(0, 0, 0.5, 0),
+		AnchorPoint = Vector2.new(0.5, 0.5), 
+		ZIndex = 0
+	})
+	Create("UICorner", {Parent = ActiveIndicator, CornerRadius = UDim.new(1, 0)})
+
 	local function QueueDockUpdate()
 		if UpdateQueued then return end
 		UpdateQueued = true
@@ -695,20 +709,6 @@ function EnvielUI:CreateWindow(Config)
 	end
 
 	DockLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(QueueDockUpdate)
-	
-    -- Folder to isolate Indicator from UIListLayout
-    local DecorFolder = Instance.new("Folder", DockList)
-    DecorFolder.Name = "Decor"
-
-	local ActiveIndicator = Create("Frame", {
-		Parent = DecorFolder, -- Parent to Folder, not DockList directly
-        BackgroundColor3 = Window.Theme.Accent, 
-		Size = UDim2.new(0, 0, 1, -8), 
-		Position = UDim2.new(0, 0, 0.5, 0),
-		AnchorPoint = Vector2.new(0.5, 0.5), 
-		ZIndex = 0
-	})
-	Create("UICorner", {Parent = ActiveIndicator, CornerRadius = UDim.new(1, 0)})
 
 	function Window:SelectTab(TabId)
 		for _, p in pairs(ContentHolder:GetChildren()) do 
