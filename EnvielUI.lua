@@ -562,7 +562,7 @@ function EnvielUI:CreateWindow(Config)
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
 		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, 15),
 		AnchorPoint = Vector2.new(0.5, 0), AutomaticSize = Enum.AutomaticSize.X,
-		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = 0.1, ZIndex = 10
+		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = 0, ZIndex = 10
 	})
 	
 	task.spawn(function()
@@ -662,8 +662,8 @@ function EnvielUI:CreateWindow(Config)
             Parent = Page, 
             PaddingBottom = UDim.new(0, 10),
             PaddingTop = UDim.new(0, 5),
-            PaddingLeft = UDim.new(0, 4), 
-            PaddingRight = UDim.new(0, 4)
+            PaddingLeft = UDim.new(0, 12), 
+            PaddingRight = UDim.new(0, 12)
         })
 		
 		local Elements = {}
