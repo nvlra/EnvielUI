@@ -368,11 +368,11 @@ function EnvielUI:CreateWindow(Config)
 			Parent = Wrapper, BackgroundColor3 = Window.Theme.Main, 
 			Size = UDim2.new(1, -4, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
 			Position = UDim2.new(1.5, 0, 0, 0),
-            BackgroundTransparency = 0.3
+            BackgroundTransparency = 0.2
 		})
 		
 		Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 15)})
-        Create("UISizeConstraint", {Parent = F, MinSize = Vector2.new(0, 90)})
+        Create("UISizeConstraint", {Parent = F, MinSize = Vector2.new(0, 60)})
 
 		local Accent = Create("Frame", {
 			Parent = F, BackgroundColor3 = Window.Theme.Accent,
