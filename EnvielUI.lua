@@ -100,7 +100,6 @@ end
 local function AddHover(Obj, NormalColor)
 	if IsMobile then return end
 	if not Obj then return end
-    -- Store original in attribute or closure
     Obj.MouseEnter:Connect(function()
         Tween(Obj, {BackgroundColor3 = Lighten(NormalColor, 0.1)}, 0.2)
     end)
@@ -674,7 +673,7 @@ function EnvielUI:CreateWindow(Config)
 		})
 		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
-        -- Hover for Dock Buttons (Text Color)
+
         if not IsMobile then
             Btn.MouseEnter:Connect(function() Tween(Btn, {TextColor3 = Window.Theme.Text}, 0.2) end)
             Btn.MouseLeave:Connect(function() if Page.Visible == false then Tween(Btn, {TextColor3 = Window.Theme.TextDark}, 0.2) end end)
