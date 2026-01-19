@@ -651,7 +651,7 @@ function EnvielUI:CreateWindow(Config)
 		HorizontalAlignment = Enum.HorizontalAlignment.Left, -- Left for stable anchoring
 		VerticalAlignment = Enum.VerticalAlignment.Center
 	})
-	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
+	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 12)})
 
 	-- Safe Queue System
 	local UpdateQueued = false
@@ -664,7 +664,7 @@ function EnvielUI:CreateWindow(Config)
 		task.defer(function()
 			task.wait(0.05) -- 50ms debounce
 			
-			local ContentW = DockLayout.AbsoluteContentSize.X + 34
+			local ContentW = DockLayout.AbsoluteContentSize.X + 50
 			local MaxW = IsMobile and 350 or 650
 			local ClampedWidth = math.clamp(ContentW, 60, MaxW)
 			
@@ -1279,7 +1279,12 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(1, 0)})
             
             if not IsPrimary then
-                Create("UIStroke", {Parent = Btn, Color = Window.Theme.Text, Thickness = 1})
+                Create("UIStroke", {
+                    Parent = Btn, 
+                    Color = Window.Theme.Text, 
+                    Thickness = 1,
+                    ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- Ensure it strokes the border, not text
+                })
             end
 
 			Btn.MouseButton1Click:Connect(function()
