@@ -202,6 +202,7 @@ function EnvielUI:CreateWindow(Config)
         AutomaticSize = Enum.AutomaticSize.Y
 	})
 	
+	local Camera = workspace.CurrentCamera
 	local Character = Players.LocalPlayer.Character
 	local IsMobile = Camera.ViewportSize.X < 800
 	
