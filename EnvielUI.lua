@@ -91,6 +91,24 @@ local function Tween(instance, properties, duration, style, direction)
 	return tween
 end
 
+local function Lighten(Color, Amount)
+	local H, S, V = Color:ToHSV()
+	V = math.clamp(V + Amount, 0, 1)
+	return Color3.fromHSV(H, S, V)
+end
+
+local function AddHover(Obj, NormalColor)
+	if IsMobile then return end
+	if not Obj then return end
+    -- Store original in attribute or closure
+    Obj.MouseEnter:Connect(function()
+        Tween(Obj, {BackgroundColor3 = Lighten(NormalColor, 0.1)}, 0.2)
+    end)
+    Obj.MouseLeave:Connect(function()
+        Tween(Obj, {BackgroundColor3 = NormalColor}, 0.2)
+    end)
+end
+
 local function Dragify(Frame, Parent)
 	if not Frame then return end
 	Parent = Parent or Frame
@@ -528,6 +546,8 @@ function EnvielUI:CreateWindow(Config)
 				})
 				Create("UICorner", {Parent = Item, CornerRadius = UDim.new(0, 8)})
 				if isSelected then Create("UIStroke", {Parent = Item, Color = Window.Theme.Stroke, Thickness = 1}) end
+                
+                AddHover(Item, isSelected and Window.Theme.Secondary or Window.Theme.Main)
 				
 				Item.MouseButton1Click:Connect(function()
 					if Multi then
@@ -654,6 +674,11 @@ function EnvielUI:CreateWindow(Config)
 		})
 		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
+        -- Hover for Dock Buttons (Text Color)
+        if not IsMobile then
+            Btn.MouseEnter:Connect(function() Tween(Btn, {TextColor3 = Window.Theme.Text}, 0.2) end)
+            Btn.MouseLeave:Connect(function() if Page.Visible == false then Tween(Btn, {TextColor3 = Window.Theme.TextDark}, 0.2) end end)
+        end
 		
 		local Page = Create("ScrollingFrame", {
 			Name = TabId, Parent = ContentHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Visible = false,
@@ -757,6 +782,7 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = B, CornerRadius = UDim.new(1, 0)})
 			local BScale = Create("UIScale", {Parent = B, Scale = 1})
 			Create("UIStroke", {Parent = B, Color = Window.Theme.Stroke, Thickness = 0, Transparency = 1}) 
+            AddHover(B, Window.Theme.Button)
 
 			B.MouseButton1Click:Connect(function()
 				Tween(BScale, {Scale = 0.95}, 0.05).Completed:Wait()
@@ -788,11 +814,22 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = Circle, CornerRadius = UDim.new(1, 0)})
 			
 			local function Update()
-				Tween(Switch, {BackgroundColor3 = Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive}, 0.2)
-				Tween(Circle, {Position = Val and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}, 0.2)
 				if Cfg.Flag then Window.Flags[Cfg.Flag] = Val end
 				if Cfg.Callback then Cfg.Callback(Val) end
 			end
+            AddHover(Switch, Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive) -- Update this inside Update() too?
+             -- Actually AddHover binds to a fixed color. Toggles change color.
+             -- Manual hover for Toggle:
+            if not IsMobile then
+                Switch.MouseEnter:Connect(function()
+                    local C = Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive
+                    Tween(Switch, {BackgroundColor3 = Lighten(C, 0.1)}, 0.2)
+                end)
+                Switch.MouseLeave:Connect(function()
+                    local C = Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive
+                    Tween(Switch, {BackgroundColor3 = C}, 0.2)
+                end)
+            end
 			Switch.MouseButton1Click:Connect(function() Val = not Val Update() end)
 			if Cfg.Default then Update() end
 			return {Set = function(self, v) Val = v Update() end}
@@ -876,6 +913,7 @@ function EnvielUI:CreateWindow(Config)
             })
             Create("UICorner", {Parent = BoxContainer, CornerRadius = UDim.new(0, 6)})
             Create("UIStroke", {Parent = BoxContainer, Color = Window.Theme.Stroke, Thickness = 1})
+            AddHover(BoxContainer, Window.Theme.Input)
             
 			local Box = Create("TextBox", {
 				Parent = BoxContainer, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 1, 0), Position = UDim2.new(0, 8, 0, 0),
@@ -912,6 +950,7 @@ function EnvielUI:CreateWindow(Config)
             })
             Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
             Create("UIStroke", {Parent = Btn, Color = Window.Theme.Stroke, Thickness = 1})
+            AddHover(Btn, Window.Theme.Input)
             
             Create("ImageLabel", {
                 Parent = Btn, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -8, 0.5, 0), Size = UDim2.fromOffset(14, 14),
