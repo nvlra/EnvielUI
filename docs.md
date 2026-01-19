@@ -101,9 +101,12 @@ local MainTab = Window:CreateTab({
 
 ---
 
-## 5. Groups (Containers)
+## 5. Groups (Containers) & Styling
 
-Groups organize elements. There are two types:
+Groups organize elements.
+**New Styling Feature**: Elements placed inside a group (using `Group:CreateX`) now automatically adopt a "Clean List" unified style, blending into the group's background for a premium look.
+
+There are two types:
 
 ### A. Container Group (Fixed)
 
@@ -145,7 +148,7 @@ FarmGroup:CreateButton({
 
 ### Toggle
 
-```lua
+````lua
 FarmGroup:CreateToggle({
     Name = "Enable Auto Farm",
     Default = false, -- Initial State
@@ -155,7 +158,14 @@ FarmGroup:CreateToggle({
         print("Toggle is:", Value)
     end
 })
-```
+
+#### Update Programmatically
+```lua
+local MyToggle = FarmGroup:CreateToggle({ ... })
+MyToggle:Set(true) -- Turns it ON
+````
+
+````
 
 ### Slider
 
@@ -171,7 +181,14 @@ FarmGroup:CreateSlider({
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
     end
 })
-```
+
+#### Update Programmatically
+```lua
+local MySlider = FarmGroup:CreateSlider({ ... })
+MySlider:Set(50) -- Sets value to 50
+````
+
+````
 
 ### Input (Result Box)
 
@@ -185,13 +202,13 @@ FarmGroup:CreateInput({
         print("Input:", Text)
     end
 })
-```
+````
 
 ### Dropdown
 
 Supports Search and Multi-Select. opens in a modal.
 
-```lua
+````lua
 FarmGroup:CreateDropdown({
     Name = "Select Weapon",
     Options = {"Sword", "Bow", "Staff", "Axe"},
@@ -203,7 +220,19 @@ FarmGroup:CreateDropdown({
         print("Selected:", Option)
     end
 })
-```
+
+#### Refresh Options / Set Value
+```lua
+local MyDropdown = FarmGroup:CreateDropdown({ ... })
+
+-- Update the List of Options
+MyDropdown:Refresh({"New Item A", "New Item B", "New Item C"})
+
+-- Select a specific Option programmatically
+MyDropdown:Set("New Item A")
+````
+
+````
 
 ### Color Picker
 
@@ -217,7 +246,14 @@ FarmGroup:CreateColorPicker({
         print("New Color:", Color)
     end
 })
-```
+
+#### Update Color
+```lua
+local MyCP = FarmGroup:CreateColorPicker({ ... })
+MyCP:Set(Color3.fromRGB(0, 255, 0)) -- Sets color to Green
+````
+
+````
 
 ### Paragraph
 
@@ -228,7 +264,7 @@ FarmGroup:CreateParagraph({
     Title = "Status",
     Content = "Waiting for User..."
 })
-```
+````
 
 Update a paragraph later:
 
