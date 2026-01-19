@@ -349,7 +349,7 @@ function EnvielUI:CreateWindow(Config)
 		Parent = ScreenGui, BackgroundTransparency = 1, Size = IsMobile and UDim2.new(0, 220, 1, -20) or UDim2.new(0, 360, 1, -20),
 		Position = IsMobile and UDim2.new(1, -230, 0, 20) or UDim2.new(1, -380, 0, 20), AnchorPoint = Vector2.new(0, 0)
 	})
-	Create("UIListLayout", {Parent = NotifHolder, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4), VerticalAlignment = Enum.VerticalAlignment.Bottom})
+	Create("UIListLayout", {Parent = NotifHolder, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2), VerticalAlignment = Enum.VerticalAlignment.Bottom})
 	
 	function Window:Notify(Cfg)
 		local Title = Cfg.Title or "Notification"
@@ -361,23 +361,23 @@ function EnvielUI:CreateWindow(Config)
 		})
 		
 		local F = Create("Frame", {
-			Parent = Wrapper, BackgroundColor3 = Window.Theme.Main, 
+			Parent = F, BackgroundColor3 = Window.Theme.Main, 
 			Size = UDim2.new(1, -4, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
 			Position = UDim2.new(1.5, 0, 0, 0),
-            BackgroundTransparency = 0.2
+            BackgroundTransparency = 0.05
 		})
 		
-		Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 15)})
-        Create("UISizeConstraint", {Parent = F, MinSize = Vector2.new(0, 60)})
+		Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 12)})
+        Create("UISizeConstraint", {Parent = F, MinSize = Vector2.new(0, 50)})
 
 		local Accent = Create("Frame", {
 			Parent = F, BackgroundColor3 = Window.Theme.Accent,
-			Size = UDim2.new(0, 2, 1, -12), Position = UDim2.new(0, 6, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)
+			Size = UDim2.new(0, 4, 1, -16), Position = UDim2.new(0, 8, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)
 		})
 		Create("UICorner", {Parent = Accent, CornerRadius = UDim.new(1, 0)})
 		
 		local ContentPad = Create("Frame", {
-			Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -20, 1, 0), Position = UDim2.new(0, 16, 0, 0)
+			Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -26, 1, 0), Position = UDim2.new(0, 24, 0, 0)
 		})
 		Create("UIListLayout", {Parent = ContentPad, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
 		Create("UIPadding", {Parent = ContentPad, PaddingTop = UDim.new(0, 10), PaddingBottom = UDim.new(0, 10), PaddingRight = UDim.new(0, 10)})
@@ -394,10 +394,10 @@ function EnvielUI:CreateWindow(Config)
 		task.spawn(function()
             RunService.RenderStepped:Wait() 
 			local TargetSize = F.AbsoluteSize.Y
-			if TargetSize < 90 then TargetSize = 90 end
-			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, TargetSize + 6)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+			if TargetSize < 50 then TargetSize = 50 end
+			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, TargetSize + 2)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 			
-			Tween(F, {Position = UDim2.new(0, 2, 0, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+			Tween(F, {Position = UDim2.new(0, 0, 0, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		end)
 		
 		task.delay(Duration, function()
