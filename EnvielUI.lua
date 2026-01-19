@@ -635,7 +635,7 @@ function EnvielUI:CreateWindow(Config)
     
     local TabsHolder = Create("Frame", {
         Parent = DockList, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
-        AutomaticSize = Enum.AutomaticSize.X
+        -- AutomaticSize removed to prevent re-entrancy loop with CanvasSize
     })
 
 	local DockLayout = Create("UIListLayout", {
@@ -644,8 +644,13 @@ function EnvielUI:CreateWindow(Config)
     })
 	Create("UIPadding", {Parent = TabsHolder, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
 
+    local LastContentW = 0
     local function UpdateDockSize()
-        local ContentW = DockLayout.AbsoluteContentSize.X + 20
+        local RawW = DockLayout.AbsoluteContentSize.X
+        if math.abs(RawW - LastContentW) < 1 then return end
+        LastContentW = RawW
+
+        local ContentW = RawW + 8
         local MaxW = IsMobile and 350 or 650
         Dock.Size = UDim2.new(0, math.clamp(ContentW, 0, MaxW), 0, NavH)
         DockList.CanvasSize = UDim2.new(0, ContentW, 0, 0)
@@ -742,7 +747,7 @@ function EnvielUI:CreateWindow(Config)
 			task.spawn(function()
                 local sT = tick()
                 repeat RunService.RenderStepped:Wait() until Btn.AbsoluteSize.X > 0 or (tick()-sT > 2)
-                task.wait(0.3) -- Stabilize layout (increased to ensure accuracy)
+                task.wait(0.5) -- Stabilize layout (increased for final consistency)
 				Window:SelectTab(TabId)
 			end)
 		end
