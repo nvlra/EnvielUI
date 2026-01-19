@@ -702,7 +702,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			-- Sync Indicator Position after Resize
 			if ActiveTabButton then
-				local CenterX = (ActiveTabButton.AbsolutePosition.X - DockList.AbsolutePosition.X + (ActiveTabButton.AbsoluteSize.X / 2) + DockList.CanvasPosition.X) - 4
+				local CenterX = (ActiveTabButton.AbsolutePosition.X - DockList.AbsolutePosition.X + (ActiveTabButton.AbsoluteSize.X / 2) + DockList.CanvasPosition.X)
 				ActiveIndicator.Position = UDim2.new(0, CenterX, 0.5, 0)
 			end
 		end)
@@ -724,8 +724,7 @@ function EnvielUI:CreateWindow(Config)
 				ActiveTabButton = Btn -- Updates the tracking variable
 				task.spawn(function()
 					RunService.RenderStepped:Wait()
-                    -- Subtract 4 (PaddingLeft) because UIPadding shifts the Indicator too
-                    local CenterX = (Btn.AbsolutePosition.X - DockList.AbsolutePosition.X + (Btn.AbsoluteSize.X / 2) + DockList.CanvasPosition.X) - 4
+                    local CenterX = (Btn.AbsolutePosition.X - DockList.AbsolutePosition.X + (Btn.AbsoluteSize.X / 2) + DockList.CanvasPosition.X)
 					
 					Tween(ActiveIndicator, {
 						Size = UDim2.new(0, Btn.AbsoluteSize.X, 1, -8), 
@@ -797,8 +796,9 @@ function EnvielUI:CreateWindow(Config)
 			task.spawn(function()
                 local sT = tick()
                 repeat RunService.RenderStepped:Wait() until Btn.AbsoluteSize.X > 0 or (tick()-sT > 2)
-                task.wait(0.1) -- Fast but stable
+                task.wait(0.5) -- Slightly increased for robustness
 				Window:SelectTab(TabId)
+                task.delay(0.1, QueueDockUpdate) -- Force final sync snap
 			end)
 		end
 		
