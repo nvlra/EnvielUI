@@ -623,14 +623,23 @@ function EnvielUI:CreateWindow(Config)
 		Dock.GroupTransparency = 1
 		Tween(Dock, {GroupTransparency = 0}, 0.4)
 	end)
+	end)
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
+    Create("UISizeConstraint", {Parent = Dock, MaxSize = Vector2.new(IsMobile and 350 or 620, 50)})
 
-	local DockList = Create("Frame", {Parent = Dock, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0)})
-	Create("UIListLayout", {Parent = DockList, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center})
+	local DockList = Create("ScrollingFrame", {
+         Parent = Dock, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
+         AutomaticCanvasSize = Enum.AutomaticSize.X, CanvasSize = UDim2.new(0,0,0,0),
+         ScrollBarThickness = 0, ScrollingDirection = Enum.ScrollingDirection.X
+    })
+	Create("UIListLayout", {
+        Parent = DockList, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), 
+        HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center
+    })
 	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 6)})
 	
 	local ActiveIndicator = Create("Frame", {
-		Parent = Dock, BackgroundColor3 = Window.Theme.Accent, Size = UDim2.new(0, 0, 1, -8), Position = UDim2.new(0, 0, 0.5, 0),
+		Parent = DockList, BackgroundColor3 = Window.Theme.Accent, Size = UDim2.new(0, 0, 1, -8), Position = UDim2.new(0, 0, 0.5, 0),
 		AnchorPoint = Vector2.new(0.5, 0.5), ZIndex = 0
 	})
 	Create("UICorner", {Parent = ActiveIndicator, CornerRadius = UDim.new(1, 0)})
@@ -648,7 +657,7 @@ function EnvielUI:CreateWindow(Config)
 			if Btn then
 				task.spawn(function()
 					RunService.RenderStepped:Wait()
-					local CenterX = (Btn.AbsolutePosition.X - Dock.AbsolutePosition.X) + (Btn.AbsoluteSize.X / 2)
+                    local CenterX = Btn.AbsolutePosition.X - DockList.AbsolutePosition.X + (Btn.AbsoluteSize.X / 2) + DockList.CanvasPosition.X
 					
 					Tween(ActiveIndicator, {
 						Size = UDim2.new(0, Btn.AbsoluteSize.X, 1, -8), 
