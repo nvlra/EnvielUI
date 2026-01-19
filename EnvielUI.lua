@@ -210,7 +210,6 @@ function EnvielUI:CreateWindow(Config)
 	local TitleS = IsMobile and LibraryConfig.Sizes.TitleSize.Mobile or LibraryConfig.Sizes.TitleSize.PC
 	local HdrH = IsMobile and LibraryConfig.Sizes.HeaderHeight.Mobile or LibraryConfig.Sizes.HeaderHeight.PC
 	
-	-- // Dynamic Frame Logic //
     local ViewportSize = Camera.ViewportSize
 	if IsMobile then 
 		MainFrame.Size = UDim2.fromScale(0.60, 0)
@@ -645,13 +644,10 @@ function EnvielUI:CreateWindow(Config)
 			end)
 		end
 		
-        -- UIListLayout updates AutomaticCanvasSize automatically, but we ensure padding is accounted for
-        -- Logic: Page (AutoSize Y) expands MainFrame. When MainFrame hits MaxSize, Page stops expanding.
-        -- Since CanvasSize > PhysicalSize, Scrollbar appears.
 		Create("UIListLayout", {Parent = Page, Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder})
 		Create("UIPadding", {
             Parent = Page, 
-            PaddingBottom = UDim.new(0, NavH + NavP + 20), -- Ensure space for Dock at bottom
+            PaddingBottom = UDim.new(0, NavH + NavP + 20),
             PaddingTop = UDim.new(0, 5)
         })
 		
@@ -917,7 +913,7 @@ function EnvielUI:CreateWindow(Config)
 
 			local Content = Create("Frame", {
 				Parent = ContainerStub, Size = UDim2.new(1, 0, 0, Open and 0 or 0), Position = UDim2.new(0, 0, 0, 36),
-				BackgroundTransparency = 1, ClipsDescendants = true, Visible = true -- Always visible for tween
+				BackgroundTransparency = 1, ClipsDescendants = true, Visible = true
 			})
 			
 			local Layout = Create("UIListLayout", {
@@ -926,7 +922,7 @@ function EnvielUI:CreateWindow(Config)
 			Create("UIPadding", {Parent = Content, PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8), PaddingBottom = UDim.new(0, 10)})
 			
 			local function UpdateHeight()
-				GroupH = Layout.AbsoluteContentSize.Y + 10 -- Padding
+				GroupH = Layout.AbsoluteContentSize.Y + 10
 				if Open then
 					ContainerStub.Size = UDim2.new(1, 0, 0, 36 + GroupH)
 					Content.Size = UDim2.new(1, 0, 0, GroupH)
@@ -958,7 +954,7 @@ function EnvielUI:CreateWindow(Config)
 				end
 			end
 			GroupMethods.CreateCollapsibleGroup = nil 
-			GroupMethods.CreateGroup = GroupMethods.CreateCollapsibleGroup -- Alias
+			GroupMethods.CreateGroup = GroupMethods.CreateCollapsibleGroup
 			
 			return GroupMethods
 		end
