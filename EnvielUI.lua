@@ -6,7 +6,7 @@ local LOGO_WHITE = "94854804824909"
 local LOGO_BLACK = "120261170817156"
 
 local LibraryConfig = {
-    Transparency = 0.2,
+    Transparency = 0.1,
     CornerRadius = {
         Window = 14,
         Group = 12,
