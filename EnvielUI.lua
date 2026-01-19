@@ -176,7 +176,6 @@ function EnvielUI:CreateWindow(Config)
 		MainFrame.Size = UDim2.fromScale(0.60, 0.70)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.50)
 	else
-		-- Reduced desktop size as requested
 		MainFrame.Size = UDim2.fromScale(0.35, 0.45)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.5)
 	end
@@ -610,8 +609,6 @@ function EnvielUI:CreateWindow(Config)
 			})
 		end
 
-		function Elements:CreateGroup(Config)
-			local Text = (type(Config) == "table" and Config.Name) or Config
 		function Elements:CreateGroup(Cfg)
 			local Text = (type(Cfg) == "table" and Cfg.Name) or Cfg
 			Elements:CreateSection(Text)
@@ -695,44 +692,7 @@ function EnvielUI:CreateWindow(Config)
 			return {Set = function(self, v) Val = v Update() end}
 		end
 
-        function Elements:CreateDropdown(Cfg)
-            local Options = Cfg.Options or {}
-            local Current = Cfg.CurrentValue or (Cfg.Multi and "..." or Options[1])
-            
-            local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = WindowTransparency})
-            Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
-            
-            Create("TextLabel", {
-                Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, 0), Position = UDim2.new(0, 12, 0, 0),
-                Text = Cfg.Name or "Dropdown", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
-            })
-            
-            local Btn = Create("TextButton", {
-                Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -10, 0.5, 0), Size = UDim2.new(0, 120, 0, 26),
-                BackgroundColor3 = Window.Theme.Main, Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current)),
-                Font = Enum.Font.Gotham, TextColor3 = Window.Theme.Text, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false
-            })
-            Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
-            Create("UIStroke", {Parent = Btn, Color = Window.Theme.Stroke, Thickness = 1})
-            
-            Create("ImageLabel", {
-                Parent = Btn, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -8, 0.5, 0), Size = UDim2.fromOffset(14, 14),
-                BackgroundTransparency = 1, Image = GetIcon("chevron-down") or "rbxassetid://6031091004", ImageColor3 = Window.Theme.TextDark
-            })
-            
-            Btn.MouseButton1Click:Connect(function()
-                Window:OpenDropdownModal(Cfg, function(val)
-                    Current = val
-                    Btn.Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current))
-                    if Cfg.Flag then Window.Flags[Cfg.Flag] = Current end
-                    if Cfg.Callback then Cfg.Callback(Current) end
-                end)
-            end)
-            return {Set = function(self, v)
-                 Current = v
-                 Btn.Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current))
-            end}
-        end
+
 
 		function Elements:CreateSlider(Cfg)
 			local Min, Max = Cfg.Min or 0, Cfg.Max or 100
