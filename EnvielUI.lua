@@ -648,7 +648,7 @@ function EnvielUI:CreateWindow(Config)
 		Parent = DockList, 
 		FillDirection = Enum.FillDirection.Horizontal, 
 		Padding = UDim.new(0, 10), 
-		HorizontalAlignment = Enum.HorizontalAlignment.Center, -- Center tabs
+		HorizontalAlignment = Enum.HorizontalAlignment.Left, -- Left for stable anchoring
 		VerticalAlignment = Enum.VerticalAlignment.Center
 	})
 	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
