@@ -207,7 +207,7 @@ function EnvielUI:CreateWindow(Config)
 	local HdrH = IsMobile and LibraryConfig.Sizes.HeaderHeight.Mobile or LibraryConfig.Sizes.HeaderHeight.PC
 
     local ViewportSize = Camera.ViewportSize
-    local MinHeight = 320
+    local MinHeight = IsMobile and 130 or 320
     
 	if IsMobile then 
 		MainFrame.Size = UDim2.fromScale(0.60, 0)
@@ -372,19 +372,19 @@ function EnvielUI:CreateWindow(Config)
 
 		local Accent = Create("Frame", {
 			Parent = F, BackgroundColor3 = Window.Theme.Accent,
-			Size = UDim2.new(0, 3, 1, -12), Position = UDim2.new(0, 6, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)
+			Size = UDim2.new(0, 2, 1, -12), Position = UDim2.new(0, 6, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5)
 		})
 		Create("UICorner", {Parent = Accent, CornerRadius = UDim.new(1, 0)})
 		
 		local ContentPad = Create("Frame", {
 			Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -20, 1, 0), Position = UDim2.new(0, 16, 0, 0)
 		})
-		Create("UIListLayout", {Parent = ContentPad, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2)})
+		Create("UIListLayout", {Parent = ContentPad, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4)})
 		Create("UIPadding", {Parent = ContentPad, PaddingTop = UDim.new(0, 10), PaddingBottom = UDim.new(0, 10), PaddingRight = UDim.new(0, 10)})
 
 		Create("TextLabel", {
 			Parent = ContentPad, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 16), Text = Title,
-			Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left
+			Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left
 		})
 		Create("TextLabel", {
 			Parent = ContentPad, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
@@ -685,7 +685,7 @@ function EnvielUI:CreateWindow(Config)
 				AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 0.6
 			})
 			Create("UICorner", {Parent = GroupContainer, CornerRadius = UDim.new(0, 12)})
-			Create("UIPadding", {Parent = GroupContainer, PaddingTop = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12), PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
+			Create("UIPadding", {Parent = GroupContainer, PaddingTop = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12), PaddingLeft = UDim.new(0, 0), PaddingRight = UDim.new(0, 0)})
 			Create("UIListLayout", {Parent = GroupContainer, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
 			
 			if Text and Text ~= "" then
@@ -712,10 +712,10 @@ function EnvielUI:CreateWindow(Config)
 		end
 		
 		function Elements:CreateParagraph(Cfg)
-			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = WindowTransparency})
-			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
-			Create("UIPadding", {Parent = F, PaddingTop = UDim.new(0,10), PaddingBottom = UDim.new(0,10), PaddingLeft = UDim.new(0,12), PaddingRight = UDim.new(0,12)})
-			Create("UIStroke", {Parent = F, Color = Window.Theme.Stroke, Thickness = 1})
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1})
+			Create("UICorner", {Parent = F, CornerRadius = UDim.new(1, 0)})
+			Create("UIPadding", {Parent = F, PaddingTop = UDim.new(0,10), PaddingBottom = UDim.new(0,10), PaddingLeft = UDim.new(0,16), PaddingRight = UDim.new(0,16)})
+			Create("UIStroke", {Parent = F, Color = Window.Theme.TextDark, Thickness = 1, Transparency = 0.5}) -- Outline for pill shape
 			local Title = Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,18), Text = Cfg.Title or "Header", Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize=13, TextXAlignment=Enum.TextXAlignment.Left})
 			local Content = Create("TextLabel", {Parent = F, BackgroundTransparency = 1, Position=UDim2.new(0,0,0,20), Size=UDim2.new(1,0,0,0), AutomaticSize=Enum.AutomaticSize.Y, Text = Cfg.Content or "", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.TextDark, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left, TextWrapped=true})
 			
@@ -729,15 +729,15 @@ function EnvielUI:CreateWindow(Config)
 
 		function Elements:CreateButton(Cfg)
 			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Button, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = Cfg.InGroup and 1 or WindowTransparency})
-			if not Cfg.InGroup then Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)}) end
-			Create("UIPadding", {Parent = F, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
+			if not Cfg.InGroup then Create("UICorner", {Parent = F, CornerRadius = UDim.new(1, 0)}) end
+			Create("UIPadding", {Parent = F, PaddingLeft = UDim.new(0, 0), PaddingRight = UDim.new(0, 0)})
 
 			local B = Create("TextButton", {
 				Parent = F, BackgroundTransparency = 0, BackgroundColor3 = Window.Theme.Button, Size = UDim2.new(1, 0, 1, 0),
 				Font = Enum.Font.GothamMedium, Text = Cfg.Name or "Button", TextColor3 = Window.Theme.ButtonText, TextSize = TextS,
 				TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, AutoButtonColor = false
 			})
-			Create("UICorner", {Parent = B, CornerRadius = UDim.new(0, 8)})
+			Create("UICorner", {Parent = B, CornerRadius = UDim.new(1, 0)})
 			local BScale = Create("UIScale", {Parent = B, Scale = 1})
 			Create("UIStroke", {Parent = B, Color = Window.Theme.Stroke, Thickness = 0, Transparency = 1}) 
 
@@ -887,7 +887,7 @@ function EnvielUI:CreateWindow(Config)
             
             local Btn = Create("TextButton", {
                 Parent = F, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -10, 0.5, 0), Size = UDim2.new(0, 120, 0, 26),
-                BackgroundColor3 = Window.Theme.Input, Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current)),
+                BackgroundColor3 = Window.Theme.Input, Text = "  "..(type(Current)=="table" and table.concat(Current, ", ") or tostring(Current)),
                 Font = Enum.Font.Gotham, TextColor3 = Window.Theme.Text, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false
             })
             Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0, 6)})
@@ -902,7 +902,7 @@ function EnvielUI:CreateWindow(Config)
                 Window:OpenDropdownModal(Cfg, function(val)
                     Current = val
 					Cfg.CurrentValue = val -- Update Config so it persists next reopen
-                    Btn.Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current))
+                    Btn.Text = "  "..(type(Current)=="table" and table.concat(Current, ", ") or tostring(Current))
                     if Cfg.Flag then Window.Flags[Cfg.Flag] = Current end
                     if Cfg.Callback then Cfg.Callback(Current) end
                 end)
@@ -922,7 +922,7 @@ function EnvielUI:CreateWindow(Config)
                     else
                          Current = {}
                     end
-                    Btn.Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current))
+                    Btn.Text = "  "..(type(Current)=="table" and table.concat(Current, ", ") or tostring(Current))
                 end
             }
         end
