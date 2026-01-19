@@ -571,7 +571,8 @@ function EnvielUI:CreateWindow(Config)
 		Tween(Dock, {GroupTransparency = 0}, 0.4)
 	end)
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
-	Create("UIStroke", {Parent = Dock, Color = Window.Theme.Stroke, Thickness = 1})
+	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
+    -- Removed Dock UIStroke per user request
 
 	
 
@@ -630,11 +631,17 @@ function EnvielUI:CreateWindow(Config)
 		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
 		
-		local Page = Create("ScrollingFrame", {
 			Name = TabId, Parent = ContentHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Visible = false,
 			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0),
             AutomaticSize = Enum.AutomaticSize.Y, AutomaticCanvasSize = Enum.AutomaticSize.Y
 		})
+        
+        local MaxH = IsMobile and (Camera.ViewportSize.Y * 0.8) or 450
+        Create("UISizeConstraint", {
+             Parent = Page,
+             MinSize = Vector2.new(0, 0),
+             MaxSize = Vector2.new(9999, MaxH - (HdrH + NavH + NavP + 20)) -- Subtract header/nav/padding to fit in window
+        })
 
 		local TabCount = 0
 		for _, v in pairs(DockList:GetChildren()) do
@@ -656,9 +663,12 @@ function EnvielUI:CreateWindow(Config)
 		
 		local Elements = {}
 		
-		function Elements:CreateSection(Text)
+		function Elements:CreateSection(Cfg)
+            local Text = (type(Cfg) == "table" and Cfg.Name) or Cfg
+            local Parent = (type(Cfg) == "table" and Cfg.Parent) or Page
+            
 			Create("TextLabel", {
-				Parent = Page, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 24), Text = Text,
+				Parent = Parent, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 24), Text = Text,
 				Font = Enum.Font.GothamBold, TextColor3 = Window.Theme.Text, TextSize = TextS + 1,
 				TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center
 			})
@@ -685,8 +695,9 @@ function EnvielUI:CreateWindow(Config)
 
 			local GroupElements = {}
 			for k,v in pairs(Elements) do
-				if type(v) == "function" and k ~= "CreateGroup" and k ~= "CreateSection" then
+				if type(v) == "function" and k ~= "CreateGroup" then
 					GroupElements[k] = function(self, Config)
+                        if type(Config) ~= "table" then Config = {Name = Config} end
 						Config = Config or {}
 						Config.Parent = GroupContainer
 						return v(self, Config)
@@ -828,20 +839,26 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateInput(Cfg)
-			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 4), BackgroundTransparency = WindowTransparency})
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = WindowTransparency})
 			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
 
 			Create("TextLabel", {
-				Parent = F, BackgroundTransparency = 1, Position = UDim2.new(0, 12, 0, 0), Size = UDim2.new(1, -24, 0, ItemH - 18),
+				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -160, 1, 0), Position = UDim2.new(0, 12, 0, 0),
 				Text = Cfg.Name or "Input", Font = Enum.Font.GothamMedium, TextColor3 = Window.Theme.Text, TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left
 			})
+			
+            local BoxContainer = Create("Frame", {
+                Parent = F, BackgroundColor3 = Window.Theme.Input, 
+                AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.new(0, 140, 0, 26)
+            })
+            Create("UICorner", {Parent = BoxContainer, CornerRadius = UDim.new(0, 6)})
+            
 			local Box = Create("TextBox", {
-				Parent = F, BackgroundColor3 = Window.Theme.Input, Position = UDim2.new(0, 12, 0, ItemH - 18), Size = UDim2.new(1, -24, 0, 16),
-				Text = "", PlaceholderText = Cfg.PlaceholderText or "...", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.Text, 
-				PlaceholderColor3 = Color3.fromRGB(180, 180, 180), TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 0, ClearTextOnFocus = false
+				Parent = BoxContainer, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 1, 0), Position = UDim2.new(0, 8, 0, 0),
+				Text = "", PlaceholderText = Cfg.PlaceholderText or "", Font = Enum.Font.Gotham, TextColor3 = Window.Theme.Text, 
+				PlaceholderColor3 = Color3.fromRGB(180, 180, 180), TextSize = TextS, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false
 			})
-			Create("UIStroke", {Parent = Box, Color = Window.Theme.Stroke, Thickness = 0, Transparency = 1}) 
-			Create("UICorner", {Parent = Box, CornerRadius = UDim.new(0, 6)})
+
 			Box.FocusLost:Connect(function()
 				if Cfg.Flag then Window.Flags[Cfg.Flag] = Box.Text end
 				if Cfg.Callback then Cfg.Callback(Box.Text) end
@@ -1051,7 +1068,8 @@ function EnvielUI:CreateWindow(Config)
 			BackgroundColor3 = Window.Theme.Secondary, GroupTransparency = 1
 		})
 		Create("UICorner", {Parent = AlertFrame, CornerRadius = UDim.new(0, 12)})
-		Create("UIStroke", {Parent = AlertFrame, Color = Window.Theme.Stroke, Thickness = 1})
+		Create("UICorner", {Parent = AlertFrame, CornerRadius = UDim.new(0, 12)})
+		-- Removed AlertFrame UIStroke per user request
 		
 		Create("TextLabel", {
 			Parent = AlertFrame, Size = UDim2.new(1, 0, 0, 40), Position = UDim2.new(0, 0, 0, 10), BackgroundTransparency = 1,
