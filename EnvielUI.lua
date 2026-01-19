@@ -220,7 +220,7 @@ function EnvielUI:CreateWindow(Config)
         Create("UISizeConstraint", {
             Parent = MainFrame,
             MinSize = Vector2.new(0, MinHeight),
-            MaxSize = Vector2.new(9999, MaxHeight)
+            MaxSize = Vector2.new(9999, math.min(450, MaxHeight))
         })
 	else
 		MainFrame.Size = UDim2.fromOffset(650, 0)
@@ -395,7 +395,7 @@ function EnvielUI:CreateWindow(Config)
 		})
 		
 		task.spawn(function()
-            task.wait()
+            RunService.RenderStepped:Wait() 
 			local TargetSize = F.AbsoluteSize.Y
 			if TargetSize < 40 then TargetSize = 60 end
 			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, TargetSize + 6)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
@@ -636,7 +636,7 @@ function EnvielUI:CreateWindow(Config)
 		})
         
         local MaxH = 450
-        if IsMobile then MaxH = math.floor(Camera.ViewportSize.Y * 0.8) end
+        if IsMobile then MaxH = math.min(450, math.floor(Camera.ViewportSize.Y * 0.8)) end
         
         Create("UISizeConstraint", {
              Parent = Page,
