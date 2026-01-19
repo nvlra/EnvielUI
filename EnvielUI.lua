@@ -582,7 +582,6 @@ function EnvielUI:CreateWindow(Config)
 	Create("UICorner", {Parent = ActiveIndicator, CornerRadius = UDim.new(1, 0)})
 
 	function Window:SelectTab(TabId)
-        -- Removed Fade Effect for Stability
 		for _, p in pairs(ContentHolder:GetChildren()) do 
 			if p:IsA("ScrollingFrame") then p.Visible = false end 
 		end
@@ -594,6 +593,7 @@ function EnvielUI:CreateWindow(Config)
 			local Btn = DockList:FindFirstChild(TabId.."Btn")
 			if Btn then
 				task.spawn(function()
+					RunService.RenderStepped:Wait()
 					local CenterX = (Btn.AbsolutePosition.X - Dock.AbsolutePosition.X) + (Btn.AbsoluteSize.X / 2)
 					
 					Tween(ActiveIndicator, {
@@ -610,16 +610,14 @@ function EnvielUI:CreateWindow(Config)
 				end
 			end
 			
-			-- Dynamic Resizing Logic
             task.spawn(function()
-                 task.wait(0.05) -- Wait for layout
+                 task.wait(0.05)
                  local List = Page:FindFirstChildWhichIsA("UIListLayout")
                  if List then
                       local ContentH = List.AbsoluteContentSize.Y
-                      local Padding = 60 -- Header + Padding spacing
+                      local Padding = 60
                       local TargetH = math.clamp(ContentH + HdrH + Padding, 320, 450)
                       
-                      -- Resize MainFrame
                       if IsMobile then
                           Tween(MainFrame, {Size = UDim2.new(0.60, 0, 0, TargetH)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
                       else
@@ -647,7 +645,6 @@ function EnvielUI:CreateWindow(Config)
 			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0),
 			Size = UDim2.new(1, 0, 1, 0), AutomaticCanvasSize = Enum.AutomaticSize.Y, BorderSizePixel = 0
 		})
-        -- Create("UICorner", {Parent = Page, CornerRadius = UDim.new(0, 0)}) -- ScrollingFrames don't support UICorner well if clipping content, but border removal is key.
 
 		local TabCount = 0
 		for _, v in pairs(DockList:GetChildren()) do
@@ -765,6 +762,7 @@ function EnvielUI:CreateWindow(Config)
 				BackgroundColor3 = Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive, Text = "", AutoButtonColor = false
 			})
 			Create("UICorner", {Parent = Switch, CornerRadius = UDim.new(1, 0)})
+            Create("UIStroke", {Parent = Switch, Color = Window.Theme.Stroke, Thickness = 1})
 			local Circle = Create("Frame", {
 				Parent = Switch, BackgroundColor3 = Color3.new(1,1,1), Size = UDim2.new(0, 18, 0, 18),
 				Position = Val and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)
@@ -859,6 +857,7 @@ function EnvielUI:CreateWindow(Config)
                 AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.new(0, 140, 0, 26)
             })
             Create("UICorner", {Parent = BoxContainer, CornerRadius = UDim.new(0, 6)})
+            Create("UIStroke", {Parent = BoxContainer, Color = Window.Theme.Stroke, Thickness = 1})
             
 			local Box = Create("TextBox", {
 				Parent = BoxContainer, BackgroundTransparency = 1, Size = UDim2.new(1, -16, 1, 0), Position = UDim2.new(0, 8, 0, 0),
@@ -914,8 +913,7 @@ function EnvielUI:CreateWindow(Config)
                 Refresh = function(self, NewOptions)
                     Cfg.Options = NewOptions
                     Options = NewOptions
-                    -- Reset selection if invalid? Use first option or keep if valid.
-                    -- Simple reset to first option for safety:
+
                     if not Cfg.Multi then
                         Current = NewOptions[1] or "..."
                     else
