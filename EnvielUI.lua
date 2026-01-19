@@ -218,7 +218,7 @@ function EnvielUI:CreateWindow(Config)
 	})
 	
 	local CloseBtn = Create("ImageButton", {
-		Parent = Controls, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(20, 20),
+		Parent = Controls, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(20, 20),
 		BackgroundTransparency = 1, Image = GetIcon("x") or "", ImageColor3 = Window.Theme.TextDark
 	})
 
