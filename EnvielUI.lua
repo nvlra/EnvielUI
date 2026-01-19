@@ -349,7 +349,7 @@ function EnvielUI:CreateWindow(Config)
 		Parent = ScreenGui, BackgroundTransparency = 1, Size = IsMobile and UDim2.new(0, 220, 1, -20) or UDim2.new(0, 360, 1, -20),
 		Position = IsMobile and UDim2.new(1, -230, 0, 20) or UDim2.new(1, -380, 0, 20), AnchorPoint = Vector2.new(0, 0)
 	})
-	Create("UIListLayout", {Parent = NotifHolder, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 10), VerticalAlignment = Enum.VerticalAlignment.Bottom})
+	Create("UIListLayout", {Parent = NotifHolder, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4), VerticalAlignment = Enum.VerticalAlignment.Bottom})
 	
 	function Window:Notify(Cfg)
 		local Title = Cfg.Title or "Notification"
@@ -560,9 +560,9 @@ function EnvielUI:CreateWindow(Config)
 	local NavP = IsMobile and LibraryConfig.Sizes.NavPadding.Mobile or LibraryConfig.Sizes.NavPadding.PC
 	local Dock = Create("CanvasGroup", {
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
-		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, -15),
+		Size = UDim2.new(0, 0, 0, NavH), Position = UDim2.new(0.5, 0, 1, -20),
 		AnchorPoint = Vector2.new(0.5, 1), AutomaticSize = Enum.AutomaticSize.X,
-		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = 0.25
+		GroupTransparency = 0, BorderSizePixel = 0, BackgroundTransparency = 0.25, ZIndex = 10
 	})
 	
 	task.spawn(function()
@@ -645,8 +645,9 @@ function EnvielUI:CreateWindow(Config)
 		local Page = Create("ScrollingFrame", {
 			Name = TabId, Parent = ContentHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Visible = false,
 			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0),
-			Size = UDim2.new(1, 0, 1, 0), AutomaticCanvasSize = Enum.AutomaticSize.Y
+			Size = UDim2.new(1, 0, 1, 0), AutomaticCanvasSize = Enum.AutomaticSize.Y, BorderSizePixel = 0
 		})
+        -- Create("UICorner", {Parent = Page, CornerRadius = UDim.new(0, 0)}) -- ScrollingFrames don't support UICorner well if clipping content, but border removal is key.
 
 		local TabCount = 0
 		for _, v in pairs(DockList:GetChildren()) do
@@ -705,6 +706,7 @@ function EnvielUI:CreateWindow(Config)
                         if type(Config) ~= "table" then Config = {Name = Config} end
 						Config = Config or {}
 						Config.Parent = GroupContainer
+                        Config.InGroup = true
 						return v(self, Config)
 					end
 				end
@@ -728,8 +730,8 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateButton(Cfg)
-			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Button, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = WindowTransparency})
-			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Button, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = Cfg.InGroup and 1 or WindowTransparency})
+			if not Cfg.InGroup then Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)}) end
 			Create("UIPadding", {Parent = F, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 
 			local B = Create("TextButton", {
@@ -749,8 +751,8 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateToggle(Cfg)
-			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = WindowTransparency})
-			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = Cfg.InGroup and 1 or WindowTransparency})
+			if not Cfg.InGroup then Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)}) end
 
 			Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 12, 0, 0),
@@ -783,8 +785,8 @@ function EnvielUI:CreateWindow(Config)
 		function Elements:CreateSlider(Cfg)
 			local Min, Max = Cfg.Min or 0, Cfg.Max or 100
 			local Val = Cfg.Default or Min
-			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 8), BackgroundTransparency = WindowTransparency})
-			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH + 8), BackgroundTransparency = Cfg.InGroup and 1 or WindowTransparency})
+			if not Cfg.InGroup then Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)}) end
 
 			Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 0, 24), Position = UDim2.new(0, 12, 0, 4),
@@ -844,8 +846,8 @@ function EnvielUI:CreateWindow(Config)
 		end
 
 		function Elements:CreateInput(Cfg)
-			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = WindowTransparency})
-			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
+			local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = Cfg.InGroup and 1 or WindowTransparency})
+			if not Cfg.InGroup then Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)}) end
 
 			Create("TextLabel", {
 				Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -160, 1, 0), Position = UDim2.new(0, 12, 0, 0),
@@ -875,8 +877,8 @@ function EnvielUI:CreateWindow(Config)
             local Options = Cfg.Options or {}
             local Current = Cfg.CurrentValue or (Cfg.Multi and "..." or Options[1])
             
-            local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = WindowTransparency})
-            Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
+            local F = Create("Frame", {Parent = Cfg.Parent or Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, ItemH), BackgroundTransparency = Cfg.InGroup and 1 or WindowTransparency})
+            if not Cfg.InGroup then Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)}) end
             
             Create("TextLabel", {
                 Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, -24, 1, 0), Position = UDim2.new(0, 12, 0, 0),
@@ -987,6 +989,7 @@ function EnvielUI:CreateWindow(Config)
 			for k, v in pairs(Elements) do
 				GroupMethods[k] = function(self, ChildConfig)
 					ChildConfig.Parent = Content
+                    ChildConfig.InGroup = true
 					return Elements[k](Elements, ChildConfig)
 				end
 			end
@@ -1004,8 +1007,8 @@ function EnvielUI:CreateWindow(Config)
 			local BaseH = 42
 			local ExpandH = 42 + 60
 			
-			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, BaseH), ClipsDescendants = true})
-			Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)})
+			local F = Create("Frame", {Parent = Page, BackgroundColor3 = Window.Theme.Secondary, Size = UDim2.new(1, 0, 0, BaseH), ClipsDescendants = true, BackgroundTransparency = Config.InGroup and 1 or 0})
+			if not Config.InGroup then Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 8)}) end
 
 			
 			local Top = Create("TextButton", {Parent = F, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 42), Text = "", AutoButtonColor = false})
