@@ -625,7 +625,7 @@ function EnvielUI:CreateWindow(Config)
 	end)
 	
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
-    Create("UISizeConstraint", {Parent = Dock, MaxSize = Vector2.new(IsMobile and 350 or 620, 50)})
+    Create("UISizeConstraint", {Parent = Dock, MaxSize = Vector2.new(IsMobile and 350 or 650, 50)})
 
 	local DockList = Create("ScrollingFrame", {
          Parent = Dock, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0),
@@ -640,7 +640,7 @@ function EnvielUI:CreateWindow(Config)
 
 	local DockLayout = Create("UIListLayout", {
         Parent = TabsHolder, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 10), 
-        HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center
+        HorizontalAlignment = Enum.HorizontalAlignment.Left, VerticalAlignment = Enum.VerticalAlignment.Center
     })
 	Create("UIPadding", {Parent = TabsHolder, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
 
@@ -742,6 +742,7 @@ function EnvielUI:CreateWindow(Config)
 			task.spawn(function()
                 local sT = tick()
                 repeat RunService.RenderStepped:Wait() until Btn.AbsoluteSize.X > 0 or (tick()-sT > 2)
+                task.wait(0.1) -- Stabilize layout
 				Window:SelectTab(TabId)
 			end)
 		end

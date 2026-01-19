@@ -1,13 +1,17 @@
 # EnvielUI Documentation
 
-A modern, transparent, and aesthetically pleasing UI- **Consistent Modal**: Dropdown modal now features a `BackgroundTransparency` of 0.1, applying a consistent semi-transparent look across single and multi-select modes.
+A modern, transparent, and aesthetically pleasing UI Library for Roblox.
 
-- **Smart Sorting**:
-  - **Multi Select**: Selected items float to the top.
-  - **Single Select**: The currently selected item also floats to the top.
-- **Optimized Mobile UX**:
-  - Horizontal scrolling is disabled on pages to prevent "wiggle".
-  - Dropdown height and width are optimized for mobile (60% width). (Default: Glass/Dark).
+## Key Features
+
+- **Responsive**: Adapts perfectly to PC (650px) and Mobile (Compact 60% Width).
+- **Infinite Dock**:
+  - **Scrollable Tabs**: The bottom dock supports unlimited tabs by enabling horizontal scrolling.
+  - **Auto-Focus**: Clicking a tab automatically centers it in the view, ensuring active tabs are always visible.
+- **Smart Components**:
+  - **Dropdowns**: Auto-sorting (Selected items float to top) and consistent glass styling.
+  - **Clean Groups**: Elements inside groups adopt a seamless transparent look.
+- **Optimized UX**: Prevent mobile scroll wiggling, consistent padding, and smooth tweens.
 
 ## 1. Getting Started
 
