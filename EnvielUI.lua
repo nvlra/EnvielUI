@@ -201,8 +201,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	local MainScale = Create("UIScale", {Parent = MainFrame, Scale = 0.9})
 	
-	local IsMobile = Camera.ViewportSize.X < 800
-	
+    local Camera = workspace.CurrentCamera
 	local IsMobile = Camera.ViewportSize.X < 800
 	
 	local ContentWindow = Create("CanvasGroup", {
