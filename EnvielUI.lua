@@ -1,4 +1,4 @@
-if task and task.synchronize then task.synchronize() end
+if task and task.synchronize then pcall(task.synchronize) end
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
 
@@ -223,15 +223,8 @@ function EnvielUI:CreateWindow(Config)
             MaxSize = Vector2.new(9999, math.min(450, MaxHeight))
         })
 	else
-		MainFrame.Size = UDim2.fromOffset(650, 0)
+		MainFrame.Size = UDim2.fromOffset(650, 450)
 		MainFrame.Position = UDim2.fromScale(0.5, 0.5)
-        MainFrame.AutomaticSize = Enum.AutomaticSize.Y
-        
-        Create("UISizeConstraint", {
-            Parent = MainFrame,
-            MinSize = Vector2.new(650, MinHeight),
-            MaxSize = Vector2.new(650, 450)
-        })
 	end
 	
 	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 14)})
@@ -633,17 +626,8 @@ function EnvielUI:CreateWindow(Config)
 		local Page = Create("ScrollingFrame", {
 			Name = TabId, Parent = ContentHolder, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), Visible = false,
 			ScrollBarThickness = 2, ScrollBarImageColor3 = Window.Theme.Stroke, CanvasSize = UDim2.new(0, 0, 0, 0),
-            AutomaticSize = Enum.AutomaticSize.Y, AutomaticCanvasSize = Enum.AutomaticSize.Y
+			Size = UDim2.new(1, 0, 1, 0), AutomaticCanvasSize = Enum.AutomaticSize.Y
 		})
-        
-        local MaxH = 450
-        if IsMobile then MaxH = math.min(450, math.floor(Camera.ViewportSize.Y * 0.8)) end
-        
-        Create("UISizeConstraint", {
-             Parent = Page,
-             MinSize = Vector2.new(0, 0),
-             MaxSize = Vector2.new(9999, MaxH - (HdrH + NavH + NavP + 25)) 
-        })
 
 		local TabCount = 0
 		for _, v in pairs(DockList:GetChildren()) do
@@ -901,10 +885,24 @@ function EnvielUI:CreateWindow(Config)
                     if Cfg.Callback then Cfg.Callback(Current) end
                 end)
             end)
-            return {Set = function(self, v)
-                 Current = v
-                 Btn.Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current))
-            end}
+            return {
+                Set = function(self, v)
+                     Current = v
+                     Btn.Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current))
+                end,
+                Refresh = function(self, NewOptions)
+                    Cfg.Options = NewOptions
+                    Options = NewOptions
+                    -- Reset selection if invalid? Use first option or keep if valid.
+                    -- Simple reset to first option for safety:
+                    if not Cfg.Multi then
+                        Current = NewOptions[1] or "..."
+                    else
+                         Current = {}
+                    end
+                    Btn.Text = "  "..(type(Current)=="table" and "Selected ["..#Current.."]" or tostring(Current))
+                end
+            }
         end
 
 		function Elements:CreateCollapsibleGroup(Config)
