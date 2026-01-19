@@ -368,10 +368,11 @@ function EnvielUI:CreateWindow(Config)
 			Parent = Wrapper, BackgroundColor3 = Window.Theme.Main, 
 			Size = UDim2.new(1, -4, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
 			Position = UDim2.new(1.5, 0, 0, 0),
-            BackgroundTransparency = 0.2
+            BackgroundTransparency = 0.3
 		})
 		
-		Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 10)})
+		Create("UICorner", {Parent = F, CornerRadius = UDim.new(0, 15)})
+        Create("UISizeConstraint", {Parent = F, MinSize = Vector2.new(0, 90)})
 
 		local Accent = Create("Frame", {
 			Parent = F, BackgroundColor3 = Window.Theme.Accent,
@@ -397,7 +398,7 @@ function EnvielUI:CreateWindow(Config)
 		task.spawn(function()
             RunService.RenderStepped:Wait() 
 			local TargetSize = F.AbsoluteSize.Y
-			if TargetSize < 40 then TargetSize = 60 end
+			if TargetSize < 90 then TargetSize = 90 end
 			Tween(Wrapper, {Size = UDim2.new(1, 0, 0, TargetSize + 6)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 			
 			Tween(F, {Position = UDim2.new(0, 2, 0, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
