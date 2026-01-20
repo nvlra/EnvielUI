@@ -163,7 +163,8 @@ function EnvielUI:CreateWindow(Config)
 		Flags = {}, 
 		Theme = Config.Theme,
 		Connections = {},
-        OnCloseCallbacks = {}
+        OnCloseCallbacks = {},
+		TabCount = 0 -- Initialize counter for layout order
 	}
 	
 	function Window:OnClose(Callback)
@@ -771,10 +772,14 @@ function EnvielUI:CreateWindow(Config)
 		local TabName = (type(Config) == "table" and Config.Name) or Config
 		local TabId = "Tab_"..TabName:gsub(" ", "")
 		
+		Window.TabCount = Window.TabCount + 1
+		local TabIndex = Window.TabCount
+		
 		local Btn = Create("TextButton", {
 			Name = TabId.."Btn", Parent = DockList, BackgroundTransparency = 1, Text = TabName, Font = Enum.Font.GothamBold,
 			TextColor3 = Window.Theme.TextDark, TextSize = TextS + 1, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, ZIndex = 2,
-			TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
+			TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center,
+			LayoutOrder = TabIndex -- Force Order
 		})
 		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
@@ -792,11 +797,8 @@ function EnvielUI:CreateWindow(Config)
             Btn.MouseLeave:Connect(function() if Page.Visible == false then Tween(Btn, {TextColor3 = Window.Theme.TextDark}, 0.2) end end)
         end
 
-		local TabCount = 0
-		for _, v in pairs(DockList:GetChildren()) do
-			if v:IsA("TextButton") then TabCount += 1 end
-		end
-		if TabCount == 1 then
+		local IsSelected = (type(Config) == "table" and Config.Selected)
+		if TabIndex == 1 or IsSelected then
 			task.spawn(function()
                 local sT = tick()
                 repeat RunService.RenderStepped:Wait() until Btn.AbsoluteSize.X > 0 or (tick()-sT > 2)

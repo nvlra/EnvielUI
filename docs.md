@@ -106,7 +106,8 @@ Tabs appearing in the floating bottom dock.
 
 ```lua
 local MainTab = Window:CreateTab({
-    Name = "Main" -- Text displayed on the pill button
+    Name = "Main",
+    Selected = true -- Optional: Set as default active tab
 })
 ```
 
