@@ -413,7 +413,6 @@ function EnvielUI:CreateWindow(Config)
             local TargetY = IsMobile and (SafeArea.Y + 6) or (SafeArea.Y + 20)
             Tween(StatsHolder, {Position = UDim2.new(0.5, 0, 0, TargetY)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
             
-            -- Cleanup old connection if exists
             if StatsConn then StatsConn:Disconnect() StatsConn = nil end
             
             local LastUpdate = 0
@@ -427,7 +426,7 @@ function EnvielUI:CreateWindow(Config)
                 end
 
                 local CurrentFPS = 1 / dt
-                table.insert(FPSSamples, dt) -- Store dt instead of FPS
+                table.insert(FPSSamples, dt)
                 if #FPSSamples > MaxSamples then table.remove(FPSSamples, 1) end
 
                 local Now = tick()
