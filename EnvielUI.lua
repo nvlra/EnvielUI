@@ -1056,15 +1056,16 @@ function EnvielUI:CreateWindow(Config)
 			Create("UICorner", {Parent = Switch, CornerRadius = UDim.new(1, 0)})
             Create("UIStroke", {Parent = Switch, Color = Window.Theme.Stroke, Thickness = 1})
 			local Circle = Create("Frame", {
-				Parent = Switch, BackgroundColor3 = Color3.new(1,1,1), Size = UDim2.new(0, 18, 0, 18),
+				Parent = Switch, BackgroundColor3 = Val and Window.Theme.Main or Color3.new(1,1,1), Size = UDim2.new(0, 18, 0, 18),
 				Position = Val and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)
 			})
 			Create("UICorner", {Parent = Circle, CornerRadius = UDim.new(1, 0)})
 			
 			local function UpdateVisuals()
 				local TargetC = Val and Window.Theme.ToggleActive or Window.Theme.ToggleInactive
+                local TargetDot = Val and Window.Theme.Main or Color3.new(1,1,1)
 				Tween(Switch, {BackgroundColor3 = TargetC}, 0.2)
-				Tween(Circle, {Position = Val and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}, 0.2)
+                Tween(Circle, {Position = Val and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9), BackgroundColor3 = TargetDot}, 0.2)
 			end
 			
 			local function UpdateState()
