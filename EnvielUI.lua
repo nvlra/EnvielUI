@@ -347,7 +347,7 @@ function EnvielUI:CreateWindow(Config)
 
     local StatsPill = Create("Frame", {
         Parent = StatsHolder, Size = UDim2.fromOffset(0, 36), BackgroundColor3 = Window.Theme.Main,
-        BackgroundTransparency = 0, AutomaticSize = Enum.AutomaticSize.X, LayoutOrder = 1
+        BackgroundTransparency = 0, AutomaticSize = Enum.AutomaticSize.X, LayoutOrder = 1, Active = true
     })
     Create("UICorner", {Parent = StatsPill, CornerRadius = UDim.new(1, 0)})
     Create("UIPadding", {Parent = StatsPill, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
