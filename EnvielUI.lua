@@ -161,6 +161,7 @@ function EnvielUI:CreateWindow(Config)
 
 	local Window = {
 		Flags = {}, 
+        Theme = Config.Theme,
 		Connections = {},
         OnCloseCallbacks = {},
 		TabCount = 0, -- Initialize counter for layout order
