@@ -248,26 +248,7 @@ function EnvielUI:CreateWindow(Config)
 	
 	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 14)})
 
-	task.spawn(function()
-        local SplashCanvas = Create("Frame", {
-            Name = "Splash", Parent = ScreenGui, Size = UDim2.fromScale(1,1), 
-            BackgroundTransparency = 1, ZIndex = 100
-        })
-        local SplashLogo = Create("ImageLabel", {
-            Parent = SplashCanvas, Size = UDim2.fromOffset(150, 150), Position = UDim2.fromScale(0.5, 0.5), AnchorPoint = Vector2.new(0.5, 0.5),
-            BackgroundTransparency = 1, Image = "rbxthumb://type=Asset&id=94854804824909&w=420&h=420", ImageTransparency = 1, ScaleType = Enum.ScaleType.Fit
-        })
-        
-        Tween(SplashLogo, {ImageTransparency = 0}, 0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-        task.wait(1.5)
-        Tween(SplashLogo, {ImageTransparency = 1}, 0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-        task.wait(0.5)
-        SplashCanvas:Destroy()
-        
-		ContentWindow.GroupTransparency = 1
-		Tween(MainScale, {Scale = 1}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-		Tween(ContentWindow, {GroupTransparency = 0}, 0.4)
-	end)
+
 	
 	local Header = Create("Frame", {Parent = ContentWindow, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, HdrH)})
 	Create("UIPadding", {Parent = Header, PaddingLeft = UDim.new(0, 20), PaddingRight = UDim.new(0, 20)})
@@ -641,13 +622,7 @@ function EnvielUI:CreateWindow(Config)
 		ClipsDescendants = true
 	})
 
-	task.spawn(function()
-		task.wait(0.1)
-		Tween(Dock, {
-			GroupTransparency = 0,
-			Position = UDim2.new(0.5, 0, 1, IsMobile and 8 or 15)
-		}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-	end)
+
 
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
     Create("UISizeConstraint", {Parent = Dock, MaxSize = Vector2.new(IsMobile and 350 or 650, 50)})
@@ -1368,6 +1343,39 @@ function EnvielUI:CreateWindow(Config)
 		if not gp and input.KeyCode == Enum.KeyCode.RightControl then
 			Window:Toggle()
 		end
+	end)
+
+    -- Unified Entrance Animation (Splash -> Main + Dock)
+	task.spawn(function()
+        -- Splash Logic
+        local SplashCanvas = Create("Frame", {
+            Name = "Splash", Parent = ScreenGui, Size = UDim2.fromScale(1,1), 
+            BackgroundTransparency = 1, ZIndex = 100
+        })
+        local SplashLogo = Create("ImageLabel", {
+            Parent = SplashCanvas, Size = UDim2.fromOffset(150, 150), Position = UDim2.fromScale(0.5, 0.5), AnchorPoint = Vector2.new(0.5, 0.5),
+            BackgroundTransparency = 1, Image = "rbxthumb://type=Asset&id=94854804824909&w=420&h=420", ImageTransparency = 1, ScaleType = Enum.ScaleType.Fit
+        })
+        
+        -- 1. Splash Sequence
+        Tween(SplashLogo, {ImageTransparency = 0}, 0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+        task.wait(3)
+        Tween(SplashLogo, {ImageTransparency = 1}, 0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+        task.wait(0.5)
+        SplashCanvas:Destroy()
+        
+        -- 2. Main Window Entrance
+		ContentWindow.GroupTransparency = 1
+		Tween(MainScale, {Scale = 1}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+		Tween(ContentWindow, {GroupTransparency = 0}, 0.4)
+        
+        -- 3. Dock Entrance (Synced)
+        if Dock then
+            Tween(Dock, {
+                GroupTransparency = 0,
+                Position = UDim2.new(0.5, 0, 1, IsMobile and 8 or 15)
+            }, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+        end
 	end)
 
 	return Window
