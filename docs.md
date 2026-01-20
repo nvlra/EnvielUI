@@ -87,6 +87,7 @@ Window:Toggle()
 
 Toggles the window visibility. Users can also press Right Control to toggle.
 
+````
 #### Notifications
 
 Display a notification to the user:
@@ -97,7 +98,20 @@ Window:Notify({
     Content = "Operation completed successfully",
     Duration = 5
 })
-```
+````
+
+### Stats Bar & Minimization
+
+The library features a smart minimization system with a built-in performance monitor.
+
+1.  **Minimize**: Clicking the minimize button (next to Close) hides the main window and shows the **Stats Bar**.
+2.  **Stats Bar**: Displays real-time performance metrics at the top of the screen.
+    - **PING**: Real server latency (Color coded: Green < 30ms, Yellow < 70ms, Red > 70ms).
+    - **CPU**: Frame Render Time in milliseconds (Syncs with Ping color logic).
+    - **FPS**: True visual FPS (calculated using Harmonic Mean for accuracy).
+3.  **Mini Icon**: Closing the Stats Bar shrinks it into a small, draggable logo icon. Clicking this icon restores the Main Window.
+
+_Note: The Stats Bar is optimized for both Desktop and Mobile, with automatic positioning and battery-saving loops._
 
 **Parameters:**
 
