@@ -164,8 +164,8 @@ function EnvielUI:CreateWindow(Config)
         Theme = Config.Theme,
 		Connections = {},
         OnCloseCallbacks = {},
-		TabCount = 0, -- Initialize counter for layout order
-        HasExplicitSelection = false -- Track if user manually selected a tab
+		TabCount = 0, 
+        HasExplicitSelection = false 
 	}
 	
 	function Window:OnClose(Callback)
@@ -617,16 +617,16 @@ function EnvielUI:CreateWindow(Config)
 
 	local Dock = Create("CanvasGroup", {
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
-		Size = UDim2.new(0, 100, 0, NavH), -- Start small
-		Position = UDim2.new(0.5, 0, 1, 60), -- Start lower for slide-up
+		Size = UDim2.new(0, 100, 0, NavH), 
+		Position = UDim2.new(0.5, 0, 1, 60),
 		AnchorPoint = Vector2.new(0.5, 0), 
 		GroupTransparency = 1, BorderSizePixel = 0, 
 		BackgroundTransparency = 0, ZIndex = 10,
-		ClipsDescendants = true -- Prevent visual overflow
+		ClipsDescendants = true
 	})
 
 	task.spawn(function()
-		task.wait(0.1) -- Slight delay to stagger with MainFrame
+		task.wait(0.1)
 		Tween(Dock, {
 			GroupTransparency = 0,
 			Position = UDim2.new(0.5, 0, 1, 15)
@@ -636,12 +636,11 @@ function EnvielUI:CreateWindow(Config)
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
     Create("UISizeConstraint", {Parent = Dock, MaxSize = Vector2.new(IsMobile and 350 or 650, 50)})
 
-	-- ScrollingFrame for horizontal scrolling (if many tabs)
 	local DockList = Create("ScrollingFrame", {
 		Parent = Dock, 
 		BackgroundTransparency = 1, 
 		Size = UDim2.new(1, 0, 1, 0),
-		AutomaticCanvasSize = Enum.AutomaticSize.None, -- CRITICAL: Manual control
+		AutomaticCanvasSize = Enum.AutomaticSize.None,
 		CanvasSize = UDim2.new(0, 0, 0, 0),
 		ScrollBarThickness = 0, 
 		ScrollingDirection = Enum.ScrollingDirection.X,
@@ -653,17 +652,15 @@ function EnvielUI:CreateWindow(Config)
 		Parent = DockList, 
 		FillDirection = Enum.FillDirection.Horizontal, 
 		Padding = UDim.new(0, 10), 
-		HorizontalAlignment = Enum.HorizontalAlignment.Left, -- Left for stable anchoring
+		HorizontalAlignment = Enum.HorizontalAlignment.Left,
 		VerticalAlignment = Enum.VerticalAlignment.Center
 	})
 	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
 
-	-- Safe Queue System
 	local UpdateQueued = false
-	local CurrentDockWidth = 100 -- Match initial Dock.Size
-	local ActiveTabButton = nil -- Track active button for sync
+	local CurrentDockWidth = 100
+	local ActiveTabButton = nil
 
-    -- Folder to isolate Indicator from UIListLayout
     local DecorFolder = Instance.new("Folder", DockList)
     DecorFolder.Name = "Decor"
 
@@ -682,7 +679,7 @@ function EnvielUI:CreateWindow(Config)
 		UpdateQueued = true
 		
 		task.defer(function()
-			task.wait(0.05) -- 50ms debounce
+			task.wait(0.1)
 			
 			local AbsSize = DockLayout.AbsoluteContentSize.X
 			local PadLeft = 4
@@ -692,22 +689,18 @@ function EnvielUI:CreateWindow(Config)
 			local MaxW = IsMobile and 350 or 650
 			local ClampedWidth = math.clamp(ContentW, 60, MaxW)
 			
-			-- Always update to prevent clipping
 			CurrentDockWidth = ClampedWidth
 			
-			-- Update Dock size (direct, no tween to prevent cascade)
 			Dock.Size = UDim2.new(0, ClampedWidth, 0, NavH)
-			
-			-- Update CanvasSize for scrolling (only if content exceeds dock)
+
 			if ContentW > ClampedWidth then
 				DockList.CanvasSize = UDim2.new(0, ContentW, 0, 0)
 			else
-				DockList.CanvasSize = UDim2.new(0, 0, 0, 0) -- No scroll needed
+				DockList.CanvasSize = UDim2.new(0, 0, 0, 0)
 			end
 			
 			UpdateQueued = false
 			
-			-- Sync Indicator Position after Resize
 			if ActiveTabButton then
 				local CenterX = (ActiveTabButton.AbsolutePosition.X - DockList.AbsolutePosition.X + (ActiveTabButton.AbsoluteSize.X / 2) + DockList.CanvasPosition.X) - 4
 				ActiveIndicator.Position = UDim2.new(0, CenterX, 0.5, 0)
@@ -728,7 +721,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			local Btn = DockList:FindFirstChild(TabId.."Btn")
 			if Btn then
-				ActiveTabButton = Btn -- Updates the tracking variable
+				ActiveTabButton = Btn
 				task.spawn(function()
 					RunService.RenderStepped:Wait()
                     local CenterX = (Btn.AbsolutePosition.X - DockList.AbsolutePosition.X + (Btn.AbsoluteSize.X / 2) + DockList.CanvasPosition.X) - 4
@@ -738,7 +731,6 @@ function EnvielUI:CreateWindow(Config)
 						Position = UDim2.new(0, CenterX, 0.5, 0)
 					}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 
-                    -- Auto Scroll to Tab (Preserved feature)
                     local CanvasX = CenterX - (DockList.AbsoluteWindowSize.X / 2)
                     Tween(DockList, {CanvasPosition = Vector2.new(CanvasX, 0)}, 0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 				end)
@@ -780,7 +772,7 @@ function EnvielUI:CreateWindow(Config)
 			Name = TabId.."Btn", Parent = DockList, BackgroundTransparency = 1, Text = TabName, Font = Enum.Font.GothamBold,
 			TextColor3 = Window.Theme.TextDark, TextSize = TextS + 1, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, ZIndex = 2,
 			TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center,
-			LayoutOrder = TabIndex -- Force Order
+			LayoutOrder = TabIndex
 		})
 		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
@@ -805,15 +797,14 @@ function EnvielUI:CreateWindow(Config)
 			task.spawn(function()
                 local sT = tick()
                 repeat RunService.RenderStepped:Wait() until Btn.AbsoluteSize.X > 0 or (tick()-sT > 2)
-                task.wait(0.5) -- Slightly increased for robustness
+                task.wait(0.5)
                 
-                -- Yield if we are Tab 1 (Default) but the user explicitly selected another tab later
                 if TabIndex == 1 and Window.HasExplicitSelection and not IsSelected then
                     return
                 end
                 
 				Window:SelectTab(TabId)
-                task.delay(0.1, QueueDockUpdate) -- Force final sync snap
+                task.delay(0.1, QueueDockUpdate)
 			end)
 		end
 		
@@ -1261,7 +1252,7 @@ function EnvielUI:CreateWindow(Config)
 		local Content = Config.Content or "Are you sure?"
 		local Actions = Config.Actions or {{Text = "OK", Callback = function() end}}
 		
-		local Blur = Create("TextButton", { -- Changed to TextButton to capture input (Modal)
+		local Blur = Create("TextButton", {
 			Parent = MainFrame, BackgroundColor3 = Color3.new(0,0,0), BackgroundTransparency = 1, Size = UDim2.fromScale(1,1), 
             Name = "AlertBlur", ZIndex = 100, AutoButtonColor = false, Text = ""
 		})
@@ -1290,7 +1281,6 @@ function EnvielUI:CreateWindow(Config)
 		Create("UIListLayout", {Parent = BtnContainer, FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 12), HorizontalAlignment = Enum.HorizontalAlignment.Center, SortOrder = Enum.SortOrder.LayoutOrder})
 		
 		for i, Action in pairs(Actions) do
-            -- Smart detection: If explicitly Primary OR text is Confirm/Yes/OK -> Primary logic
             local IsPrimary = Action.Primary or (Action.Text:lower() == "yes" or Action.Text:lower() == "confirm" or Action.Text:lower() == "ok")
             
 			local Btn = Create("TextButton", {
@@ -1300,7 +1290,7 @@ function EnvielUI:CreateWindow(Config)
 				Text = Action.Text, Font = Enum.Font.GothamBold, 
                 TextColor3 = IsPrimary and Window.Theme.Main or Window.Theme.Text, 
                 TextSize = 13, AutoButtonColor = false,
-                LayoutOrder = IsPrimary and 2 or 1 -- Primary always on Right
+                LayoutOrder = IsPrimary and 2 or 1
 			})
 			Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(1, 0)})
             
@@ -1325,7 +1315,6 @@ function EnvielUI:CreateWindow(Config)
 			end)
 		end
 		
-		Tween(Blur, {BackgroundTransparency = 0.4}, 0.3)
 		Tween(Blur, {BackgroundTransparency = 0.4}, 0.3)
         if AlertFrame:IsA("CanvasGroup") then
 		    Tween(AlertFrame, {GroupTransparency = 0, Size = UDim2.fromOffset(300, 160)}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
