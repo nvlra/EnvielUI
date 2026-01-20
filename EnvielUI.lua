@@ -346,10 +346,9 @@ function EnvielUI:CreateWindow(Config)
 
     local StatsPill = Create("Frame", {
         Parent = StatsHolder, Size = UDim2.fromOffset(0, 36), BackgroundColor3 = Window.Theme.Main,
-        BackgroundTransparency = 0.1, AutomaticSize = Enum.AutomaticSize.X, LayoutOrder = 1
+        BackgroundTransparency = 0, AutomaticSize = Enum.AutomaticSize.X, LayoutOrder = 1
     })
     Create("UICorner", {Parent = StatsPill, CornerRadius = UDim.new(1, 0)})
-    Create("UIStroke", {Parent = StatsPill, Color = Window.Theme.Stroke, Thickness = 1})
     Create("UIPadding", {Parent = StatsPill, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
 
     local StatsLayout = Create("UIListLayout", {
@@ -406,7 +405,7 @@ function EnvielUI:CreateWindow(Config)
             StatsActive = true
             StatsHolder.Position = UDim2.new(0.5, 0, 0, -100)
             StatsPill.AutomaticSize = Enum.AutomaticSize.X
-            StatsPill.BackgroundTransparency = 0.1
+            StatsPill.BackgroundTransparency = 0
             StatsPill.Size = UDim2.fromOffset(0, 36)
             
             local TargetY = IsMobile and (SafeArea.Y + 4) or (SafeArea.Y + 8)
