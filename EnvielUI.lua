@@ -313,7 +313,6 @@ function EnvielUI:CreateWindow(Config)
 	
 	local SafeArea = GuiService:GetGuiInset()
     
-    -- // 1. Mini Icon (Draggable) matches existing logic
 	local MiniButton = Create("CanvasGroup", {
 		Name = "MiniButton", Parent = ScreenGui, BackgroundColor3 = Window.Theme.Main, Size = UDim2.fromOffset(45, 45),
 		Position = UDim2.new(0, SafeArea.X + 20, 0.5, 0),
@@ -334,13 +333,11 @@ function EnvielUI:CreateWindow(Config)
 	
 	Dragify(MiniClick, MiniButton)
 
-    -- // 2. Stats Bar Implementation
     local StatsHolder = Create("Frame", {
         Name = "StatsHolder", Parent = ScreenGui, Size = UDim2.fromOffset(0, 36), Position = UDim2.new(0.5, 0, 0, SafeArea.Y + 20),
         AnchorPoint = Vector2.new(0.5, 0), BackgroundTransparency = 1, Visible = false, AutomaticSize = Enum.AutomaticSize.X
     })
     
-    -- Auto-Layout to keep Close Button next to Pill
     Create("UIListLayout", {
         Parent = StatsHolder, FillDirection = Enum.FillDirection.Horizontal,
         SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6),
@@ -355,20 +352,17 @@ function EnvielUI:CreateWindow(Config)
     Create("UIStroke", {Parent = StatsPill, Color = Window.Theme.Stroke, Thickness = 1})
     Create("UIPadding", {Parent = StatsPill, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
 
-    -- Layout for Stats Content
     local StatsLayout = Create("UIListLayout", {
         Parent = StatsPill, FillDirection = Enum.FillDirection.Horizontal, 
         HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center,
         Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder
     })
     
-    -- Stats Logo
     local SLogo = Create("ImageLabel", {
         Parent = StatsPill, BackgroundTransparency = 1, Size = UDim2.fromOffset(20, 20),
         Image = "rbxthumb://type=Asset&id="..LOGO_WHITE.."&w=150&h=150", ImageColor3 = Window.Theme.Text, LayoutOrder = 1
     })
     
-    -- Separator Dot
     local function Dot(Order)
         local D = Create("Frame", {Parent = StatsPill, BackgroundColor3 = Window.Theme.TextDark, Size = UDim2.fromOffset(4, 4), LayoutOrder = Order})
         Create("UICorner", {Parent = D, CornerRadius = UDim.new(1, 0)})
@@ -376,13 +370,11 @@ function EnvielUI:CreateWindow(Config)
 
     Dot(2)
 
-    -- Stats Text
     local StatsLabel = Create("TextLabel", {
         Parent = StatsPill, BackgroundTransparency = 1, AutomaticSize = Enum.AutomaticSize.X, Size = UDim2.fromScale(0, 1),
         Text = "", Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = Window.Theme.Text, RichText = true, LayoutOrder = 3
     })
 
-    -- Close Button (Sticks to right via Layout)
     local StatsClose = Create("ImageButton", {
         Parent = StatsHolder, Size = UDim2.fromOffset(36, 36), LayoutOrder = 2,
         BackgroundColor3 = Color3.fromHex("1A1A1A"), BackgroundTransparency = 0.1, AutoButtonColor = false
@@ -394,7 +386,6 @@ function EnvielUI:CreateWindow(Config)
         BackgroundTransparency = 1, Image = GetIcon("x") or "rbxassetid://6031094678", ImageColor3 = Window.Theme.Text
     })
 
-    -- // Logic
     local RunService = game:GetService("RunService")
     local StatsActive = false
     local StatColors = {
@@ -409,15 +400,12 @@ function EnvielUI:CreateWindow(Config)
 
     local function ToggleStats(State, IsCloseAnim)
         if State then
-            -- Slide In Animation
             StatsHolder.Visible = true
             StatsActive = true
-            
-            -- Pre-anim setup
             StatsHolder.Position = UDim2.new(0.5, 0, 0, -100)
-            StatsPill.AutomaticSize = Enum.AutomaticSize.X -- Ensure auto size is on
+            StatsPill.AutomaticSize = Enum.AutomaticSize.X
             StatsPill.BackgroundTransparency = 0.1
-            StatsPill.Size = UDim2.fromOffset(0, 36) -- Let autosize handle it, but base 0
+            StatsPill.Size = UDim2.fromOffset(0, 36)
             
             Tween(StatsHolder, {Position = UDim2.new(0.5, 0, 0, SafeArea.Y + 20)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
             
@@ -443,23 +431,18 @@ function EnvielUI:CreateWindow(Config)
         else
             StatsActive = false
             if IsCloseAnim then
-                -- Collapse Animation (Suck into Close Button)
-                -- 1. Freeze Size
                 local CurrentW = StatsPill.AbsoluteSize.X
                 StatsPill.AutomaticSize = Enum.AutomaticSize.None
                 StatsPill.Size = UDim2.fromOffset(CurrentW, 36)
-                StatsPill.ClipsDescendants = true -- Clip text as it shrinks
+                StatsPill.ClipsDescendants = true
                 
-                -- 2. Tween width to 0 and fade
                 Tween(StatsPill, {Size = UDim2.fromOffset(0, 36), BackgroundTransparency = 1}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-                -- 3. Fade visuals
                 Tween(SLogo, {ImageTransparency = 1}, 0.2)
                 Tween(StatsLabel, {TextTransparency = 1}, 0.2)
                 
                 task.wait(0.3)
                 StatsHolder.Visible = false
-                
-                -- Reset for next open
+
                 StatsPill.ClipsDescendants = false
                 SLogo.ImageTransparency = 0
                 StatsLabel.TextTransparency = 0
@@ -469,9 +452,6 @@ function EnvielUI:CreateWindow(Config)
         end
     end
 
-    -- // Event Handlers
-
-    -- 1. Minimize Click -> Show Stats
 	MinBtn.MouseButton1Click:Connect(function()
 		Tween(MainScale, {Scale = 0}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
 		Tween(ContentWindow, {GroupTransparency = 1}, 0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
@@ -481,12 +461,11 @@ function EnvielUI:CreateWindow(Config)
         end
 		task.wait(0.2)
 		MainFrame.Visible = false
-        ToggleStats(true) -- SHOW STATS (With Slide In)
+        ToggleStats(true)
 	end)
 
-    -- 2. Stats Close Click -> Show Mini Icon
     StatsClose.MouseButton1Click:Connect(function()
-        ToggleStats(false, true) -- HIDE STATS (With Collapse Anim)
+        ToggleStats(false, true)
         
 		MiniButton.Visible = true
 		MiniButton.GroupTransparency = 1
@@ -494,8 +473,7 @@ function EnvielUI:CreateWindow(Config)
 		Tween(MiniButton, {GroupTransparency = 0}, 0.2)
 		Tween(MiniScale, {Scale = 1}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     end)
-	
-    -- 3. Mini Icon Click -> Restore Main
+
 	MiniClick.MouseButton1Click:Connect(function()
 		Tween(MiniScale, {Scale = 0}, 0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
 		Tween(MiniButton, {GroupTransparency = 1}, 0.15).Completed:Wait()
