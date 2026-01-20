@@ -1345,9 +1345,7 @@ function EnvielUI:CreateWindow(Config)
 		end
 	end)
 
-    -- Unified Entrance Animation (Splash -> Main + Dock)
 	task.spawn(function()
-        -- Splash Logic
         local SplashCanvas = Create("Frame", {
             Name = "Splash", Parent = ScreenGui, Size = UDim2.fromScale(1,1), 
             BackgroundTransparency = 1, ZIndex = 100
@@ -1357,19 +1355,16 @@ function EnvielUI:CreateWindow(Config)
             BackgroundTransparency = 1, Image = "rbxthumb://type=Asset&id=94854804824909&w=420&h=420", ImageTransparency = 1, ScaleType = Enum.ScaleType.Fit
         })
         
-        -- 1. Splash Sequence
         Tween(SplashLogo, {ImageTransparency = 0}, 0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
         task.wait(3)
         Tween(SplashLogo, {ImageTransparency = 1}, 0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
         task.wait(0.5)
         SplashCanvas:Destroy()
         
-        -- 2. Main Window Entrance
 		ContentWindow.GroupTransparency = 1
 		Tween(MainScale, {Scale = 1}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		Tween(ContentWindow, {GroupTransparency = 0}, 0.4)
         
-        -- 3. Dock Entrance (Synced)
         if Dock then
             Tween(Dock, {
                 GroupTransparency = 0,
