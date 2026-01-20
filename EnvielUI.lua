@@ -231,7 +231,7 @@ function EnvielUI:CreateWindow(Config)
     
 	if IsMobile then 
 		MainFrame.Size = UDim2.fromScale(0.55, 0)
-		MainFrame.Position = UDim2.fromScale(0.5, 0.55)
+		MainFrame.Position = UDim2.fromScale(0.5, 0.5)
         MainFrame.AutomaticSize = Enum.AutomaticSize.Y
         
         local MaxHeight = math.floor(ViewportSize.Y * 0.8)
