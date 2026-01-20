@@ -702,7 +702,7 @@ function EnvielUI:CreateWindow(Config)
 			
 			-- Sync Indicator Position after Resize
 			if ActiveTabButton then
-				local CenterX = (ActiveTabButton.AbsolutePosition.X - DockList.AbsolutePosition.X + (ActiveTabButton.AbsoluteSize.X / 2) + DockList.CanvasPosition.X)
+				local CenterX = (ActiveTabButton.AbsolutePosition.X - DockList.AbsolutePosition.X + (ActiveTabButton.AbsoluteSize.X / 2) + DockList.CanvasPosition.X) - 4
 				ActiveIndicator.Position = UDim2.new(0, CenterX, 0.5, 0)
 			end
 		end)
@@ -724,7 +724,7 @@ function EnvielUI:CreateWindow(Config)
 				ActiveTabButton = Btn -- Updates the tracking variable
 				task.spawn(function()
 					RunService.RenderStepped:Wait()
-                    local CenterX = (Btn.AbsolutePosition.X - DockList.AbsolutePosition.X + (Btn.AbsoluteSize.X / 2) + DockList.CanvasPosition.X)
+                    local CenterX = (Btn.AbsolutePosition.X - DockList.AbsolutePosition.X + (Btn.AbsoluteSize.X / 2) + DockList.CanvasPosition.X) - 4
 					
 					Tween(ActiveIndicator, {
 						Size = UDim2.new(0, Btn.AbsoluteSize.X, 1, -8), 
@@ -771,7 +771,7 @@ function EnvielUI:CreateWindow(Config)
 			TextColor3 = Window.Theme.TextDark, TextSize = TextS + 1, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, ZIndex = 2,
 			TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
 		})
-		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
+		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
 		
         task.defer(QueueDockUpdate)
