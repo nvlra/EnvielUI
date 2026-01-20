@@ -336,18 +336,26 @@ function EnvielUI:CreateWindow(Config)
 
     -- // 2. Stats Bar Implementation
     local StatsHolder = Create("Frame", {
-        Name = "StatsHolder", Parent = ScreenGui, Size = UDim2.new(1, 0, 0, 100), Position = UDim2.new(0, 0, 0, SafeArea.Y + 20),
-        BackgroundTransparency = 1, Visible = false
+        Name = "StatsHolder", Parent = ScreenGui, Size = UDim2.fromOffset(0, 36), Position = UDim2.new(0.5, 0, 0, SafeArea.Y + 20),
+        AnchorPoint = Vector2.new(0.5, 0), BackgroundTransparency = 1, Visible = false, AutomaticSize = Enum.AutomaticSize.X
+    })
+    
+    -- Auto-Layout to keep Close Button next to Pill
+    Create("UIListLayout", {
+        Parent = StatsHolder, FillDirection = Enum.FillDirection.Horizontal,
+        SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6),
+        VerticalAlignment = Enum.VerticalAlignment.Center, HorizontalAlignment = Enum.HorizontalAlignment.Center
     })
 
     local StatsPill = Create("Frame", {
-        Parent = StatsHolder, Size = UDim2.fromOffset(IsMobile and 300 or 400, 36), AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 0),
-        BackgroundColor3 = Window.Theme.Main, BackgroundTransparency = 0.1
+        Parent = StatsHolder, Size = UDim2.fromOffset(0, 36), BackgroundColor3 = Window.Theme.Main,
+        BackgroundTransparency = 0.1, AutomaticSize = Enum.AutomaticSize.X, LayoutOrder = 1
     })
     Create("UICorner", {Parent = StatsPill, CornerRadius = UDim.new(1, 0)})
     Create("UIStroke", {Parent = StatsPill, Color = Window.Theme.Stroke, Thickness = 1})
+    Create("UIPadding", {Parent = StatsPill, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
 
-    -- Layout for Stats
+    -- Layout for Stats Content
     local StatsLayout = Create("UIListLayout", {
         Parent = StatsPill, FillDirection = Enum.FillDirection.Horizontal, 
         HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center,
@@ -374,10 +382,9 @@ function EnvielUI:CreateWindow(Config)
         Text = "", Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = Window.Theme.Text, RichText = true, LayoutOrder = 3
     })
 
-    -- Close Button (Next to Pill)
+    -- Close Button (Sticks to right via Layout)
     local StatsClose = Create("ImageButton", {
-        Parent = StatsHolder, Size = UDim2.fromOffset(36, 36), AnchorPoint = Vector2.new(0, 0), 
-        Position = UDim2.new(0.5, (IsMobile and 150 or 200) + 10, 0, 0), -- Positioned right of Pill
+        Parent = StatsHolder, Size = UDim2.fromOffset(36, 36), LayoutOrder = 2,
         BackgroundColor3 = Color3.fromHex("1A1A1A"), BackgroundTransparency = 0.1, AutoButtonColor = false
     })
     Create("UICorner", {Parent = StatsClose, CornerRadius = UDim.new(1, 0)})
@@ -389,7 +396,7 @@ function EnvielUI:CreateWindow(Config)
 
     -- // Logic
     local RunService = game:GetService("RunService")
-    local StatsConn
+    local StatsActive = false
     local StatColors = {
         Good = "#4DEF7E", Warn = "#F6CA4F", Bad = "#F84343"
     }
@@ -400,31 +407,65 @@ function EnvielUI:CreateWindow(Config)
         else return StatColors.Bad end
     end
 
-    local function UpdateStatsContent()
-        local Ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
-        local FPS = math.floor(workspace:GetRealPhysicsFPS())
-        -- CPU isn't directly readable accurately in Lua without hacks, using simpler FrameTime proxy or just 0 for now?
-        -- User asked for CPU ms. We can approx with Heartbeat delta * 1000.
-        local FrameTime = math.floor(RunService.Heartbeat:Wait() * 1000) 
-        
-        -- Colors
-        local C_Ping = GetColor(Ping, 60, 150) -- Adjusted thresholds
-        local C_CPU = GetColor(FrameTime, 10, 20)
-        
-        -- Strict User Format: PING : [Color]120 ms[-] • CPU : [Color]6 ms[-] • FPS : 206
-        StatsLabel.Text = string.format(
-            "PING : <font color='%s'>%d ms</font>   <font color='#888888'>•</font>   CPU : <font color='%s'>%d ms</font>   <font color='#888888'>•</font>   FPS : %d",
-            C_Ping, Ping, C_CPU, FrameTime, FPS
-        )
-    end
-
-    local function ToggleStats(State)
+    local function ToggleStats(State, IsCloseAnim)
         if State then
+            -- Slide In Animation
             StatsHolder.Visible = true
-            StatsConn = RunService.RenderStepped:Connect(UpdateStatsContent)
+            StatsActive = true
+            
+            -- Pre-anim setup
+            StatsHolder.Position = UDim2.new(0.5, 0, 0, -100)
+            StatsPill.AutomaticSize = Enum.AutomaticSize.X -- Ensure auto size is on
+            StatsPill.BackgroundTransparency = 0.1
+            StatsPill.Size = UDim2.fromOffset(0, 36) -- Let autosize handle it, but base 0
+            
+            Tween(StatsHolder, {Position = UDim2.new(0.5, 0, 0, SafeArea.Y + 20)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+            
+            task.spawn(function()
+                while StatsActive do
+                    local Ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
+                    
+                    local dt = RunService.RenderStepped:Wait() 
+                    local FPS = math.floor(1 / dt)
+                    local FrameTime = math.floor(dt * 1000) 
+            
+                    local C_Ping = GetColor(Ping, 30, 70)
+                    local C_CPU = GetColor(FrameTime, 10, 20)
+                    
+                    StatsLabel.Text = string.format(
+                        "PING : <font color='%s'>%d ms</font>   <font color='#888888'>•</font>   CPU : <font color='%s'>%d ms</font>   <font color='#888888'>•</font>   FPS : %d",
+                        C_Ping, Ping, C_CPU, FrameTime, FPS
+                    )
+                    
+                    task.wait(0.35)
+                end
+            end)
         else
-            StatsHolder.Visible = false
-            if StatsConn then StatsConn:Disconnect() StatsConn = nil end
+            StatsActive = false
+            if IsCloseAnim then
+                -- Collapse Animation (Suck into Close Button)
+                -- 1. Freeze Size
+                local CurrentW = StatsPill.AbsoluteSize.X
+                StatsPill.AutomaticSize = Enum.AutomaticSize.None
+                StatsPill.Size = UDim2.fromOffset(CurrentW, 36)
+                StatsPill.ClipsDescendants = true -- Clip text as it shrinks
+                
+                -- 2. Tween width to 0 and fade
+                Tween(StatsPill, {Size = UDim2.fromOffset(0, 36), BackgroundTransparency = 1}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
+                -- 3. Fade visuals
+                Tween(SLogo, {ImageTransparency = 1}, 0.2)
+                Tween(StatsLabel, {TextTransparency = 1}, 0.2)
+                
+                task.wait(0.3)
+                StatsHolder.Visible = false
+                
+                -- Reset for next open
+                StatsPill.ClipsDescendants = false
+                SLogo.ImageTransparency = 0
+                StatsLabel.TextTransparency = 0
+            else
+                StatsHolder.Visible = false
+            end
         end
     end
 
@@ -440,12 +481,12 @@ function EnvielUI:CreateWindow(Config)
         end
 		task.wait(0.2)
 		MainFrame.Visible = false
-        ToggleStats(true) -- SHOW STATS
+        ToggleStats(true) -- SHOW STATS (With Slide In)
 	end)
 
     -- 2. Stats Close Click -> Show Mini Icon
     StatsClose.MouseButton1Click:Connect(function()
-        ToggleStats(false) -- HIDE STATS
+        ToggleStats(false, true) -- HIDE STATS (With Collapse Anim)
         
 		MiniButton.Visible = true
 		MiniButton.GroupTransparency = 1
