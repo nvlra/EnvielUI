@@ -651,7 +651,7 @@ function EnvielUI:CreateWindow(Config)
 		HorizontalAlignment = Enum.HorizontalAlignment.Left, -- Left for stable anchoring
 		VerticalAlignment = Enum.VerticalAlignment.Center
 	})
-	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 0)})
+	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 2)})
 
 	-- Safe Queue System
 	local UpdateQueued = false
