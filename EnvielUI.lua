@@ -231,7 +231,7 @@ function EnvielUI:CreateWindow(Config)
     
 	if IsMobile then 
 		MainFrame.Size = UDim2.fromScale(0.55, 0)
-		MainFrame.Position = UDim2.fromScale(0.5, 0.45)
+		MainFrame.Position = UDim2.fromScale(0.5, 0.55)
         MainFrame.AutomaticSize = Enum.AutomaticSize.Y
         
         local MaxHeight = math.floor(ViewportSize.Y * 0.8)
@@ -398,6 +398,9 @@ function EnvielUI:CreateWindow(Config)
         else return StatColors.Bad end
     end
 
+    local StatsConn
+    local DataPing = game:GetService("Stats").Network.ServerStatsItem["Data Ping"] -- Cache reference
+
     local function ToggleStats(State, IsCloseAnim)
         if State then
             StatsHolder.Visible = true
@@ -407,29 +410,51 @@ function EnvielUI:CreateWindow(Config)
             StatsPill.BackgroundTransparency = 0.1
             StatsPill.Size = UDim2.fromOffset(0, 36)
             
-            Tween(StatsHolder, {Position = UDim2.new(0.5, 0, 0, SafeArea.Y + 20)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+            local TargetY = IsMobile and (SafeArea.Y + 6) or (SafeArea.Y + 20)
+            Tween(StatsHolder, {Position = UDim2.new(0.5, 0, 0, TargetY)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
             
-            task.spawn(function()
-                while StatsActive do
-                    local Ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
-                    
-                    local dt = RunService.RenderStepped:Wait() 
-                    local FPS = math.floor(1 / dt)
-                    local FrameTime = math.floor(dt * 1000) 
+            -- Cleanup old connection if exists
+            if StatsConn then StatsConn:Disconnect() StatsConn = nil end
             
-                    local C_Ping = GetColor(Ping, 30, 70)
-                    local C_CPU = GetColor(FrameTime, 30, 70)
-                    
-                    StatsLabel.Text = string.format(
-                        "PING : <font color='%s'>%d ms</font>   <font color='#888888'>•</font>   CPU : <font color='%s'>%d ms</font>   <font color='#888888'>•</font>   FPS : %d",
-                        C_Ping, Ping, C_CPU, FrameTime, FPS
-                    )
-                    
-                    task.wait(0.35)
+            local LastUpdate = 0
+            local FPSSamples = {}
+            local MaxSamples = 20
+
+            StatsConn = RunService.RenderStepped:Connect(function(dt)
+                if not StatsActive then
+                    if StatsConn then StatsConn:Disconnect() StatsConn = nil end
+                    return
                 end
+
+                local CurrentFPS = 1 / dt
+                table.insert(FPSSamples, CurrentFPS)
+                if #FPSSamples > MaxSamples then table.remove(FPSSamples, 1) end
+
+                local Now = tick()
+                if Now - LastUpdate < 0.35 then return end
+                LastUpdate = Now
+
+                local FPSObj = 0
+                for _, v in ipairs(FPSSamples) do FPSObj = FPSObj + v end
+                local FPS = math.floor(FPSObj / #FPSSamples)
+
+                local success, pingVal = pcall(function() return DataPing:GetValue() end)
+                local Ping = success and math.floor(pingVal) or 0
+                
+                local FrameTime = math.floor(dt * 1000)
+        
+                local C_Ping = GetColor(Ping, 30, 70)
+                local C_CPU = GetColor(FrameTime, 30, 70)
+                
+                StatsLabel.Text = string.format(
+                    "PING : <font color='%s'>%d ms</font>   <font color='#888888'>•</font>   CPU : <font color='%s'>%d ms</font>   <font color='#888888'>•</font>   FPS : %d",
+                    C_Ping, Ping, C_CPU, FrameTime, FPS
+                )
             end)
         else
             StatsActive = false
+            if StatsConn then StatsConn:Disconnect() StatsConn = nil end
+
             if IsCloseAnim then
                 local CurrentW = StatsPill.AbsoluteSize.X
                 StatsPill.AutomaticSize = Enum.AutomaticSize.None
