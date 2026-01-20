@@ -366,36 +366,31 @@ Window:LoadConfig()
 
 ---
 
-## 8. Notifications
+### Prompt (Alert/Confirmation)
 
-Displays a notification at the bottom right.
+Show a modal dialog requiring user action. Prevents interaction with the background UI until dismissed.
 
-```lua
-Window:Notify({
-    Title = "Alert",
-    Content = "This is a notification message.",
-    Duration = 3 -- Time in seconds before disappearing
-})
-```
+**New Feature**:
 
----
-
-## 9. Prompt (Alert Dialog)
-
-Show a modal confirmation dialog.
+- **Primary Action**: Text like "Yes", "Confirm", "OK" is automatically styled as Primary (Solid White) and moved to the Right.
+- **Secondary Action**: Other text (Cancel, No) is Outlined.
 
 ```lua
 Window:Prompt({
-    Title = "Confirmation",
-    Content = "Do you really want to delete this?",
+    Title = "Reset Settings?",
+    Content = "Are you sure you want to reset all settings to default?",
     Actions = {
         {
-            Text = "Cancel",
-            Callback = function() print("Cancelled") end
+            Text = "Yes", -- Automatically becomes Primary (Solid White, Right)
+            Callback = function()
+                print("Confirmed")
+            end
         },
         {
-            Text = "Confirm",
-            Callback = function() print("Confirmed") end
+            Text = "Cancel", -- Automatically becomes Secondary (Outline, Left)
+            Callback = function()
+                print("Cancelled")
+            end
         }
     }
 })

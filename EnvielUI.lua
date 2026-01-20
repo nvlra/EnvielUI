@@ -616,16 +616,19 @@ function EnvielUI:CreateWindow(Config)
 	local Dock = Create("CanvasGroup", {
 		Name = "Dock", Parent = MainFrame, BackgroundColor3 = Window.Theme.Secondary, 
 		Size = UDim2.new(0, 100, 0, NavH), -- Start small
-		Position = UDim2.new(0.5, 0, 1, 15),
+		Position = UDim2.new(0.5, 0, 1, 60), -- Start lower for slide-up
 		AnchorPoint = Vector2.new(0.5, 0), 
-		GroupTransparency = 0, BorderSizePixel = 0, 
+		GroupTransparency = 1, BorderSizePixel = 0, 
 		BackgroundTransparency = 0, ZIndex = 10,
 		ClipsDescendants = true -- Prevent visual overflow
 	})
 
 	task.spawn(function()
-		Dock.GroupTransparency = 1
-		Tween(Dock, {GroupTransparency = 0}, 0.4)
+		task.wait(0.1) -- Slight delay to stagger with MainFrame
+		Tween(Dock, {
+			GroupTransparency = 0,
+			Position = UDim2.new(0.5, 0, 1, 15)
+		}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 	end)
 
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
