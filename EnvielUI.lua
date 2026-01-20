@@ -255,7 +255,7 @@ function EnvielUI:CreateWindow(Config)
         })
         local SplashLogo = Create("ImageLabel", {
             Parent = SplashCanvas, Size = UDim2.fromOffset(150, 150), Position = UDim2.fromScale(0.5, 0.5), AnchorPoint = Vector2.new(0.5, 0.5),
-            BackgroundTransparency = 1, Image = "rbxthumb://type=Asset&id=89017753037134&w=420&h=420", ImageTransparency = 1, ScaleType = Enum.ScaleType.Fit
+            BackgroundTransparency = 1, Image = "rbxthumb://type=Asset&id=94854804824909&w=420&h=420", ImageTransparency = 1, ScaleType = Enum.ScaleType.Fit
         })
         
         Tween(SplashLogo, {ImageTransparency = 0}, 0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
