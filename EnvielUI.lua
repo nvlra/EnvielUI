@@ -192,9 +192,11 @@ function EnvielUI:CreateWindow(Config)
 		IgnoreGuiInset = true, DisplayOrder = 1000000
 	})
 	
+	local IsMobile = workspace.CurrentCamera.ViewportSize.X < 800
+
 	local MainFrame = Create("Frame", {
 		Name = "MainFrame", Parent = ScreenGui, BackgroundTransparency = 1,
-		Size = UDim2.fromOffset(580, 380), Position = UDim2.fromScale(0.5, 0.45),
+		Size = UDim2.fromOffset(580, 380), Position = IsMobile and UDim2.fromScale(0.5, 0.55) or UDim2.fromScale(0.5, 0.45),
 		AnchorPoint = Vector2.new(0.5, 0.5), Active = true
 	})
 	Window.MainFrame = MainFrame
@@ -202,7 +204,6 @@ function EnvielUI:CreateWindow(Config)
 	local MainScale = Create("UIScale", {Parent = MainFrame, Scale = 0.9})
 	
     local Camera = workspace.CurrentCamera
-	local IsMobile = Camera.ViewportSize.X < 800
     
     local function AddHover(Obj, NormalColor)
         if IsMobile then return end
@@ -629,7 +630,7 @@ function EnvielUI:CreateWindow(Config)
 		task.wait(0.1)
 		Tween(Dock, {
 			GroupTransparency = 0,
-			Position = UDim2.new(0.5, 0, 1, 15)
+			Position = UDim2.new(0.5, 0, 1, IsMobile and 8 or 15)
 		}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 	end)
 
@@ -686,7 +687,7 @@ function EnvielUI:CreateWindow(Config)
 			local PadRight = 4
 			local Safety = 0
 			local ContentW = AbsSize + PadLeft + PadRight + Safety
-			local MaxW = IsMobile and 350 or 650
+			local MaxW = IsMobile and MainFrame.AbsoluteSize.X or 650
 			local ClampedWidth = math.clamp(ContentW, 60, MaxW)
 			
 			CurrentDockWidth = ClampedWidth
