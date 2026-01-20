@@ -498,6 +498,21 @@ function EnvielUI:CreateWindow(Config)
 		Tween(MiniScale, {Scale = 1}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     end)
 
+    StatsPill.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            ToggleStats(false)
+            
+            MainFrame.Visible = true
+            MainScale.Scale = 0.9
+            Tween(MainScale, {Scale = 1}, 0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+            Tween(ContentWindow, {GroupTransparency = 0}, 0.2)
+            local D = MainFrame:FindFirstChild("Dock")
+            if D then
+                if D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 0}, 0.2) else Tween(D, {BackgroundTransparency = 0}, 0.2) end
+            end
+        end
+    end)
+
 	MiniClick.MouseButton1Click:Connect(function()
 		Tween(MiniScale, {Scale = 0}, 0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
 		Tween(MiniButton, {GroupTransparency = 1}, 0.15).Completed:Wait()
@@ -768,8 +783,6 @@ function EnvielUI:CreateWindow(Config)
 		BackgroundTransparency = 0, ZIndex = 10,
 		ClipsDescendants = true
 	})
-
-
 
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
     Create("UISizeConstraint", {Parent = Dock, MaxSize = Vector2.new(IsMobile and 2000 or 650, 50)})

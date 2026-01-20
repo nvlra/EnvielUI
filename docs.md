@@ -37,7 +37,7 @@ A modern, lightweight Roblox UI library with support for both PC and mobile plat
 Load the library in your script:
 
 ```lua
-local EnvielUI = loadstring(game:HttpGet("your-library-url-here"))()
+local EnvielUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/nvlra/EnvielUI/main/EnvielUI.lua))()
 ```
 
 ---
