@@ -259,8 +259,9 @@ function EnvielUI:CreateWindow(Config)
 	})
 	
 	Create("TextLabel", {
-		Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(0, 0, 1, 0), Position = UDim2.new(0, 32, 0, 0), AutomaticSize = Enum.AutomaticSize.X,
-		Font = Enum.Font.GothamBold, Text = Name, TextColor3 = Window.Theme.Text, TextSize = TitleS, TextXAlignment = Enum.TextXAlignment.Left
+		Parent = Header, BackgroundTransparency = 1, Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0, 36, 0.5, 0), AutomaticSize = Enum.AutomaticSize.XY,
+		Font = Enum.Font.GothamBold, Text = Name, TextColor3 = Window.Theme.Text, TextSize = TitleS, TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Center, AnchorPoint = Vector2.new(0, 0.5)
 	})
 
 	task.wait(0.05)
