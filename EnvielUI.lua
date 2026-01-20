@@ -249,7 +249,6 @@ function EnvielUI:CreateWindow(Config)
 	Create("UICorner", {Parent = ContentWindow, CornerRadius = UDim.new(0, 14)})
 
 	task.spawn(function()
-        -- Splash Logic
         local SplashCanvas = Create("Frame", {
             Name = "Splash", Parent = ScreenGui, Size = UDim2.fromScale(1,1), 
             BackgroundTransparency = 1, ZIndex = 100
@@ -259,14 +258,12 @@ function EnvielUI:CreateWindow(Config)
             BackgroundTransparency = 1, Image = "rbxassetid://89017753037134", ImageTransparency = 1, ScaleType = Enum.ScaleType.Fit
         })
         
-        -- Anim: Fade In -> Wait -> Fade Out -> Destroy
         Tween(SplashLogo, {ImageTransparency = 0}, 0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
         task.wait(1.5)
         Tween(SplashLogo, {ImageTransparency = 1}, 0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
         task.wait(0.5)
         SplashCanvas:Destroy()
         
-        -- Main Entrance
 		ContentWindow.GroupTransparency = 1
 		Tween(MainScale, {Scale = 1}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 		Tween(ContentWindow, {GroupTransparency = 0}, 0.4)
