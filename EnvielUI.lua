@@ -651,7 +651,7 @@ function EnvielUI:CreateWindow(Config)
 		HorizontalAlignment = Enum.HorizontalAlignment.Left, -- Left for stable anchoring
 		VerticalAlignment = Enum.VerticalAlignment.Center
 	})
-	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 14)})
+	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 6)})
 
 	-- Safe Queue System
 	local UpdateQueued = false
@@ -663,7 +663,7 @@ function EnvielUI:CreateWindow(Config)
     DecorFolder.Name = "Decor"
 
 	local ActiveIndicator = Create("Frame", {
-		Parent = DecorFolder, -- Parent to Folder, not DockList directly
+		Parent = DecorFolder,
         BackgroundColor3 = Window.Theme.Accent, 
 		Size = UDim2.new(0, 0, 1, -8), 
 		Position = UDim2.new(0, 0, 0.5, 0),
@@ -679,7 +679,7 @@ function EnvielUI:CreateWindow(Config)
 		task.defer(function()
 			task.wait(0.05) -- 50ms debounce
 			
-			local ContentW = DockLayout.AbsoluteContentSize.X + 60
+			local ContentW = DockLayout.AbsoluteContentSize.X + 24
 			local MaxW = IsMobile and 350 or 650
 			local ClampedWidth = math.clamp(ContentW, 60, MaxW)
 			
