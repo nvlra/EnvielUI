@@ -312,6 +312,8 @@ function EnvielUI:CreateWindow(Config)
 	
 	
 	local SafeArea = GuiService:GetGuiInset()
+    
+    -- // 1. Mini Icon (Draggable) matches existing logic
 	local MiniButton = Create("CanvasGroup", {
 		Name = "MiniButton", Parent = ScreenGui, BackgroundColor3 = Window.Theme.Main, Size = UDim2.fromOffset(45, 45),
 		Position = UDim2.new(0, SafeArea.X + 20, 0.5, 0),
@@ -331,7 +333,128 @@ function EnvielUI:CreateWindow(Config)
 	})
 	
 	Dragify(MiniClick, MiniButton)
+
+    -- // 2. Stats Bar Implementation
+    local StatsHolder = Create("Frame", {
+        Name = "StatsHolder", Parent = ScreenGui, Size = UDim2.new(1, 0, 0, 100), Position = UDim2.new(0, 0, 0, SafeArea.Y + 20),
+        BackgroundTransparency = 1, Visible = false
+    })
+
+    local StatsPill = Create("Frame", {
+        Parent = StatsHolder, Size = UDim2.fromOffset(IsMobile and 300 or 400, 36), AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 0),
+        BackgroundColor3 = Window.Theme.Main, BackgroundTransparency = 0.1
+    })
+    Create("UICorner", {Parent = StatsPill, CornerRadius = UDim.new(1, 0)})
+    Create("UIStroke", {Parent = StatsPill, Color = Window.Theme.Stroke, Thickness = 1})
+
+    -- Layout for Stats
+    local StatsLayout = Create("UIListLayout", {
+        Parent = StatsPill, FillDirection = Enum.FillDirection.Horizontal, 
+        HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center,
+        Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder
+    })
+    
+    -- Stats Logo
+    local SLogo = Create("ImageLabel", {
+        Parent = StatsPill, BackgroundTransparency = 1, Size = UDim2.fromOffset(20, 20),
+        Image = "rbxthumb://type=Asset&id="..LOGO_WHITE.."&w=150&h=150", ImageColor3 = Window.Theme.Text, LayoutOrder = 1
+    })
+    
+    -- Separator Dot
+    local function Dot(Order)
+        local D = Create("Frame", {Parent = StatsPill, BackgroundColor3 = Window.Theme.TextDark, Size = UDim2.fromOffset(4, 4), LayoutOrder = Order})
+        Create("UICorner", {Parent = D, CornerRadius = UDim.new(1, 0)})
+    end
+
+    Dot(2)
+
+    -- Stats Text
+    local StatsLabel = Create("TextLabel", {
+        Parent = StatsPill, BackgroundTransparency = 1, AutomaticSize = Enum.AutomaticSize.X, Size = UDim2.fromScale(0, 1),
+        Text = "", Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = Window.Theme.Text, RichText = true, LayoutOrder = 3
+    })
+
+    -- Close Button (Next to Pill)
+    local StatsClose = Create("ImageButton", {
+        Parent = StatsHolder, Size = UDim2.fromOffset(36, 36), AnchorPoint = Vector2.new(0, 0), 
+        Position = UDim2.new(0.5, (IsMobile and 150 or 200) + 10, 0, 0), -- Positioned right of Pill
+        BackgroundColor3 = Color3.fromHex("1A1A1A"), BackgroundTransparency = 0.1, AutoButtonColor = false
+    })
+    Create("UICorner", {Parent = StatsClose, CornerRadius = UDim.new(1, 0)})
+    Create("UIStroke", {Parent = StatsClose, Color = Window.Theme.Stroke, Thickness = 1})
+    Create("ImageLabel", {
+        Parent = StatsClose, Size = UDim2.fromOffset(18, 18), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5),
+        BackgroundTransparency = 1, Image = GetIcon("x") or "rbxassetid://6031094678", ImageColor3 = Window.Theme.Text
+    })
+
+    -- // Logic
+    local RunService = game:GetService("RunService")
+    local StatsConn
+    local StatColors = {
+        Good = "#4DEF7E", Warn = "#F6CA4F", Bad = "#F84343"
+    }
+    
+    local function GetColor(Val, Good, Bad) 
+        if Val <= Good then return StatColors.Good
+        elseif Val <= Bad then return StatColors.Warn
+        else return StatColors.Bad end
+    end
+
+    local function UpdateStatsContent()
+        local Ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
+        local FPS = math.floor(workspace:GetRealPhysicsFPS())
+        -- CPU isn't directly readable accurately in Lua without hacks, using simpler FrameTime proxy or just 0 for now?
+        -- User asked for CPU ms. We can approx with Heartbeat delta * 1000.
+        local FrameTime = math.floor(RunService.Heartbeat:Wait() * 1000) 
+        
+        -- Colors
+        local C_Ping = GetColor(Ping, 60, 150) -- Adjusted thresholds
+        local C_CPU = GetColor(FrameTime, 10, 20)
+        
+        -- Strict User Format: PING : [Color]120 ms[-] • CPU : [Color]6 ms[-] • FPS : 206
+        StatsLabel.Text = string.format(
+            "PING : <font color='%s'>%d ms</font>   <font color='#888888'>•</font>   CPU : <font color='%s'>%d ms</font>   <font color='#888888'>•</font>   FPS : %d",
+            C_Ping, Ping, C_CPU, FrameTime, FPS
+        )
+    end
+
+    local function ToggleStats(State)
+        if State then
+            StatsHolder.Visible = true
+            StatsConn = RunService.RenderStepped:Connect(UpdateStatsContent)
+        else
+            StatsHolder.Visible = false
+            if StatsConn then StatsConn:Disconnect() StatsConn = nil end
+        end
+    end
+
+    -- // Event Handlers
+
+    -- 1. Minimize Click -> Show Stats
+	MinBtn.MouseButton1Click:Connect(function()
+		Tween(MainScale, {Scale = 0}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+		Tween(ContentWindow, {GroupTransparency = 1}, 0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+		local D = MainFrame:FindFirstChild("Dock")
+		if D then
+            if D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 1}, 0.15) else Tween(D, {BackgroundTransparency = 1}, 0.15) end
+        end
+		task.wait(0.2)
+		MainFrame.Visible = false
+        ToggleStats(true) -- SHOW STATS
+	end)
+
+    -- 2. Stats Close Click -> Show Mini Icon
+    StatsClose.MouseButton1Click:Connect(function()
+        ToggleStats(false) -- HIDE STATS
+        
+		MiniButton.Visible = true
+		MiniButton.GroupTransparency = 1
+		MiniScale.Scale = 0
+		Tween(MiniButton, {GroupTransparency = 0}, 0.2)
+		Tween(MiniScale, {Scale = 1}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    end)
 	
+    -- 3. Mini Icon Click -> Restore Main
 	MiniClick.MouseButton1Click:Connect(function()
 		Tween(MiniScale, {Scale = 0}, 0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
 		Tween(MiniButton, {GroupTransparency = 1}, 0.15).Completed:Wait()
@@ -349,25 +472,6 @@ function EnvielUI:CreateWindow(Config)
 		if D then
             if D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 0}, 0.2) else Tween(D, {BackgroundTransparency = 0.25}, 0.2) end
         end
-	end)
-	
-	MinBtn.MouseButton1Click:Connect(function()
-		Tween(MainScale, {Scale = 0}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-		Tween(ContentWindow, {GroupTransparency = 1}, 0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-		
-		local D = MainFrame:FindFirstChild("Dock")
-		if D then
-            if D:IsA("CanvasGroup") then Tween(D, {GroupTransparency = 1}, 0.15) else Tween(D, {BackgroundTransparency = 1}, 0.15) end
-        end
-		
-		task.wait(0.2)
-		MainFrame.Visible = false
-		
-		MiniButton.Visible = true
-		MiniButton.GroupTransparency = 1
-		MiniScale.Scale = 0
-		Tween(MiniButton, {GroupTransparency = 0}, 0.2)
-		Tween(MiniScale, {Scale = 1}, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 	end)
 	
 	local NotifHolder = Create("Frame", {
