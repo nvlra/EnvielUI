@@ -772,7 +772,7 @@ function EnvielUI:CreateWindow(Config)
 
 
 	Create("UICorner", {Parent = Dock, CornerRadius = UDim.new(1, 0)})
-    Create("UISizeConstraint", {Parent = Dock, MaxSize = Vector2.new(IsMobile and 350 or 650, 50)})
+    Create("UISizeConstraint", {Parent = Dock, MaxSize = Vector2.new(IsMobile and 2000 or 650, 50)})
 
 	local DockList = Create("ScrollingFrame", {
 		Parent = Dock, 
@@ -1504,7 +1504,7 @@ function EnvielUI:CreateWindow(Config)
         })
         
         Tween(SplashLogo, {ImageTransparency = 0}, 0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-        task.wait(3)
+        task.wait(2)
         Tween(SplashLogo, {ImageTransparency = 1}, 0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
         task.wait(0.5)
         SplashCanvas:Destroy()
