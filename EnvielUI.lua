@@ -418,7 +418,7 @@ function EnvielUI:CreateWindow(Config)
                     local FrameTime = math.floor(dt * 1000) 
             
                     local C_Ping = GetColor(Ping, 30, 70)
-                    local C_CPU = GetColor(FrameTime, 10, 20)
+                    local C_CPU = GetColor(FrameTime, 30, 70)
                     
                     StatsLabel.Text = string.format(
                         "PING : <font color='%s'>%d ms</font>   <font color='#888888'>•</font>   CPU : <font color='%s'>%d ms</font>   <font color='#888888'>•</font>   FPS : %d",
