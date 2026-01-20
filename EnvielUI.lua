@@ -651,7 +651,7 @@ function EnvielUI:CreateWindow(Config)
 		HorizontalAlignment = Enum.HorizontalAlignment.Left, -- Left for stable anchoring
 		VerticalAlignment = Enum.VerticalAlignment.Center
 	})
-	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 10)})
+	Create("UIPadding", {Parent = DockList, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 12)})
 
 	-- Safe Queue System
 	local UpdateQueued = false
@@ -681,25 +681,23 @@ function EnvielUI:CreateWindow(Config)
 			
 			local AbsSize = DockLayout.AbsoluteContentSize.X
 			local PadLeft = 4
-			local PadRight = 10
-			local Safety = 2
+			local PadRight = 12
+			local Safety = 20
 			local ContentW = AbsSize + PadLeft + PadRight + Safety
 			local MaxW = IsMobile and 350 or 650
 			local ClampedWidth = math.clamp(ContentW, 60, MaxW)
 			
-			-- Only update if changed significantly (>2px threshold)
-			if math.abs(ClampedWidth - CurrentDockWidth) > 2 then
-				CurrentDockWidth = ClampedWidth
-				
-				-- Update Dock size (direct, no tween to prevent cascade)
-				Dock.Size = UDim2.new(0, ClampedWidth, 0, NavH)
-				
-				-- Update CanvasSize for scrolling (only if content exceeds dock)
-				if ContentW > ClampedWidth then
-					DockList.CanvasSize = UDim2.new(0, ContentW, 0, 0)
-				else
-					DockList.CanvasSize = UDim2.new(0, 0, 0, 0) -- No scroll needed
-				end
+			-- Always update to prevent clipping
+			CurrentDockWidth = ClampedWidth
+			
+			-- Update Dock size (direct, no tween to prevent cascade)
+			Dock.Size = UDim2.new(0, ClampedWidth, 0, NavH)
+			
+			-- Update CanvasSize for scrolling (only if content exceeds dock)
+			if ContentW > ClampedWidth then
+				DockList.CanvasSize = UDim2.new(0, ContentW, 0, 0)
+			else
+				DockList.CanvasSize = UDim2.new(0, 0, 0, 0) -- No scroll needed
 			end
 			
 			UpdateQueued = false
