@@ -161,10 +161,10 @@ function EnvielUI:CreateWindow(Config)
 
 	local Window = {
 		Flags = {}, 
-		Theme = Config.Theme,
 		Connections = {},
         OnCloseCallbacks = {},
-		TabCount = 0 -- Initialize counter for layout order
+		TabCount = 0, -- Initialize counter for layout order
+        HasExplicitSelection = false -- Track if user manually selected a tab
 	}
 	
 	function Window:OnClose(Callback)
@@ -798,11 +798,19 @@ function EnvielUI:CreateWindow(Config)
         end
 
 		local IsSelected = (type(Config) == "table" and Config.Selected)
+        if IsSelected then Window.HasExplicitSelection = true end
+        
 		if TabIndex == 1 or IsSelected then
 			task.spawn(function()
                 local sT = tick()
                 repeat RunService.RenderStepped:Wait() until Btn.AbsoluteSize.X > 0 or (tick()-sT > 2)
                 task.wait(0.5) -- Slightly increased for robustness
+                
+                -- Yield if we are Tab 1 (Default) but the user explicitly selected another tab later
+                if TabIndex == 1 and Window.HasExplicitSelection and not IsSelected then
+                    return
+                end
+                
 				Window:SelectTab(TabId)
                 task.delay(0.1, QueueDockUpdate) -- Force final sync snap
 			end)

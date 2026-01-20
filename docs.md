@@ -104,12 +104,19 @@ local Window = EnvielUI:CreateWindow({
 
 Tabs appearing in the floating bottom dock.
 
+````lua
+local MainTab = Window:CreateTab({
+    Name = "Main",
+    Selected = true -- Optional: Set as default active tab
+})
 ```lua
 local MainTab = Window:CreateTab({
     Name = "Main",
     Selected = true -- Optional: Set as default active tab
 })
-```
+````
+
+**Note**: Tabs appear in the Dock from **Left to Right** based on the order they are created in your script.
 
 ---
 
