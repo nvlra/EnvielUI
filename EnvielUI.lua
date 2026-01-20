@@ -427,16 +427,17 @@ function EnvielUI:CreateWindow(Config)
                 end
 
                 local CurrentFPS = 1 / dt
-                table.insert(FPSSamples, CurrentFPS)
+                table.insert(FPSSamples, dt) -- Store dt instead of FPS
                 if #FPSSamples > MaxSamples then table.remove(FPSSamples, 1) end
 
                 local Now = tick()
                 if Now - LastUpdate < 0.35 then return end
                 LastUpdate = Now
 
-                local FPSObj = 0
-                for _, v in ipairs(FPSSamples) do FPSObj = FPSObj + v end
-                local FPS = math.floor(FPSObj / #FPSSamples)
+                local TotalDT = 0
+                for _, v in ipairs(FPSSamples) do TotalDT = TotalDT + v end
+                local AvgDT = TotalDT / #FPSSamples
+                local FPS = math.floor(1 / AvgDT)
 
                 local success, pingVal = pcall(function() return DataPing:GetValue() end)
                 local Ping = success and math.floor(pingVal) or 0
