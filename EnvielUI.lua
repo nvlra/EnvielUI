@@ -771,7 +771,7 @@ function EnvielUI:CreateWindow(Config)
 			TextColor3 = Window.Theme.TextDark, TextSize = TextS + 1, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, ZIndex = 2,
 			TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center
 		})
-		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
+		Create("UIPadding", {Parent = Btn, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12)})
 		Btn.MouseButton1Click:Connect(function() Window:SelectTab(TabId) end)
 		
         task.defer(QueueDockUpdate)
