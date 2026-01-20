@@ -409,7 +409,7 @@ function EnvielUI:CreateWindow(Config)
             StatsPill.BackgroundTransparency = 0.1
             StatsPill.Size = UDim2.fromOffset(0, 36)
             
-            local TargetY = IsMobile and (SafeArea.Y + 6) or (SafeArea.Y + 8)
+            local TargetY = IsMobile and (SafeArea.Y + 4) or (SafeArea.Y + 8)
             Tween(StatsHolder, {Position = UDim2.new(0.5, 0, 0, TargetY)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
             
             if StatsConn then StatsConn:Disconnect() StatsConn = nil end
