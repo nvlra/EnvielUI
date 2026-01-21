@@ -1,4 +1,3 @@
-if task and task.synchronize then pcall(task.synchronize) end
 local EnvielUI = {}
 EnvielUI.__index = EnvielUI
 
